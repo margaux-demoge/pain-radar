@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Loop · Pain Radar proto 09/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F1ECE2;
+    --paper: #F8F4EA;
+    --paper-dim: #ECE5D4;
+    --sage: #6B7A5A;
+    --sage-soft: rgba(107, 122, 90, 0.12);
+    --sage-dim: #98A48A;
+    --terra: #B8634A;
+    --terra-soft: rgba(184, 99, 74, 0.12);
+    --ink: #2A2922;
+    --ink-2: #585448;
+    --ink-3: #8A8576;
+    --line: rgba(42, 41, 34, 0.12);
+    --line-strong: rgba(42, 41, 34, 0.22);
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(241, 236, 226, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--terra); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--terra); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--sage-soft); color: var(--sage);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--sage); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--sage); color: var(--paper);
+    border-color: var(--sage);
+  }
+  #app .chip.terra {
+    background: var(--terra); color: var(--paper);
+    border-color: var(--terra);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--sage); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--sage); margin-top: 2px; }
+
+  #app .meal-card {
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  #app .meal-slot {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--sage); font-weight: 600;
+  }
+  #app .meal-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 17px; font-weight: 500; color: var(--ink);
+    line-height: 1.2;
+  }
+  #app .meal-meta { font-size: 11px; color: var(--ink-3); }
+
+  /* texture */
+  #app .grain {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 1px 1px, rgba(42,41,34,0.04) 1px, transparent 0);
+    background-size: 6px 6px;
+    pointer-events: none;
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">09 / 45 — Loop</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Lex/index.html" title="Previous: Lex">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Lull/index.html" title="Next: Lull">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Restraint-as-feature · weeknight cooking</div>
+  <h1 class="page-title serif">Loop</h1>
+  <p class="page-tagline serif">Seven meals. That's your week. Loop helps you find the small set of meals you actually cook and rotate them on repeat, guilt-free.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven proto, no photos. See <a href="../../Apps/_radar/Loop/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const Ico = {
+  star: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l1.9 4 4.4.6-3.2 3 .8 4.3L8 11.5 4.1 13.4 5 9.1 1.7 6.1l4.4-.6L8 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>,
+  starFill: <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1.5l1.9 4 4.4.6-3.2 3 .8 4.3L8 11.5 4.1 13.4 5 9.1 1.7 6.1l4.4-.6L8 1.5z" fill="currentColor"/></svg>,
+  frown: <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.3"/><circle cx="5.8" cy="7" r="0.8" fill="currentColor"/><circle cx="10.2" cy="7" r="0.8" fill="currentColor"/><path d="M5.5 11.2c.6-.9 1.5-1.4 2.5-1.4s1.9.5 2.5 1.4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" fill="none"/></svg>,
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  list: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14 M3 10h14 M3 15h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  cart: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 3h2l2 10h10l2-7H5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><circle cx="7" cy="17" r="1.2" stroke="currentColor" strokeWidth="1.4"/><circle cx="15" cy="17" r="1.2" stroke="currentColor" strokeWidth="1.4"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  bell: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11h8 M4 11V7a3 3 0 016 0v4 M6 13h2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/></svg>,
+  check: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  x: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 3l6 6 M9 3l-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Tonight', icon: Ico.home },
+    { id: 'rotation', label: 'Rotation', icon: Ico.list },
+    { id: 'cart', label: 'Groceries', icon: Ico.cart },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------- 01 Hero ----------------
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="grain" />
+      <div className="pad col" style={{paddingTop: 36, height: '100%', position: 'relative'}}>
+        <div className="label" style={{color: 'var(--terra)'}}>Loop</div>
+        <div style={{height: 70}} />
+        <div className="serif" style={{
+          fontSize: 44, lineHeight: 1.05, fontWeight: 600, letterSpacing: '-0.02em', color: 'var(--ink)'
+        }}>
+          Seven meals.<br/>
+          <span style={{fontStyle: 'italic', color: 'var(--sage)'}}>That's your week.</span>
+        </div>
+        <div style={{height: 22}} />
+        <div className="serif" style={{fontSize: 17, fontStyle: 'italic', color: 'var(--ink-2)', lineHeight: 1.5}}>
+          Find the small set of meals you actually cook. Rotate them on repeat. Stop deciding at 6pm.
+        </div>
+        <div style={{flex: 1}} />
+        {/* decorative meal ring */}
+        <div style={{position: 'relative', height: 140, marginBottom: 24}}>
+          <svg viewBox="0 0 280 140" width="100%" height="100%">
+            <g transform="translate(140 70)">
+              {[0,1,2,3,4,5,6].map(i => {
+                const a = (i / 7) * Math.PI * 2 - Math.PI / 2;
+                const x = Math.cos(a) * 56;
+                const y = Math.sin(a) * 56;
+                return <circle key={i} cx={x} cy={y} r={i===0?10:6} fill={i===0?'var(--terra)':'var(--sage)'} opacity={i===0?1:0.55} />
+              })}
+              <circle r="56" fill="none" stroke="var(--line-strong)" strokeDasharray="2 4"/>
+              <text textAnchor="middle" y="4" fontFamily="Fraunces" fontStyle="italic" fontSize="13" fill="var(--ink-3)">MON</text>
+            </g>
+          </svg>
+        </div>
+        <button className="btn-primary">Start your rotation</button>
+        <div style={{height: 10}} />
+        <div className="small" style={{textAlign: 'center'}}>Four-week setup. No recipe feed. Ever.</div>
+        <div style={{height: 24}} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 02 Onboarding — type meals you've cooked ----------------
+function Onb1Screen() {
+  const meals = [
+    'Sheet-pan miso salmon',
+    'Turkey chili',
+    'Pasta with brown butter & peas',
+    'Roast chicken thighs',
+    'Black bean tacos',
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 30, gap: 18, height: '100%'}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <div className="small">Step 1 of 3</div>
+          <div className="small" style={{color: 'var(--sage)'}}>Skip ›</div>
+        </div>
+        <div className="h1">What have you actually cooked, lately?</div>
+        <div className="meta" style={{lineHeight: 1.5}}>
+          Type meals that landed in the last month. Doesn't matter if they're simple. Five is plenty.
+        </div>
+        <div className="col gap-8">
+          {meals.map((m, i) => (
+            <div key={i} className="row" style={{
+              padding: '12px 14px', borderRadius: 12,
+              background: 'var(--paper-dim)', border: '1px solid var(--line)',
+              gap: 10, alignItems: 'center'
+            }}>
+              <span style={{color: 'var(--sage)'}}>{Ico.check}</span>
+              <span style={{fontSize: 14}}>{m}</span>
+            </div>
+          ))}
+          <div className="row" style={{
+            padding: '12px 14px', borderRadius: 12,
+            border: '1px dashed var(--line-strong)',
+            gap: 10, color: 'var(--ink-3)', fontSize: 14
+          }}>
+            <span>+</span>
+            <span style={{fontStyle: 'italic'}}>Add one more…</span>
+            <span style={{marginLeft: 'auto', width: 2, height: 16, background: 'var(--terra)', animation: 'none'}} />
+          </div>
+        </div>
+        <div style={{flex: 1}} />
+        <button className="btn-primary">Continue · 5 meals</button>
+        <div style={{height: 30}} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 03 Onboarding — family + equipment ----------------
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 30, gap: 16, height: '100%'}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <div className="small">Step 2 of 3</div>
+        </div>
+        <div className="h1">A few things about your kitchen.</div>
+        <div className="meta">Used once to shape the rotation. Skip anything that doesn't fit.</div>
+
+        <div className="col gap-8">
+          <div className="label">Who's eating</div>
+          <div className="row gap-8" style={{flexWrap: 'wrap'}}>
+            <span className="chip on">2 adults</span>
+            <span className="chip on">1 kid (6)</span>
+            <span className="chip">+ add</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Hard nos</div>
+          <div className="row gap-8" style={{flexWrap: 'wrap'}}>
+            <span className="chip on">mushrooms</span>
+            <span className="chip on">shellfish</span>
+            <span className="chip">+ add</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Equipment you'll use</div>
+          <div className="row gap-8" style={{flexWrap: 'wrap'}}>
+            <span className="chip on">oven</span>
+            <span className="chip on">slow cooker</span>
+            <span className="chip on">cast iron</span>
+            <span className="chip">instant pot</span>
+            <span className="chip">grill</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Realistic weeknight time</div>
+          <div className="row gap-8">
+            <span className="chip">15 min</span>
+            <span className="chip on">30 min</span>
+            <span className="chip">45 min</span>
+          </div>
+        </div>
+
+        <div style={{flex: 1}} />
+        <button className="btn-primary">Build my seven</button>
+        <div style={{height: 30}} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 04 Onboarding — proposed 7 ----------------
+function Onb3Screen() {
+  const meals = [
+    {slot: 'Easy weeknight', name: 'Sheet-pan miso salmon', meta: '25 min · oven'},
+    {slot: '10-minute', name: 'Soft scrambled eggs on toast', meta: '10 min · skillet'},
+    {slot: 'Slow cooker', name: 'White chicken chili', meta: 'set & forget · 4h'},
+    {slot: 'Make-ahead', name: 'Turkey ragù (Sun for Mon)', meta: 'cook Sun · eat Mon'},
+    {slot: 'Mid-effort', name: 'Roast chicken thighs + rice', meta: '40 min · oven'},
+    {slot: 'Mid-effort', name: 'Black bean tacos', meta: '20 min · skillet'},
+    {slot: 'Mid-effort', name: 'Pasta, brown butter & peas', meta: '15 min · stovetop'},
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 30, gap: 14, height: '100%'}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <div className="small">Step 3 of 3</div>
+          <div className="small serif" style={{fontStyle: 'italic', color: 'var(--terra)'}}>Your seven</div>
+        </div>
+        <div className="h2">Here's the loop for the next 4 weeks.</div>
+        <div className="meta" style={{lineHeight: 1.5}}>
+          You can swap one if it's not working. Not all of them. That's the whole point.
+        </div>
+        <div className="col gap-8" style={{marginTop: 4}}>
+          {meals.map((m, i) => (
+            <div key={i} className="meal-card">
+              <div className="meal-slot">{m.slot}</div>
+              <div className="meal-name">{m.name}</div>
+              <div className="meal-meta">{m.meta}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{height: 8}} />
+        <button className="btn-primary">Lock in. Start tonight.</button>
+        <div style={{height: 30}} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 05 Core — Tonight (4pm ping) ----------------
+function CoreTonightScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 30, gap: 14, height: '100%', paddingBottom: 90}}>
+        <div className="row gap-8" style={{color: 'var(--terra)'}}>
+          {Ico.bell}
+          <span className="label" style={{color: 'var(--terra)'}}>4:00 PM · Wednesday</span>
+        </div>
+        <div className="h1">Tonight you're cooking<br/><span style={{fontStyle: 'italic', color: 'var(--sage)'}} className="serif">sheet-pan miso salmon.</span></div>
+
+        <div className="meal-card" style={{padding: '16px 18px'}}>
+          <div className="meal-slot">Easy weeknight · week 3 of 4</div>
+          <div className="meal-name" style={{fontSize: 19}}>Sheet-pan miso salmon</div>
+          <div className="meal-meta">25 min · 4 portions · oven 425°F</div>
+          <div style={{height: 10}} />
+          <div className="row gap-8" style={{flexWrap: 'wrap'}}>
+            <span className="chip" style={{fontSize: 11, padding: '4px 10px'}}>cooked 3× before</span>
+            <span className="chip" style={{fontSize: 11, padding: '4px 10px'}}>★ ★ ★ — — </span>
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 6}}>
+          <div className="label">Need from the store</div>
+          <div className="meal-card" style={{padding: '12px 14px', gap: 4}}>
+            <div className="row" style={{justifyContent: 'space-between', fontSize: 13}}>
+              <span>Salmon fillets (4)</span><span style={{color: 'var(--ink-3)'}}>$18.40</span>
+            </div>
+            <div className="row" style={{justifyContent: 'space-between', fontSize: 13}}>
+              <span>Scallions</span><span style={{color: 'var(--ink-3)'}}>$1.20</span>
+            </div>
+            <div className="row" style={{justifyContent: 'space-between', fontSize: 13}}>
+              <span>Broccolini, 1 bunch</span><span style={{color: 'var(--ink-3)'}}>$3.80</span>
+            </div>
+            <div className="small" style={{fontStyle: 'italic', marginTop: 4}}>Miso, rice, ginger — already in your pantry.</div>
+          </div>
+        </div>
+
+        <div style={{flex: 1}} />
+        <div className="row gap-8">
+          <button className="btn-primary" style={{flex: 2}}>Open recipe</button>
+          <button className="btn-secondary" style={{flex: 1}}>Grocery</button>
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// ---------------- 06 Core — Rotation view ----------------
+function CoreRotationScreen() {
+  const days = [
+    {d: 'Mon', meal: 'Roast chicken thighs', state: 'star'},
+    {d: 'Tue', meal: 'Black bean tacos', state: 'star'},
+    {d: 'Wed', meal: 'Sheet-pan miso salmon', state: 'tonight'},
+    {d: 'Thu', meal: 'White chicken chili', state: 'planned'},
+    {d: 'Fri', meal: 'Pasta, brown butter & peas', state: 'planned'},
+    {d: 'Sat', meal: 'Turkey ragù (made Sun)', state: 'planned'},
+    {d: 'Sun', meal: 'Soft scrambled eggs', state: 'planned'},
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 30, gap: 14, height: '100%', paddingBottom: 90}}>
+        <div className="row" style={{justifyContent: 'space-between', alignItems: 'baseline'}}>
+          <div className="h2">Your seven</div>
+          <div className="small serif" style={{fontStyle: 'italic', color: 'var(--terra)'}}>week 3 / 4</div>
+        </div>
+        <div className="meta">Same loop as last week. Swap available in 5 days.</div>
+
+        <div className="col gap-8" style={{marginTop: 4}}>
+          {days.map((d, i) => (
+            <div key={i} className="row" style={{
+              padding: '12px 14px', borderRadius: 12,
+              background: d.state === 'tonight' ? 'var(--terra-soft)' : 'var(--paper-dim)',
+              border: d.state === 'tonight' ? '1px solid var(--terra)' : '1px solid var(--line)',
+              gap: 12, alignItems: 'center'
+            }}>
+              <div className="serif" style={{
+                fontSize: 13, fontWeight: 600, width: 32, color: 'var(--ink-2)',
+                textTransform: 'uppercase', letterSpacing: '0.08em'
+              }}>{d.d}</div>
+              <div style={{flex: 1, fontSize: 14, color: 'var(--ink)'}}>{d.meal}</div>
+              {d.state === 'star' && <span style={{color: 'var(--sage)'}}>{Ico.starFill}</span>}
+              {d.state === 'tonight' && <span style={{
+                fontSize: 10, color: 'var(--terra)', fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.1em'
+              }}>tonight</span>}
+              {d.state === 'planned' && <span className="small" style={{color: 'var(--ink-3)'}}>—</span>}
+            </div>
+          ))}
+        </div>
+
+        <div className="col gap-8" style={{
+          marginTop: 4, padding: 14, borderRadius: 12,
+          background: 'var(--paper)', border: '1px dashed var(--line-strong)'
+        }}>
+          <div className="label">Cook-nights this week</div>
+          <div className="serif" style={{fontSize: 26, fontWeight: 600}}>4 <span style={{color: 'var(--ink-3)', fontSize: 16}}>/ 7</span></div>
+          <div className="small">Up from 2 in week 1.</div>
+        </div>
+      </div>
+      <NavBar active="rotation" />
+    </div>
+  );
+}
+
+// ---------------- 07 Core — After dinner star/frown ----------------
+function CoreRateScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 30, gap: 16, height: '100%', paddingBottom: 90}}>
+        <div className="small" style={{color: 'var(--sage)'}}>8:42 PM · Wednesday</div>
+        <div className="h1">How'd dinner land?</div>
+        <div className="meta" style={{lineHeight: 1.5}}>
+          One tap. Loop watches the pattern, not any single night.
+        </div>
+
+        <div className="meal-card" style={{padding: '16px 18px', marginTop: 4}}>
+          <div className="meal-slot">Tonight's meal</div>
+          <div className="meal-name">Sheet-pan miso salmon</div>
+          <div className="meal-meta">Cooked 4× now · ★ ★ ★ — last 3</div>
+        </div>
+
+        <div className="row gap-12" style={{marginTop: 8}}>
+          <button style={{
+            flex: 1, padding: '22px 12px', borderRadius: 16,
+            background: 'var(--sage)', color: 'var(--paper)',
+            border: 'none', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', gap: 8, cursor: 'pointer'
+          }}>
+            <span style={{transform: 'scale(1.6)'}}>{Ico.starFill}</span>
+            <span className="serif" style={{fontSize: 16, fontStyle: 'italic'}}>It landed</span>
+          </button>
+          <button style={{
+            flex: 1, padding: '22px 12px', borderRadius: 16,
+            background: 'var(--paper-dim)', color: 'var(--ink)',
+            border: '1px solid var(--line-strong)', display: 'flex', flexDirection: 'column',
+            alignItems: 'center', gap: 8, cursor: 'pointer'
+          }}>
+            <span style={{transform: 'scale(1.4)', color: 'var(--ink-2)'}}>{Ico.frown}</span>
+            <span className="serif" style={{fontSize: 16, fontStyle: 'italic'}}>Didn't work</span>
+          </button>
+        </div>
+
+        <div className="col gap-8" style={{
+          marginTop: 12, padding: 14, borderRadius: 12,
+          background: 'var(--paper-dim)', border: '1px solid var(--line)'
+        }}>
+          <div className="label">Optional · who ate it</div>
+          <div className="row gap-8">
+            <span className="chip on">me</span>
+            <span className="chip on">partner</span>
+            <span className="chip">kid (picked at it)</span>
+          </div>
+        </div>
+
+        <div style={{flex: 1}} />
+        <div className="small" style={{textAlign: 'center', fontStyle: 'italic'}}>
+          Two weeks in. One swap available Sunday.
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// ---------------- 08 Core — Swap suggestion ----------------
+function CoreSwapScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 30, gap: 14, height: '100%', paddingBottom: 90}}>
+        <div className="label" style={{color: 'var(--terra)'}}>Sunday review · week 4</div>
+        <div className="h1">One meal isn't landing.</div>
+        <div className="meta" style={{lineHeight: 1.5}}>
+          The other six are working. Loop only swaps the one that isn't.
+        </div>
+
+        <div className="meal-card" style={{
+          padding: '16px 18px', marginTop: 4,
+          background: 'var(--paper)', border: '1px solid var(--terra)'
+        }}>
+          <div className="row" style={{justifyContent: 'space-between', alignItems: 'center'}}>
+            <div className="meal-slot" style={{color: 'var(--terra)'}}>Not landing · 0 stars in 3 tries</div>
+            <span style={{color: 'var(--terra)'}}>{Ico.frown}</span>
+          </div>
+          <div className="meal-name">Soft scrambled eggs on toast</div>
+          <div className="meal-meta">Kid won't touch it · partner skipped twice</div>
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 4}}>
+          <div className="label">Loop suggests replacing with</div>
+          {[
+            {n: 'Sausage & peppers, one pan', meta: '20 min · skillet · matches "10-min" slot'},
+            {n: 'Quesadillas, build-your-own', meta: '15 min · kid-friendly · uses pantry beans'},
+            {n: 'Fried rice, leftover chicken', meta: '12 min · uses Mon\'s leftovers'},
+          ].map((c, i) => (
+            <div key={i} className="meal-card" style={{padding: '12px 14px'}}>
+              <div className="meal-name" style={{fontSize: 15}}>{c.n}</div>
+              <div className="meal-meta">{c.meta}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{flex: 1}} />
+        <div className="row gap-8">
+          <button className="btn-secondary" style={{flex: 1}}>Keep it, try again</button>
+          <button className="btn-primary" style={{flex: 1.4}}>Swap one</button>
+        </div>
+        <div className="small" style={{textAlign: 'center', fontStyle: 'italic', marginTop: 4}}>
+          Next swap available in 14 days. Never the whole rotation.
+        </div>
+      </div>
+      <NavBar active="rotation" />
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. A seven-dot ring stands in for a recipe photo — Loop's whole pitch is that this loop, not novelty, is the product.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="What you actually cook" caption="Seeds the rotation with meals the user has already landed. Addresses the cold-start risk by allowing as few as five.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Household & kitchen" caption="One short pass: who eats, hard nos, equipment, weeknight time. Used once to shape the seven, never asked again.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Your seven, proposed" caption="Each meal occupies a named slot — easy weeknight, ten-minute, slow-cooker, make-ahead, three mid-effort. The slot structure is the contract.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Tonight, 4pm ping" caption="The single screen the user lands on after the daily push. No feed, no scroll — tonight's meal, the gap in the grocery list, two buttons.">
+        <CoreTonightScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Rotation view" caption="The whole week, same as last week. The cook-nights counter is the progress narrative — H1's metric made visible.">
+        <CoreRotationScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Star or frown" caption="One tap after dinner. Loop watches the pattern across tries, not any single night — a meal needs to fail three times before it's flagged.">
+        <CoreRateScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Swap one, not all" caption="The contrarian wedge made literal. Sunday review surfaces the one meal that isn't landing, with three replacements that fit the same slot.">
+        <CoreSwapScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

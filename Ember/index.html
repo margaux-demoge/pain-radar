@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Ember · Pain Radar proto 23/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #EFEAE4;        /* warm parchment-cream */
+    --paper:     #F6F2EC;
+    --paper-dim: #E6DFD5;
+    --accent:    #6B3F4A;        /* muted dusky plum/rose */
+    --accent-soft: rgba(107, 63, 74, 0.10);
+    --accent-dim: #9B6E76;
+    --ink:       #1F1B22;        /* near-black with violet undertone */
+    --ink-2:     #4B4450;
+    --ink-3:     #847C88;
+    --line:      rgba(31, 27, 34, 0.10);
+    --line-strong: rgba(31, 27, 34, 0.20);
+    --ember:     #C56A4E;        /* warm coal/ember orange used sparingly */
+    --sage:      #7E8C7A;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(239, 234, 228, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--accent); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 24px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 32px; line-height: 1.12;
+    letter-spacing: -0.015em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--ink); color: var(--paper);
+    padding: 15px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--ink); color: var(--paper);
+    border-color: var(--ink);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 18px; padding: 18px;
+  }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--accent); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--accent); margin-top: 2px; }
+
+  /* The Ember mark — a tiny coal */
+  #app .coal {
+    width: 12px; height: 12px; border-radius: 999px;
+    background: radial-gradient(circle at 35% 35%, #F4A98A, var(--ember) 60%, #6E2A18);
+    box-shadow: 0 0 14px rgba(197, 106, 78, 0.45);
+    display: inline-block;
+  }
+
+  /* Hero background — a soft gradient like a coal glowing through dusk */
+  #app .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(60% 40% at 50% 78%, rgba(197, 106, 78, 0.22), transparent 70%),
+      radial-gradient(80% 60% at 50% 100%, rgba(107, 63, 74, 0.18), transparent 65%),
+      linear-gradient(180deg, #EFEAE4 0%, #E5DDD3 55%, #D9CFC3 100%);
+  }
+  #app .hero-stars {
+    position: absolute; inset: 0; opacity: 0.6;
+  }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">23 / 45 — Ember</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Cue/index.html" title="Previous: Cue">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Hold/index.html" title="Next: Hold">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Quiet signal · long relationships</div>
+  <h1 class="page-title serif">Ember</h1>
+  <p class="page-tagline serif">Proof you still love each other, even when it doesn't feel like it. Ember catches the small moments your brain forgets and shows you the relationship your feed-state can't see.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟢 EMERGING</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🔴 BUILT_ON_SAND</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photographs.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Ember/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const IMG = window.IMG;
+
+// ---------------- Icons ----------------
+const Ico = {
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  line: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 14 L7 9 L11 12 L18 5" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  mark: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3 L13 9 L19 9 L14 13 L16 19 L11 15 L6 19 L8 13 L3 9 L9 9 Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  check: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3 3 7-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  lock: <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><rect x="3" y="6" width="8" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.3"/><path d="M5 6V4a2 2 0 014 0v2" stroke="currentColor" strokeWidth="1.3" fill="none"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'This week', icon: Ico.home },
+    { id: 'line', label: 'The year', icon: Ico.line },
+    { id: 'mark', label: 'Mark', icon: Ico.mark },
+    { id: 'me', label: 'You two', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------- The rhythm line (used in multiple screens) ----------------
+function RhythmLine({ width = 320, height = 80, points, highlightIdx }) {
+  // points = array of 0..1 values
+  const W = width, H = height, n = points.length;
+  const step = W / (n - 1);
+  const path = points.map((p, i) => {
+    const x = i * step;
+    const y = H - 8 - p * (H - 18);
+    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(' ');
+  // soft area underneath
+  const area = path + ` L ${W} ${H} L 0 ${H} Z`;
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
+      <defs>
+        <linearGradient id="rl" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="rgba(197, 106, 78, 0.32)" />
+          <stop offset="100%" stopColor="rgba(197, 106, 78, 0)" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill="url(#rl)" />
+      <path d={path} stroke="#6B3F4A" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      {points.map((p, i) => {
+        const x = i * step;
+        const y = H - 8 - p * (H - 18);
+        const hi = i === highlightIdx;
+        return <circle key={i} cx={x} cy={y} r={hi ? 4 : 1.6} fill={hi ? '#C56A4E' : '#6B3F4A'} />;
+      })}
+    </svg>
+  );
+}
+
+// ---------------- 01 — Hero ----------------
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="hero-bg" />
+      <svg className="hero-stars" viewBox="0 0 393 852" preserveAspectRatio="none">
+        {[[60,180,1.2],[300,140,0.8],[120,250,0.6],[260,300,1],[200,90,0.7],[340,420,0.5],[50,400,0.9]].map(([x,y,r],i) =>
+          <circle key={i} cx={x} cy={y} r={r} fill="#6B3F4A" opacity="0.35"/>
+        )}
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, padding: '120px 28px 110px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div className="col gap-16">
+          <div className="row gap-8" style={{ alignItems: 'center' }}>
+            <span className="coal" />
+            <span className="label" style={{ color: 'var(--accent)' }}>Ember</span>
+          </div>
+          <div className="serif" style={{ fontSize: 38, lineHeight: 1.1, fontWeight: 500, letterSpacing: '-0.02em', color: 'var(--ink)' }}>
+            The spark isn't gone.<br/>
+            <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>You just can't see it</span> from inside the week.
+          </div>
+          <div className="serif" style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--ink-2)', fontStyle: 'italic', maxWidth: 300 }}>
+            One quiet observation every Sunday. The shape of your year, plotted. No score. No advice. Just the rhythm you're inside.
+          </div>
+        </div>
+        <div className="col gap-12">
+          <button className="btn-primary">Connect what you already use</button>
+          <div className="row" style={{ justifyContent: 'center', gap: 6 }}>
+            {Ico.lock}
+            <span className="small" style={{ color: 'var(--ink-3)' }}>On-device only. Your partner never sees this.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 02 — Onboarding: who and how long ----------------
+function Onb1Screen() {
+  return (
+    <div className="scr">
+      <div style={{ position: 'absolute', inset: 0, padding: '78px 24px 110px', display: 'flex', flexDirection: 'column' }}>
+        <div className="label" style={{ marginBottom: 14 }}>Step 1 of 3</div>
+        <div className="h1">Who's the<br/><em style={{ color: 'var(--accent)', fontWeight: 500 }}>other one</em>?</div>
+        <div className="meta" style={{ marginTop: 10, marginBottom: 22 }}>
+          Pick the person in your phone. Ember reads the rhythm between you two — nothing else.
+        </div>
+
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ padding: '14px 16px', background: 'var(--ink)', color: 'var(--paper)', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 38, height: 38, borderRadius: 999, background: 'linear-gradient(135deg, #C56A4E, #6B3F4A)', display: 'grid', placeItems: 'center', fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 16, fontWeight: 500 }}>S</div>
+            <div className="col" style={{ gap: 2 }}>
+              <div style={{ fontWeight: 500 }}>Sam</div>
+              <div style={{ fontSize: 11, opacity: 0.7 }}>iMessage · Photos · Shared calendar</div>
+            </div>
+            <div style={{ marginLeft: 'auto' }}>{Ico.check}</div>
+          </div>
+          <div style={{ padding: 14 }}>
+            {[
+              { n: 'Mum', s: '128 threads · 4 photos' },
+              { n: 'Léa', s: '64 threads · 12 photos' },
+              { n: 'Tom (work)', s: '38 threads · 0 photos' },
+            ].map(p => (
+              <div key={p.n} className="row" style={{ padding: '10px 0', borderBottom: '1px solid var(--line)' }}>
+                <div style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--paper-dim)', marginRight: 12 }} />
+                <div className="col" style={{ gap: 2 }}>
+                  <div style={{ fontSize: 14 }}>{p.n}</div>
+                  <div className="small">{p.s}</div>
+                </div>
+                <span className="small" style={{ marginLeft: 'auto' }}>Pick</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="field" style={{ marginTop: 18 }}>
+          <div className="field-label">Together since</div>
+          <div className="field-value serif" style={{ fontStyle: 'italic' }}>March 2023 · 3 years, 3 months</div>
+        </div>
+
+        <div style={{ marginTop: 'auto' }} />
+        <button className="btn-primary" style={{ marginTop: 16 }}>That's them →</button>
+      </div>
+      <NavBar />
+    </div>
+  );
+}
+
+// ---------------- 03 — Onboarding: permissions, plainly ----------------
+function Onb2Screen() {
+  const items = [
+    { k: 'Texts with Sam', v: 'Frequency and length only. We never read the words.', on: true },
+    { k: 'Camera roll', v: 'Photos identified as Sam. Faces stay on your phone.', on: true },
+    { k: 'Calendar', v: 'Events where you were both invited.', on: true },
+    { k: 'Location', v: 'Off. Ember doesn\'t need to know where you were.', on: false },
+  ];
+  return (
+    <div className="scr">
+      <div style={{ position: 'absolute', inset: 0, padding: '78px 24px 110px', display: 'flex', flexDirection: 'column' }}>
+        <div className="label" style={{ marginBottom: 14 }}>Step 2 of 3</div>
+        <div className="h1">Read <em style={{ color: 'var(--accent)', fontWeight: 500 }}>what's already happening</em>.</div>
+        <div className="meta" style={{ marginTop: 10, marginBottom: 22 }}>
+          Ember adds no work. It listens to the signals your life already produces. Everything stays on this device.
+        </div>
+
+        <div className="col gap-12">
+          {items.map((it,i) => (
+            <div key={i} className="card" style={{ padding: 14 }}>
+              <div className="row" style={{ alignItems: 'flex-start', gap: 12 }}>
+                <div style={{ marginTop: 2, width: 22, height: 22, borderRadius: 6, border: '1.4px solid var(--line-strong)', background: it.on ? 'var(--ink)' : 'transparent', display: 'grid', placeItems: 'center', color: 'var(--paper)' }}>
+                  {it.on && Ico.check}
+                </div>
+                <div className="col" style={{ gap: 4, flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 500 }}>{it.k}</div>
+                  <div className="small" style={{ lineHeight: 1.45 }}>{it.v}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 18, padding: 12, borderRadius: 12, background: 'var(--accent-soft)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+          {Ico.lock}
+          <div className="small" style={{ color: 'var(--accent)', lineHeight: 1.5 }}>
+            Sam will never see what Ember sees. There is no shared dashboard. This is for you.
+          </div>
+        </div>
+
+        <div style={{ marginTop: 'auto' }} />
+        <button className="btn-primary" style={{ marginTop: 16 }}>Grant access →</button>
+      </div>
+      <NavBar />
+    </div>
+  );
+}
+
+// ---------------- 04 — Onboarding: priming, the line is being drawn ----------------
+function Onb3Screen() {
+  // generate a soft year-line
+  const points = [0.62, 0.74, 0.81, 0.7, 0.55, 0.66, 0.78, 0.83, 0.71, 0.58, 0.42, 0.49];
+  return (
+    <div className="scr">
+      <div style={{ position: 'absolute', inset: 0, padding: '78px 24px 110px', display: 'flex', flexDirection: 'column' }}>
+        <div className="label" style={{ marginBottom: 14 }}>Step 3 of 3</div>
+        <div className="h1">We're reading<br/><em style={{ color: 'var(--accent)', fontWeight: 500 }}>the last year</em>.</div>
+        <div className="meta" style={{ marginTop: 10, marginBottom: 18 }}>
+          So the first observation isn't a guess. Takes about a minute.
+        </div>
+
+        <div className="card" style={{ background: 'var(--paper)', borderColor: 'var(--line-strong)' }}>
+          <div className="label" style={{ marginBottom: 10 }}>Drawing your year so far</div>
+          <RhythmLine width={300} height={70} points={points} highlightIdx={10}/>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 6, fontSize: 10, color: 'var(--ink-3)', letterSpacing: '0.04em' }}>
+            <span>Jun '25</span><span>Sep</span><span>Dec</span><span>Mar '26</span><span>Jun</span>
+          </div>
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 16 }}>
+          {[
+            { d: '12,438 texts', n: 'between you and Sam'},
+            { d: '342 photos', n: 'where you\'re both in frame'},
+            { d: '87 evenings', n: 'on the calendar together'},
+          ].map((r,i) => (
+            <div key={i} className="row" style={{ gap: 10 }}>
+              <div style={{ width: 18, height: 18, borderRadius: 999, background: 'var(--accent-soft)', color: 'var(--accent)', display: 'grid', placeItems: 'center', fontSize: 11 }}>{Ico.check}</div>
+              <div style={{ fontSize: 14 }}><strong style={{ fontWeight: 500 }}>{r.d}</strong> <span style={{ color: 'var(--ink-3)' }}>{r.n}</span></div>
+            </div>
+          ))}
+        </div>
+
+        <div className="serif" style={{ marginTop: 22, fontStyle: 'italic', fontSize: 16, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+          Your first Sunday observation arrives <em style={{ color: 'var(--accent)' }}>in five days</em>. We'll be quiet until then.
+        </div>
+
+        <div style={{ marginTop: 'auto' }} />
+        <button className="btn-primary" style={{ marginTop: 16 }}>Close and live →</button>
+      </div>
+      <NavBar />
+    </div>
+  );
+}
+
+// ---------------- 05 — Core: the Sunday screen ----------------
+function CoreSundayScreen() {
+  return (
+    <div className="scr">
+      <div style={{ position: 'absolute', inset: 0, padding: '70px 24px 110px', display: 'flex', flexDirection: 'column' }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="label">Sunday · 22 June</div>
+          <div className="row" style={{ gap: 6, alignItems: 'center' }}>
+            <span className="coal" />
+            <span className="small" style={{ color: 'var(--accent)' }}>week 25</span>
+          </div>
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '20px 0' }}>
+          <div className="serif" style={{ fontSize: 13, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 18 }}>
+            One thing we noticed
+          </div>
+          <div className="serif" style={{ fontSize: 30, lineHeight: 1.25, fontWeight: 500, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
+            You and Sam sent each other <em style={{ color: 'var(--accent)' }}>forty photos</em> this week.
+          </div>
+          <div className="serif" style={{ fontSize: 22, lineHeight: 1.4, fontWeight: 400, color: 'var(--ink-2)', marginTop: 14, fontStyle: 'italic' }}>
+            That's the most since March, when you came back from Lisbon.
+          </div>
+
+          <div style={{ marginTop: 28, padding: 16, borderRadius: 14, background: 'var(--paper-dim)', borderLeft: '2px solid var(--accent)' }}>
+            <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+              Whatever you said yesterday over breakfast — it landed. The week answered.
+            </div>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label" style={{ textAlign: 'center', color: 'var(--ink-3)' }}>Did this feel true?</div>
+          <div className="row" style={{ gap: 10, justifyContent: 'center' }}>
+            <button className="btn-secondary" style={{ width: 'auto', padding: '10px 22px', borderRadius: 999 }}>Not really</button>
+            <button className="btn-primary" style={{ width: 'auto', padding: '10px 22px', borderRadius: 999, background: 'var(--accent)' }}>Yeah, it did</button>
+          </div>
+          <div className="small" style={{ textAlign: 'center', marginTop: 8, color: 'var(--ink-3)' }}>
+            <span style={{ textDecoration: 'underline', textUnderlineOffset: 3 }}>See the year so far →</span>
+          </div>
+        </div>
+      </div>
+      <NavBar active="home"/>
+    </div>
+  );
+}
+
+// ---------------- 06 — Core: the year line ----------------
+function CoreYearScreen() {
+  const months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+  const points = [0.55, 0.68, 0.72, 0.6, 0.48, 0.58, 0.71, 0.79, 0.84, 0.68, 0.46, 0.72];
+  // marks: user-added moments with month index + label
+  const marks = [
+    { m: 2, label: "Bea's wedding", up: true },
+    { m: 4, label: 'Sam\'s work trip', up: false },
+    { m: 8, label: 'Lisbon', up: true },
+    { m: 10, label: 'fight about the flat', up: false },
+  ];
+
+  return (
+    <div className="scr">
+      <div style={{ position: 'absolute', inset: 0, padding: '70px 24px 110px', display: 'flex', flexDirection: 'column' }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div className="h2 serif">The last year, you two</div>
+          <div className="small">Jul '25 → Jun '26</div>
+        </div>
+
+        <div className="card" style={{ marginTop: 18, padding: 16, position: 'relative', background: 'var(--paper)' }}>
+          <RhythmLine width={300} height={120} points={points} highlightIdx={11}/>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 4, fontSize: 9, color: 'var(--ink-3)', letterSpacing: '0.04em' }}>
+            {months.map(m => <span key={m}>{m}</span>)}
+          </div>
+        </div>
+
+        <div className="col gap-10" style={{ marginTop: 18 }}>
+          <div className="label">Moments you marked</div>
+          {marks.map((m,i) => (
+            <div key={i} className="row" style={{ gap: 10, padding: '10px 0', borderBottom: '1px solid var(--line)' }}>
+              <div style={{ width: 6, height: 6, borderRadius: 999, background: m.up ? 'var(--ember)' : 'var(--sage)', marginTop: 6 }}/>
+              <div className="col" style={{ gap: 2, flex: 1 }}>
+                <div className="serif" style={{ fontSize: 15, fontStyle: 'italic' }}>{m.label}</div>
+                <div className="small">{months[m.m]} · {m.up ? 'climb in rhythm' : 'dip you felt'}</div>
+              </div>
+              <span className="small" style={{ color: 'var(--ink-3)' }}>{Ico.arrowR}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="serif" style={{ marginTop: 18, fontStyle: 'italic', fontSize: 14, lineHeight: 1.55, color: 'var(--ink-2)', padding: 14, background: 'var(--accent-soft)', borderRadius: 12 }}>
+          The April dip you remember as <em>"the spark died"</em> reads, from up here, like a six-week stretch around Sam's mum's surgery. The line came back.
+        </div>
+      </div>
+      <NavBar active="line"/>
+    </div>
+  );
+}
+
+// ---------------- 07 — Core: mark a moment ----------------
+function CoreMarkScreen() {
+  return (
+    <div className="scr">
+      <div style={{ position: 'absolute', inset: 0, padding: '70px 24px 110px', display: 'flex', flexDirection: 'column' }}>
+        <div className="label" style={{ marginBottom: 4 }}>Add to the line</div>
+        <div className="h1">A moment <em style={{ color: 'var(--accent)', fontWeight: 500 }}>worth remembering</em>.</div>
+        <div className="meta" style={{ marginTop: 10, marginBottom: 18 }}>
+          The line gets specific to the two of you when you tell us what mattered.
+        </div>
+
+        <div className="field">
+          <div className="field-label">What happened</div>
+          <div className="field-value serif" style={{ fontStyle: 'italic', fontSize: 17 }}>
+            Cooked the lemon pasta from the Italy trip. He cried laughing.
+          </div>
+        </div>
+
+        <div className="row gap-12" style={{ marginTop: 14 }}>
+          <div className="field" style={{ flex: 1 }}>
+            <div className="field-label">When</div>
+            <div className="field-value">Last Thursday</div>
+          </div>
+          <div className="field" style={{ flex: 1 }}>
+            <div className="field-label">Felt like</div>
+            <div className="field-value">A good week</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 18 }}>
+          <div className="label" style={{ marginBottom: 10 }}>Tag it</div>
+          <div className="row" style={{ flexWrap: 'wrap', gap: 8 }}>
+            {['warm evening','first time in ages','tiny','funny','holding hands','silly','tender'].map((c,i)=>(
+              <span key={c} className={'chip' + (i===0 || i===6 ? ' on' : '')}>{c}</span>
+            ))}
+          </div>
+        </div>
+
+        <div className="card" style={{ marginTop: 18, background: 'var(--paper-dim)', borderColor: 'var(--line)' }}>
+          <div className="row" style={{ alignItems: 'flex-start', gap: 10 }}>
+            <span className="coal" style={{ marginTop: 6 }}/>
+            <div className="small" style={{ lineHeight: 1.55, color: 'var(--ink-2)' }}>
+              Marked moments stay private. They sit on your line so when next March feels flat, you have proof of last Thursday.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 'auto' }} />
+        <button className="btn-primary" style={{ marginTop: 16 }}>Pin it to the line</button>
+      </div>
+      <NavBar active="mark"/>
+    </div>
+  );
+}
+
+// ---------------- 08 — Core: a quiet midweek check-in (the dip) ----------------
+function CoreDipScreen() {
+  // a dip: low rhythm, but reframing
+  const points = [0.7, 0.74, 0.68, 0.55, 0.42, 0.40, 0.45];
+  return (
+    <div className="scr">
+      <div style={{ position: 'absolute', inset: 0, padding: '70px 24px 110px', display: 'flex', flexDirection: 'column' }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Wednesday, late</div>
+          <div className="small" style={{ color: 'var(--accent)' }}>off-cadence visit</div>
+        </div>
+
+        <div className="serif" style={{ fontSize: 26, lineHeight: 1.25, fontWeight: 500, letterSpacing: '-0.01em', marginTop: 14, color: 'var(--ink)' }}>
+          You opened Ember from bed.<br/>
+          <em style={{ color: 'var(--accent)' }}>Here's what we'd say</em> if today were Sunday.
+        </div>
+
+        <div className="card" style={{ marginTop: 20, padding: 16 }}>
+          <div className="label" style={{ marginBottom: 12 }}>Last seven days</div>
+          <RhythmLine width={300} height={70} points={points} />
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 4, fontSize: 9, color: 'var(--ink-3)', letterSpacing: '0.04em' }}>
+            <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span><span>Today</span>
+          </div>
+        </div>
+
+        <div className="serif" style={{ marginTop: 18, fontSize: 17, lineHeight: 1.55, fontStyle: 'italic', color: 'var(--ink-2)' }}>
+          The week's been quiet — four evenings apart, half the usual texting. <span style={{ color: 'var(--ink)', fontStyle: 'normal', fontWeight: 500 }}>Sam's been on deadline since Friday.</span> Your line has dipped like this five times this year, and recovered five times.
+        </div>
+
+        <div style={{ marginTop: 16, padding: 14, borderRadius: 12, background: 'var(--accent-soft)' }}>
+          <div className="small" style={{ color: 'var(--accent)', lineHeight: 1.55 }}>
+            <strong style={{ fontWeight: 600 }}>Not a verdict.</strong> Just the shape, so you stop guessing in the dark.
+          </div>
+        </div>
+
+        <div className="row gap-12" style={{ marginTop: 18 }}>
+          <button className="btn-secondary" style={{ flex: 1 }}>I feel more worried</button>
+          <button className="btn-primary" style={{ flex: 1, background: 'var(--accent)' }}>I feel more clear</button>
+        </div>
+
+        <div className="small" style={{ textAlign: 'center', marginTop: 14, color: 'var(--ink-3)' }}>
+          Closing in three seconds. Sunday is still Sunday.
+        </div>
+      </div>
+      <NavBar active="home"/>
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="No couples photo, no shared dashboard. A single coal glowing through dusk, and a promise that the spark can be measured without being graded.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Pick the person" caption="Ember is a one-person app about two people. You pick Sam from your contacts — the partner never installs anything.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Permissions, plainly" caption="The whole 'BUILT_ON_SAND' risk lives here: tell the user exactly what is read, what stays on-device, and what the partner will never see.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Drawing your year" caption="Before the first observation, Ember backfills 12 months. The user sees the line being drawn so the Sunday screen lands grounded, not generic.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The Sunday screen" caption="The one screen. One sentence in serif. The 'felt true?' thumb is H1's metric, woven into the only weekly moment.">
+        <CoreSundayScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="The year line" caption="What 'tap deeper' opens. The April dip with a name on it: not the spark dying, Sam's mum's surgery. Reframe over chart.">
+        <CoreYearScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Mark a moment" caption="The only active input. Your specific moments make the line yours, not 'a couple's'. Tags are emotional, not metric.">
+        <CoreMarkScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="The midweek dip" caption="Direct response to the WEAK_RETURN verdict: an internal trigger ('opened from bed at 11pm') gets a calmer answer than the Sunday push, between Sundays.">
+        <CoreDipScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Sync · Pain Radar proto 35/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F2EFE9;
+    --paper-2: #FAF8F3;
+    --paper-dim: #E8E4DA;
+    --ink: #15212B;
+    --ink-2: #3F5260;
+    --ink-3: #7A8893;
+    --teal: #1F6F6A;
+    --teal-soft: rgba(31, 111, 106, 0.10);
+    --teal-dim: #4D9591;
+    --rust: #9C4A36;
+    --line: rgba(21, 33, 43, 0.12);
+    --line-strong: rgba(21, 33, 43, 0.22);
+    --grid-line: rgba(21, 33, 43, 0.06);
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Inter", -apple-system, "SF Pro Text", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 239, 233, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper-2);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper-2);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--teal-soft); color: var(--teal);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-scoped */
+  #app .scr { width: 100%; height: 100%; background: var(--paper-2); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 { font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 30px; line-height: 1.1; letter-spacing: -0.01em; }
+  #app .h2 { font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 20px; line-height: 1.2; }
+  #app .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--ink); color: var(--paper-2);
+    border-radius: 14px; padding: 16px 18px;
+    text-align: center; font-weight: 600; font-size: 15px;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--line-strong);
+    border-radius: 14px; padding: 14px 18px;
+    text-align: center; font-weight: 500; font-size: 14px;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-4 { gap: 4px; } #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-10 { gap: 10px; } #app .gap-12 { gap: 12px; } #app .gap-14 { gap: 14px; }
+  #app .gap-16 { gap: 16px; } #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--paper-2); }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-3); margin-bottom: 4px; font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line-strong);
+    font-size: 12px; color: var(--ink-2); background: var(--paper-2);
+  }
+  #app .chip.on { background: var(--teal); color: var(--paper-2); border-color: var(--teal); }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    display: flex; justify-content: space-around;
+    padding: 12px 18px 22px;
+    border-top: 1px solid var(--line); background: var(--paper-2);
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+  #app .nav-item.on { color: var(--teal); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px; background: var(--teal); }
+
+  /* Sync-specific */
+  #app .card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  #app .card-tint { background: var(--teal-soft); border: 1px solid rgba(31, 111, 106, 0.18); border-radius: 14px; padding: 14px; }
+  #app .num-big { font-family: "Newsreader", Georgia, serif; font-weight: 500; font-size: 34px; line-height: 1; letter-spacing: -0.02em; color: var(--ink); }
+  #app .num-med { font-family: "IBM Plex Mono", ui-monospace, monospace; font-weight: 500; font-size: 18px; color: var(--ink); }
+  #app .formula { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; line-height: 1.55; color: var(--ink-2); background: var(--paper-dim); border-radius: 10px; padding: 10px 12px; }
+  #app .formula b { color: var(--ink); font-weight: 600; }
+  #app .bar { height: 6px; background: var(--paper-dim); border-radius: 999px; overflow: hidden; }
+  #app .bar-fill { height: 100%; background: var(--teal); border-radius: 999px; }
+  #app .profile-card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
+  #app .avatar-block { width: 100%; aspect-ratio: 4/5; border-radius: 14px; position: relative; overflow: hidden; }
+  #app .avatar-grad-1 { background: linear-gradient(140deg, #C9D8C5 0%, #7BA39D 60%, #355A60 100%); }
+  #app .avatar-grad-2 { background: linear-gradient(160deg, #E4CCBA 0%, #B98166 55%, #5A3A2B 100%); }
+  #app .avatar-grad-3 { background: linear-gradient(150deg, #D5C7E2 0%, #8E76B0 60%, #3D2E5C 100%); }
+  #app .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--paper-dim); font-size: 11px; color: var(--ink-2); font-weight: 500; }
+  #app .pill-teal { background: var(--teal-soft); color: var(--teal); }
+  #app .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--teal); display: inline-block; }
+  #app .check { width: 18px; height: 18px; border-radius: 999px; background: var(--teal); display: grid; place-items: center; color: var(--paper-2); font-size: 11px; font-weight: 700; }
+  #app .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  #app .kpi { padding: 12px; background: var(--paper-2); border: 1px solid var(--line); border-radius: 12px; }
+  #app .sparkline { width: 100%; height: 40px; }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 24px 32px 60px;
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">35 / 45 — Sync</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Sprout/index.html" title="Previous: Sprout">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Tally/index.html" title="Next: Tally">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Anti-dark-pattern · transparent matching</div>
+  <h1 class="page-title serif">Sync</h1>
+  <p class="page-tagline serif">A dating app whose algorithm works for you, not against you. No artificial scarcity, no "boost to be seen," no shadow throttling. The matching logic is published.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🔴 GRAVEYARD</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🔴 BUILT_ON_SAND</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photographs.
+  Phase 1 exploration, not a product spec. See <a href="../../Apps/_radar/Sync/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined from huashu-design skill assets) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const IMG = window.IMG;
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 70 }}>
+        <div className="label" style={{ color: 'var(--teal)' }}>Sync · v0.1 public</div>
+        <div className="h1 serif" style={{ fontSize: 38, lineHeight: 1.05 }}>
+          A dating app whose algorithm <i>works for you</i>, not against you.
+        </div>
+        <div className="meta serif" style={{ fontStyle: 'italic', fontSize: 15, color: 'var(--ink-2)', lineHeight: 1.55 }}>
+          No artificial scarcity. No "boost to be seen." No shadow throttling. The matching logic is published — and your data is yours.
+        </div>
+
+        <div className="formula" style={{ marginTop: 4 }}>
+          <div style={{ color: 'var(--ink-3)', fontSize: 10, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Today's ranking function</div>
+          <div>rank(u, v) =</div>
+          <div style={{ paddingLeft: 14 }}><b>0.40</b> · preferences_match(u, v)</div>
+          <div style={{ paddingLeft: 14 }}>+ <b>0.30</b> · mutual_signals(u, v)</div>
+          <div style={{ paddingLeft: 14 }}>+ <b>0.20</b> · distance_decay(u, v)</div>
+          <div style={{ paddingLeft: 14 }}>+ <b>0.10</b> · recency(v)</div>
+        </div>
+
+        <div className="row gap-8" style={{ marginTop: 4 }}>
+          <span className="pill pill-teal"><span className="dot" /> No boosts</span>
+          <span className="pill pill-teal"><span className="dot" /> Flat €9/mo</span>
+          <span className="pill pill-teal"><span className="dot" /> Open formula</span>
+        </div>
+
+        <div className="col gap-8" style={{ marginTop: 8 }}>
+          <div className="btn-primary">Read the algorithm, then sign up</div>
+          <div className="btn-secondary">See last month's match-rate report</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Step 1 of 4</div>
+          <div className="small mono">2 min</div>
+        </div>
+        <div className="h1 serif">Before anything, the rules.</div>
+        <div className="meta" style={{ lineHeight: 1.5 }}>
+          You'll be ranked by the same function as everyone else. Read it. If you don't accept it, don't sign up.
+        </div>
+
+        <div className="card col gap-10" style={{ marginTop: 4 }}>
+          <div className="row gap-8"><span className="check">✓</span><div style={{ fontSize: 13 }}>No paid boosts, no priority placement, no ELO</div></div>
+          <div className="divider" />
+          <div className="row gap-8"><span className="check">✓</span><div style={{ fontSize: 13 }}>The ranking function is published and versioned</div></div>
+          <div className="divider" />
+          <div className="row gap-8"><span className="check">✓</span><div style={{ fontSize: 13 }}>Production formula audited monthly by a third party</div></div>
+          <div className="divider" />
+          <div className="row gap-8"><span className="check">✓</span><div style={{ fontSize: 13 }}>You can export your data and exposure log any time</div></div>
+        </div>
+
+        <div className="card-tint col gap-6">
+          <div className="label" style={{ color: 'var(--teal)' }}>Current formula · v3.2</div>
+          <div className="mono" style={{ fontSize: 11, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            sha256: 8f4e…b21c · signed 2026-06-01
+          </div>
+          <a className="small" style={{ color: 'var(--teal)', fontWeight: 600 }}>Read formula v3.2 →</a>
+        </div>
+
+        <div className="btn-primary" style={{ marginTop: 8 }}>I've read it. Continue.</div>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-14" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Step 2 of 4 · Preferences</div>
+          <div className="small mono">Léa, 31</div>
+        </div>
+        <div className="h2 serif">What weight should each factor carry for you?</div>
+        <div className="meta" style={{ fontSize: 12, lineHeight: 1.5 }}>
+          Defaults match the global formula. Move sliders to bias your own feed — the change is logged and applied immediately.
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 4 }}>
+          <div className="col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Stated preferences</span>
+              <span className="mono small" style={{ color: 'var(--teal)' }}>0.40</span>
+            </div>
+            <div className="bar"><div className="bar-fill" style={{ width: '40%' }} /></div>
+          </div>
+          <div className="col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Mutual interest signals</span>
+              <span className="mono small" style={{ color: 'var(--teal)' }}>0.30</span>
+            </div>
+            <div className="bar"><div className="bar-fill" style={{ width: '30%' }} /></div>
+          </div>
+          <div className="col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Distance (km)</span>
+              <span className="mono small" style={{ color: 'var(--teal)' }}>0.20</span>
+            </div>
+            <div className="bar"><div className="bar-fill" style={{ width: '20%' }} /></div>
+          </div>
+          <div className="col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Recency of activity</span>
+              <span className="mono small" style={{ color: 'var(--teal)' }}>0.10</span>
+            </div>
+            <div className="bar"><div className="bar-fill" style={{ width: '10%' }} /></div>
+          </div>
+        </div>
+
+        <div className="card-tint" style={{ marginTop: 8 }}>
+          <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            <b style={{ color: 'var(--teal)' }}>Sum: 1.00</b> · Sliders are personal, not global. Other users' feeds are unaffected by yours.
+          </div>
+        </div>
+
+        <div className="btn-primary" style={{ marginTop: 4 }}>Keep defaults</div>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-14" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Step 4 of 4 · Liquidity check</div>
+          <div className="small mono">Lyon · 8km</div>
+        </div>
+        <div className="h2 serif">Here's what Lyon looks like this week.</div>
+        <div className="meta" style={{ fontSize: 12, lineHeight: 1.5 }}>
+          Before you build a profile, see whether there's enough density for you. We won't pretend.
+        </div>
+
+        <div className="card col gap-12">
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <span className="label">Active users matching your filters</span>
+            <span className="num-med">2,847</span>
+          </div>
+          <div className="divider" />
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <span className="label">Median matches / week · Lyon</span>
+            <span className="num-med">1.8</span>
+          </div>
+          <div className="divider" />
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <span className="label">Median first-date rate · day 60</span>
+            <span className="num-med">38%</span>
+          </div>
+        </div>
+
+        <div className="card-tint">
+          <div className="label" style={{ color: 'var(--teal)', marginBottom: 4 }}>Honest take</div>
+          <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            Lyon is thin for your filters. Tinder has ~14× the density here. You can still sign up, but expect quiet first weeks.
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="btn-primary">Sign up anyway</div>
+          <div className="btn-secondary">Notify me when Lyon hits 5k</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreFeedScreen() {
+  return (
+    <div className="scr">
+      <div className="col" style={{ paddingTop: 60, paddingBottom: 70 }}>
+        <div className="pad row" style={{ justifyContent: 'space-between', paddingBottom: 12 }}>
+          <div className="col gap-4">
+            <div className="label">Feed · 24 candidates today</div>
+            <div className="h2 serif">Tomás, 33</div>
+          </div>
+          <span className="pill pill-teal mono">score 0.78</span>
+        </div>
+        <div className="pad">
+          <div className="avatar-block avatar-grad-1">
+            <div style={{ position: 'absolute', bottom: 12, left: 14, right: 14, color: '#FAF8F3' }}>
+              <div className="serif" style={{ fontSize: 22, fontWeight: 600, lineHeight: 1.1 }}>Tomás</div>
+              <div style={{ fontSize: 13, opacity: 0.9 }}>33 · architect · 4.2 km · last seen 2h</div>
+            </div>
+          </div>
+        </div>
+        <div className="pad col gap-8" style={{ marginTop: 12 }}>
+          <div className="label" style={{ color: 'var(--teal)' }}>Why he's in your feed</div>
+          <div className="card col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="small">prefs match (age, height, kids)</span>
+              <span className="mono small">+0.34</span>
+            </div>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="small">you both liked Camille L. & Inès</span>
+              <span className="mono small">+0.22</span>
+            </div>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="small">distance · 4.2 km</span>
+              <span className="mono small">+0.16</span>
+            </div>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="small">active in last 6h</span>
+              <span className="mono small">+0.06</span>
+            </div>
+          </div>
+          <div className="small" style={{ color: 'var(--ink-3)', fontStyle: 'italic' }}>
+            No hidden score. No paid boost applied.
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><div className="nav-dot" />Feed</div>
+        <div className="nav-item">Matches</div>
+        <div className="nav-item">Dashboard</div>
+        <div className="nav-item">Settings</div>
+      </div>
+    </div>
+  );
+}
+
+function CoreDashScreen() {
+  return (
+    <div className="scr">
+      <div className="col" style={{ paddingTop: 60, paddingBottom: 70 }}>
+        <div className="pad col gap-4" style={{ paddingBottom: 14 }}>
+          <div className="label">Your dashboard · last 7 days</div>
+          <div className="h2 serif">What the algorithm did with you.</div>
+        </div>
+        <div className="pad kpi-grid">
+          <div className="kpi">
+            <div className="label">Shown to</div>
+            <div className="num-big">412</div>
+            <div className="small mono" style={{ color: 'var(--teal)' }}>+8% vs prev</div>
+          </div>
+          <div className="kpi">
+            <div className="label">Profile viewed</div>
+            <div className="num-big">94</div>
+            <div className="small mono" style={{ color: 'var(--ink-3)' }}>−3%</div>
+          </div>
+          <div className="kpi">
+            <div className="label">Liked you</div>
+            <div className="num-big">11</div>
+            <div className="small mono" style={{ color: 'var(--ink-3)' }}>−12%</div>
+          </div>
+          <div className="kpi">
+            <div className="label">Matches</div>
+            <div className="num-big">3</div>
+            <div className="small mono" style={{ color: 'var(--teal)' }}>median 2.4</div>
+          </div>
+        </div>
+
+        <div className="pad" style={{ marginTop: 14 }}>
+          <div className="card col gap-8">
+            <div className="label">Diagnostic · why the dip</div>
+            <div className="row gap-8" style={{ alignItems: 'flex-start' }}>
+              <span className="dot" style={{ marginTop: 6, background: 'var(--rust)' }} />
+              <div className="small" style={{ lineHeight: 1.5 }}>
+                Eligible audience online ↓ <b>18%</b> this week (school holidays in Lyon).
+              </div>
+            </div>
+            <div className="row gap-8" style={{ alignItems: 'flex-start' }}>
+              <span className="dot" style={{ marginTop: 6 }} />
+              <div className="small" style={{ lineHeight: 1.5 }}>
+                Photo #2 like-through ↓ <b>0.31 → 0.19</b>. Worth a swap?
+              </div>
+            </div>
+            <div className="row gap-8" style={{ alignItems: 'flex-start' }}>
+              <span className="dot" style={{ marginTop: 6 }} />
+              <div className="small" style={{ lineHeight: 1.5 }}>
+                Preferences unchanged. No throttle applied. <i>(verified)</i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pad" style={{ marginTop: 12 }}>
+          <a className="small" style={{ color: 'var(--teal)', fontWeight: 600 }}>Export full exposure log (.csv) →</a>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item">Feed</div>
+        <div className="nav-item">Matches</div>
+        <div className="nav-item on"><div className="nav-dot" />Dashboard</div>
+        <div className="nav-item">Settings</div>
+      </div>
+    </div>
+  );
+}
+
+function CoreChatScreen() {
+  return (
+    <div className="scr">
+      <div className="col" style={{ paddingTop: 60, paddingBottom: 70 }}>
+        <div className="pad row gap-12" style={{ paddingBottom: 12, alignItems: 'center' }}>
+          <div style={{ width: 44, height: 44, borderRadius: 999, background: 'linear-gradient(140deg, #E4CCBA, #B98166)' }} />
+          <div className="col gap-4">
+            <div className="h2 serif" style={{ fontSize: 17 }}>Inès</div>
+            <div className="small">matched 3 days ago · score 0.81</div>
+          </div>
+          <span className="pill pill-teal mono" style={{ marginLeft: 'auto' }}>unlimited</span>
+        </div>
+        <div className="divider" />
+        <div className="pad col gap-10" style={{ marginTop: 14 }}>
+          <div className="card" style={{ alignSelf: 'flex-start', maxWidth: '82%', padding: '10px 14px' }}>
+            <div style={{ fontSize: 13, lineHeight: 1.45 }}>Ton prompt sur les marchés du dimanche m'a tué. Croix-Rousse ou Saint-Antoine?</div>
+            <div className="small mono" style={{ marginTop: 4, color: 'var(--ink-3)' }}>9:12</div>
+          </div>
+          <div style={{ alignSelf: 'flex-end', maxWidth: '82%', padding: '10px 14px', background: 'var(--teal)', color: 'var(--paper-2)', borderRadius: 14 }}>
+            <div style={{ fontSize: 13, lineHeight: 1.45 }}>Croix-Rousse, sans hésiter. Mais Saint-Antoine pour les huîtres en hiver.</div>
+            <div className="small mono" style={{ marginTop: 4, color: 'rgba(250,248,243,0.7)' }}>9:14 · delivered</div>
+          </div>
+          <div className="card" style={{ alignSelf: 'flex-start', maxWidth: '82%', padding: '10px 14px' }}>
+            <div style={{ fontSize: 13, lineHeight: 1.45 }}>Réponse correcte. Café samedi vers 11h?</div>
+            <div className="small mono" style={{ marginTop: 4, color: 'var(--ink-3)' }}>9:16</div>
+          </div>
+        </div>
+
+        <div className="pad" style={{ marginTop: 16 }}>
+          <div className="card-tint col gap-6">
+            <div className="label" style={{ color: 'var(--teal)' }}>No read-receipt games</div>
+            <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+              Messages aren't throttled. Notifications fire on delivery, not on a "best moment to convert" model.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item">Feed</div>
+        <div className="nav-item on"><div className="nav-dot" />Matches</div>
+        <div className="nav-item">Dashboard</div>
+        <div className="nav-item">Settings</div>
+      </div>
+    </div>
+  );
+}
+
+function CoreReportScreen() {
+  // Aggregate monthly transparency report
+  const bars = [
+    { metro: 'Paris', val: 78, n: '3.1 / wk' },
+    { metro: 'Lyon', val: 46, n: '1.8 / wk' },
+    { metro: 'Marseille', val: 52, n: '2.0 / wk' },
+    { metro: 'Bordeaux', val: 38, n: '1.5 / wk' },
+    { metro: 'Toulouse', val: 41, n: '1.6 / wk' },
+    { metro: 'Nantes', val: 34, n: '1.3 / wk' },
+  ];
+  return (
+    <div className="scr">
+      <div className="col" style={{ paddingTop: 60, paddingBottom: 70 }}>
+        <div className="pad col gap-4" style={{ paddingBottom: 12 }}>
+          <div className="label" style={{ color: 'var(--teal)' }}>Public report · May 2026</div>
+          <div className="h2 serif">Median matches per week, by metro.</div>
+          <div className="small" style={{ color: 'var(--ink-3)', fontStyle: 'italic' }}>Audited by Cabinet Lavoine · sha256 2f9c…d41a</div>
+        </div>
+
+        <div className="pad col gap-10">
+          {bars.map((b, i) => (
+            <div key={i} className="col gap-6">
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span style={{ fontSize: 13, fontWeight: 500 }}>{b.metro}</span>
+                <span className="mono small">{b.n}</span>
+              </div>
+              <div className="bar"><div className="bar-fill" style={{ width: b.val + '%' }} /></div>
+            </div>
+          ))}
+        </div>
+
+        <div className="pad" style={{ marginTop: 14 }}>
+          <div className="card col gap-8">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="label">Active users · global</span>
+              <span className="num-med">128,402</span>
+            </div>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="label">Paid subscribers</span>
+              <span className="num-med">14.2%</span>
+            </div>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="label">Formula version in prod</span>
+              <span className="mono small">v3.2 · since May 1</span>
+            </div>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="label">Boosts sold</span>
+              <span className="num-med" style={{ color: 'var(--teal)' }}>0</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="pad" style={{ marginTop: 12 }}>
+          <div className="btn-secondary">Download full report (.pdf · 1.2 MB)</div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item">Feed</div>
+        <div className="nav-item">Matches</div>
+        <div className="nav-item">Dashboard</div>
+        <div className="nav-item on"><div className="nav-dot" />Settings</div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Tile + App ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline + formula" caption="The landing leads with the actual ranking function. If you don't accept it, the rest of the app is closed to you.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Read the rules" caption="Onboarding is a contract. Read the formula hash, the audit cadence, the no-boost guarantee — then continue.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Weight your factors" caption="The four weights of the global formula, exposed as sliders. Your bias is personal and logged; it never alters anyone else's feed.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Liquidity check" caption="Before you build a profile, we show you the honest density of your metro. Sync would rather lose you here than after week three.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Feed with reasons" caption="Every candidate carries the four sub-scores that put them in your feed today. No hidden desirability. No 'someone paid to be here'.">
+        <CoreFeedScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Your dashboard" caption="When matches dip, you can see exactly why — audience size, photo CTR, or nothing at all (the algorithm is verifiable unchanged).">
+        <CoreDashScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Match conversation" caption="Unlimited messaging on the flat sub. No read-receipt games, no engagement-maximised notification timing.">
+        <CoreChatScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Public monthly report" caption="The monthly aggregate, broken down by metro and signed by an external auditor. The discipline that keeps Sync honest.">
+        <CoreReportScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

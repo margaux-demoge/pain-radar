@@ -1,0 +1,942 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Plate · Pain Radar proto 11/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2EFE7;
+    --paper: #FAF8F2;
+    --paper-dim: #ECE7DA;
+    --rust: #6B8E5A;        /* sage green — calm, healthy, not preachy */
+    --rust-soft: rgba(107, 142, 90, 0.14);
+    --rust-dim: #9BB089;
+    --accent-warm: #C97A4B; /* terracotta accent, used sparingly */
+    --ink: #25241F;
+    --ink-2: #58564E;
+    --ink-3: #8C8A80;
+    --line: rgba(37, 36, 31, 0.10);
+    --line-strong: rgba(37, 36, 31, 0.20);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Inter", -apple-system, "SF Pro Text", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 239, 231, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--accent-warm); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--accent-warm); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rust); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--rust); color: var(--paper);
+    border-color: var(--rust);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--rust); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--rust); margin-top: 2px; }
+
+  /* Plate-specific: viewfinder + ring + bars */
+  #app .viewfinder {
+    width: 100%; aspect-ratio: 3/4; border-radius: 18px;
+    background:
+      radial-gradient(circle at 50% 40%, #d4b58e 0%, #b58a5c 35%, #6e5234 70%, #3a2a1a 100%);
+    position: relative; overflow: hidden;
+  }
+  #app .viewfinder::before {
+    content: ""; position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 40%),
+      radial-gradient(circle at 70% 70%, rgba(0,0,0,0.25), transparent 50%);
+  }
+  #app .plate-circle {
+    position: absolute; left: 50%; top: 50%;
+    width: 72%; aspect-ratio: 1; transform: translate(-50%, -50%);
+    border-radius: 999px;
+    background:
+      radial-gradient(circle at 35% 30%, #f6efe2 0%, #e8dcc4 60%, #d6c5a4 100%);
+    box-shadow: inset 0 0 0 6px rgba(255,255,255,0.5), 0 12px 30px rgba(0,0,0,0.25);
+  }
+  #app .food-blob {
+    position: absolute; border-radius: 999px; filter: blur(0.5px);
+  }
+  #app .scan-corners > div {
+    position: absolute; width: 22px; height: 22px;
+    border-color: var(--paper);
+    border-style: solid; border-width: 0;
+  }
+  #app .ring {
+    width: 96px; height: 96px; border-radius: 999px;
+    border: 6px solid var(--paper-dim);
+    position: relative; display: grid; place-items: center;
+  }
+  #app .ring-fill {
+    position: absolute; inset: -6px; border-radius: 999px;
+    border: 6px solid var(--rust);
+    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%);
+  }
+  #app .ring-num {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 24px; font-weight: 600;
+  }
+  #app .macro-row { display: flex; gap: 8px; }
+  #app .macro-cell {
+    flex: 1; padding: 10px 12px; border-radius: 12px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .bar {
+    height: 6px; border-radius: 999px; background: var(--paper-dim);
+    overflow: hidden; margin-top: 6px;
+  }
+  #app .bar > i { display: block; height: 100%; background: var(--rust); border-radius: 999px; }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">11 / 45 — Plate</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Lull/index.html" title="Previous: Lull">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Slate/index.html" title="Next: Slate">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Friction-removal · photo-first logging</div>
+  <h1 class="page-title serif">Plate</h1>
+  <p class="page-tagline serif">Point your camera at your food, and it logs itself. Calorie tracking without the search bar, the database, or the gram-by-gram weighing.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven mockups, no photos.
+  Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Plate/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '12:38', battery = 78 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Icons ----------------
+const Ico = {
+  camera: <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 8h3l2-2h6l2 2h3v11H4V8z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/><circle cx="12" cy="13.5" r="3.5" stroke="currentColor" strokeWidth="1.6"/></svg>,
+  plus: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1v12 M1 7h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>,
+  barcode: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5v14 M7 5v14 M10 5v14 M13 5v14 M16 5v14 M19 5v14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  history: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  add: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.5"/><path d="M11 7v8 M7 11h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  check: <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Today', icon: Ico.home },
+    { id: 'history', label: 'History', icon: Ico.history },
+    { id: 'add', label: '', icon: Ico.add },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// A small reusable "plate" SVG-on-CSS — type-driven food, no photos
+function PlateArt({ size = 240, items = ['chicken', 'rice', 'salad'] }) {
+  return (
+    <div style={{ width: size, height: size, position: 'relative' }}>
+      <div className="plate-circle" style={{ width: '100%', height: '100%', position: 'relative',
+        left: 0, top: 0, transform: 'none' }}>
+        {items.includes('chicken') && <div className="food-blob" style={{
+          width: '38%', height: '30%', left: '12%', top: '20%',
+          background: 'radial-gradient(circle at 40% 35%, #d9b079, #a3743f 70%, #6e4a22)'
+        }} />}
+        {items.includes('rice') && <div className="food-blob" style={{
+          width: '34%', height: '34%', right: '10%', top: '18%',
+          background: 'radial-gradient(circle at 50% 40%, #f3ead6, #d9c89a 80%)'
+        }} />}
+        {items.includes('salad') && <div className="food-blob" style={{
+          width: '50%', height: '32%', left: '22%', bottom: '14%',
+          background: 'radial-gradient(circle at 30% 50%, #7fa05e, #4a6b34 70%, #2f4622)'
+        }} />}
+        {items.includes('toast') && <div className="food-blob" style={{
+          width: '52%', height: '28%', left: '22%', top: '20%', borderRadius: 8,
+          background: 'linear-gradient(135deg, #d8a86b, #a06d34)'
+        }} />}
+        {items.includes('egg') && <div className="food-blob" style={{
+          width: '24%', height: '24%', left: '36%', top: '38%',
+          background: 'radial-gradient(circle at 45% 40%, #f6f1e3 0%, #f6f1e3 55%, #f0c44a 56%, #d99a1a 75%)'
+        }} />}
+        {items.includes('berries') && <div className="food-blob" style={{
+          width: '24%', height: '20%', right: '14%', bottom: '20%',
+          background: 'radial-gradient(circle at 30% 30%, #8a2b3a, #4a1320)'
+        }} />}
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+// 1. HERO
+function HeroScreen() {
+  return (
+    <div className="scr col" style={{ padding: '64px 28px 0', justifyContent: 'space-between', height: '100%' }}>
+      <div className="col gap-16" style={{ marginTop: 24 }}>
+        <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 13,
+          color: 'var(--accent-warm)', letterSpacing: '0.04em' }}>
+          for people who hate logging
+        </div>
+        <div className="h1 serif" style={{ fontSize: 56, lineHeight: 0.95 }}>
+          Plate
+        </div>
+        <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic',
+          fontSize: 19, lineHeight: 1.4, color: 'var(--ink-2)', marginTop: 8, maxWidth: 280 }}>
+          Point your camera at <br/>your food. The math <br/>logs itself.
+        </div>
+      </div>
+      <div style={{ alignSelf: 'center', margin: '8px 0 12px' }}>
+        <PlateArt size={240} items={['chicken','rice','salad']} />
+      </div>
+      <div className="col gap-12" style={{ marginBottom: 28 }}>
+        <button className="btn-primary">Snap your first meal</button>
+        <button className="btn-secondary">I already have an account</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 4 }}>
+          No search bar · No gram math · No streaks
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 2. ONBOARDING 1 — Goal
+function Onb1Screen() {
+  const goals = [
+    { id: 'lose', title: 'Lose weight', sub: 'A steady deficit, no crash diets', on: true },
+    { id: 'maintain', title: 'Maintain & eat better', sub: 'Stay roughly where you are' },
+    { id: 'gain', title: 'Build muscle', sub: 'Higher protein, mild surplus' },
+    { id: 'curious', title: 'Just curious', sub: 'See what a normal week looks like' },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 1 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 28 }}>Why are you<br/>tracking this time?</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5, maxWidth: 290 }}>
+        We'll set a daily target you can hit on a normal day, not a perfect one.
+      </div>
+      <div className="col gap-12" style={{ marginTop: 22 }}>
+        {goals.map(g => (
+          <div key={g.id} className="row gap-12" style={{
+            padding: 14, borderRadius: 14,
+            background: g.on ? 'var(--rust-soft)' : 'var(--paper-dim)',
+            border: '1px solid', borderColor: g.on ? 'var(--rust)' : 'var(--line)',
+          }}>
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{g.title}</div>
+              <div className="small">{g.sub}</div>
+            </div>
+            {g.on && <div style={{ width: 20, height: 20, borderRadius: 999,
+              background: 'var(--rust)', display: 'grid', placeItems: 'center', color: 'white' }}>{Ico.check}</div>}
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 18, paddingBottom: 24 }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 3. ONBOARDING 2 — Daily target
+function Onb2Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 2 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 28 }}>Your daily target.</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5, maxWidth: 290 }}>
+        Based on a 0.4 kg/week loss. You can nudge this later — Plate adjusts as you go.
+      </div>
+      <div className="col gap-12" style={{ marginTop: 22 }}>
+        <div className="field">
+          <div className="field-label">Calories</div>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div className="field-value serif" style={{ fontSize: 32, fontWeight: 600 }}>1,850 <span style={{ fontSize: 13, color: 'var(--ink-3)', fontFamily: 'Inter' }}>kcal/day</span></div>
+            <div className="small" style={{ color: 'var(--rust)' }}>Edit</div>
+          </div>
+        </div>
+        <div className="row gap-12">
+          <div className="macro-cell">
+            <div className="label">Protein</div>
+            <div style={{ fontSize: 18, fontWeight: 600, marginTop: 4 }}>130 g</div>
+          </div>
+          <div className="macro-cell">
+            <div className="label">Carbs</div>
+            <div style={{ fontSize: 18, fontWeight: 600, marginTop: 4 }}>200 g</div>
+          </div>
+          <div className="macro-cell">
+            <div className="label">Fat</div>
+            <div style={{ fontSize: 18, fontWeight: 600, marginTop: 4 }}>60 g</div>
+          </div>
+        </div>
+        <div className="field" style={{ background: 'transparent', borderStyle: 'dashed' }}>
+          <div className="field-label">A note from us</div>
+          <div className="field-value" style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--ink-2)',
+            fontFamily: 'Fraunces, serif', fontStyle: 'italic' }}>
+            Photo estimates are ±10–15% on any one meal. The 7-day average is what moves the scale, not any single number.
+          </div>
+        </div>
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 18, paddingBottom: 24 }}>
+        <button className="btn-primary">Looks right</button>
+      </div>
+    </div>
+  );
+}
+
+// 4. ONBOARDING 3 — First snap
+function Onb3Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 3 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 28 }}>Snap your next meal.</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5, maxWidth: 290 }}>
+        Aim straight down, get the whole plate in frame. We use the plate edge to estimate portion size.
+      </div>
+      <div className="viewfinder" style={{ marginTop: 22, position: 'relative' }}>
+        <div className="plate-circle">
+          <div className="food-blob" style={{ width: '38%', height: '30%', left: '12%', top: '22%',
+            background: 'radial-gradient(circle at 40% 35%, #d9b079, #a3743f 70%, #6e4a22)' }} />
+          <div className="food-blob" style={{ width: '32%', height: '32%', right: '12%', top: '20%',
+            background: 'radial-gradient(circle at 50% 40%, #f3ead6, #d9c89a 80%)' }} />
+          <div className="food-blob" style={{ width: '48%', height: '30%', left: '24%', bottom: '16%',
+            background: 'radial-gradient(circle at 30% 50%, #7fa05e, #4a6b34 70%)' }} />
+        </div>
+        {/* corner guides */}
+        {[
+          { top: 14, left: 14, b: 'top left' },
+          { top: 14, right: 14, b: 'top right' },
+          { bottom: 14, left: 14, b: 'bottom left' },
+          { bottom: 14, right: 14, b: 'bottom right' },
+        ].map((c, i) => (
+          <div key={i} style={{ position: 'absolute', ...c, width: 26, height: 26,
+            borderTop: c.top !== undefined ? '2px solid rgba(255,255,255,0.85)' : 'none',
+            borderBottom: c.bottom !== undefined ? '2px solid rgba(255,255,255,0.85)' : 'none',
+            borderLeft: c.left !== undefined ? '2px solid rgba(255,255,255,0.85)' : 'none',
+            borderRight: c.right !== undefined ? '2px solid rgba(255,255,255,0.85)' : 'none' }} />
+        ))}
+        <div style={{ position: 'absolute', top: 16, left: '50%', transform: 'translateX(-50%)',
+          padding: '4px 10px', background: 'rgba(0,0,0,0.55)', color: 'white', borderRadius: 999,
+          fontSize: 10, letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 600 }}>
+          Hold straight down
+        </div>
+      </div>
+      <div className="row" style={{ justifyContent: 'space-between', marginTop: 22,
+        alignItems: 'center' }}>
+        <div className="small" style={{ width: 60 }}>From camera roll</div>
+        <div style={{ width: 64, height: 64, borderRadius: 999, background: 'var(--rust)',
+          display: 'grid', placeItems: 'center', color: 'white',
+          boxShadow: '0 8px 20px rgba(107, 142, 90, 0.45)' }}>
+          {Ico.camera}
+        </div>
+        <div className="small" style={{ width: 60, textAlign: 'right' }}>Skip — log later</div>
+      </div>
+    </div>
+  );
+}
+
+// 5. CORE — Result of snap
+function CoreSnapResultScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 12 }}>
+        <div className="small" style={{ color: 'var(--ink-2)' }}>← Retake</div>
+        <div className="small" style={{ color: 'var(--ink-3)' }}>1.8s · identified</div>
+        <div className="small" style={{ color: 'var(--rust)', fontWeight: 600 }}>Log</div>
+      </div>
+      <div className="pad" style={{ marginTop: 14 }}>
+        <div className="viewfinder" style={{ aspectRatio: '4/3' }}>
+          <div className="plate-circle">
+            <div className="food-blob" style={{ width: '38%', height: '30%', left: '12%', top: '22%',
+              background: 'radial-gradient(circle at 40% 35%, #d9b079, #a3743f 70%, #6e4a22)' }} />
+            <div className="food-blob" style={{ width: '32%', height: '32%', right: '12%', top: '20%',
+              background: 'radial-gradient(circle at 50% 40%, #f3ead6, #d9c89a 80%)' }} />
+            <div className="food-blob" style={{ width: '48%', height: '30%', left: '24%', bottom: '16%',
+              background: 'radial-gradient(circle at 30% 50%, #7fa05e, #4a6b34 70%)' }} />
+          </div>
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 16 }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div className="h2 serif">Tuesday lunch</div>
+          <div className="serif" style={{ fontSize: 26, fontWeight: 600 }}>
+            ~640 <span style={{ fontSize: 12, color: 'var(--ink-3)', fontFamily: 'Inter', fontWeight: 500 }}>kcal</span>
+          </div>
+        </div>
+        <div className="col gap-8">
+          {[
+            { name: 'Grilled chicken breast', amt: '~140 g', kcal: 230, on: true },
+            { name: 'Jasmine rice', amt: '~180 g cooked', kcal: 235 },
+            { name: 'Mixed greens, olive oil', amt: '1 small bowl', kcal: 175 },
+          ].map((f, i) => (
+            <div key={i} className="row" style={{ justifyContent: 'space-between',
+              padding: '10px 12px', borderRadius: 12,
+              background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+              <div className="col gap-6">
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{f.name}</div>
+                <div className="small">{f.amt} <span style={{ color: 'var(--rust)' }}>· tap to correct</span></div>
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{f.kcal}</div>
+            </div>
+          ))}
+        </div>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center',
+          padding: '10px 12px', borderRadius: 12, background: 'var(--rust-soft)' }}>
+          <div className="small" style={{ color: 'var(--rust)', fontWeight: 600 }}>Estimate confidence</div>
+          <div style={{ fontSize: 13, color: 'var(--ink)' }}>±12% · good plate edge</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 6. CORE — Today dashboard
+function CoreTodayScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 12 }}>
+        <div className="col gap-6">
+          <div className="small">Tuesday · Jun 23</div>
+          <div className="h2 serif">Today</div>
+        </div>
+        <div className="small" style={{ color: 'var(--rust)' }}>7-day avg</div>
+      </div>
+      <div className="pad row gap-16" style={{ marginTop: 16, alignItems: 'center' }}>
+        <div className="ring">
+          <div className="ring-fill" style={{
+            clipPath: 'polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 60%)' }} />
+          <div className="col" style={{ alignItems: 'center', gap: 2 }}>
+            <div className="ring-num">1,210</div>
+            <div className="small" style={{ fontSize: 10 }}>of 1,850</div>
+          </div>
+        </div>
+        <div className="col gap-8" style={{ flex: 1 }}>
+          <div className="col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="small">Protein</div>
+              <div className="small" style={{ color: 'var(--ink)', fontWeight: 600 }}>78 / 130 g</div>
+            </div>
+            <div className="bar"><i style={{ width: '60%' }} /></div>
+          </div>
+          <div className="col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="small">Carbs</div>
+              <div className="small" style={{ color: 'var(--ink)', fontWeight: 600 }}>140 / 200 g</div>
+            </div>
+            <div className="bar"><i style={{ width: '70%', background: '#C97A4B' }} /></div>
+          </div>
+          <div className="col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="small">Fat</div>
+              <div className="small" style={{ color: 'var(--ink)', fontWeight: 600 }}>32 / 60 g</div>
+            </div>
+            <div className="bar"><i style={{ width: '53%', background: '#9BB089' }} /></div>
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 22 }}>
+        <div className="label" style={{ marginBottom: 10 }}>Logged today</div>
+        <div className="col gap-8">
+          {[
+            { time: '08:14', meal: 'Oats, banana, peanut butter', kcal: 410 },
+            { time: '12:38', meal: 'Chicken, rice, salad', kcal: 640 },
+            { time: '15:20', meal: 'Latte, oat milk', kcal: 160 },
+          ].map((m, i) => (
+            <div key={i} className="row gap-12" style={{ alignItems: 'center',
+              padding: '10px 12px', borderRadius: 12, border: '1px solid var(--line)' }}>
+              <div className="small" style={{ width: 42, fontVariantNumeric: 'tabular-nums' }}>{m.time}</div>
+              <div style={{ fontSize: 13, flex: 1 }}>{m.meal}</div>
+              <div style={{ fontSize: 13, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{m.kcal}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 18 }}>
+        <div className="row" style={{ justifyContent: 'space-between',
+          padding: '12px 14px', borderRadius: 12, background: 'var(--paper-dim)',
+          border: '1px solid var(--line)' }}>
+          <div className="col gap-6">
+            <div className="label">7-day average</div>
+            <div style={{ fontSize: 18, fontWeight: 600, fontFamily: 'Fraunces, serif' }}>1,790 kcal</div>
+          </div>
+          <div className="col" style={{ alignItems: 'flex-end' }}>
+            <div className="small" style={{ color: 'var(--rust)', fontWeight: 600 }}>−60 vs target</div>
+            <div className="small">on track</div>
+          </div>
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// 7. CORE — Correct an estimate
+function CoreCorrectScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 12 }}>
+        <div className="small" style={{ color: 'var(--ink-2)' }}>← Back</div>
+        <div className="h2 serif" style={{ fontSize: 17 }}>Correct portion</div>
+        <div className="small" style={{ color: 'var(--rust)', fontWeight: 600 }}>Save</div>
+      </div>
+      <div className="pad" style={{ marginTop: 14 }}>
+        <div className="viewfinder" style={{ aspectRatio: '4/3' }}>
+          <div className="plate-circle">
+            <div className="food-blob" style={{ width: '32%', height: '32%', right: '12%', top: '20%',
+              background: 'radial-gradient(circle at 50% 40%, #f3ead6, #d9c89a 80%)',
+              boxShadow: '0 0 0 3px rgba(107,142,90,0.7)' }} />
+          </div>
+          <div style={{ position: 'absolute', right: '12%', top: '8%',
+            padding: '3px 8px', background: 'var(--rust)', color: 'white', borderRadius: 999,
+            fontSize: 10, fontWeight: 600 }}>Rice</div>
+        </div>
+      </div>
+      <div className="pad col gap-16" style={{ marginTop: 18 }}>
+        <div className="col gap-8">
+          <div className="label">Plate estimated</div>
+          <div className="serif" style={{ fontSize: 22, fontWeight: 600 }}>180 g · 235 kcal</div>
+        </div>
+        <div className="col gap-8">
+          <div className="label">Your correction</div>
+          <div className="row" style={{ flexWrap: 'wrap', gap: 8 }}>
+            {[
+              { l: 'A bit less', v: '140 g' },
+              { l: 'Same', v: '180 g' },
+              { l: 'A bit more', v: '220 g', on: true },
+              { l: 'A lot more', v: '280 g' },
+            ].map((c, i) => (
+              <div key={i} className={`chip ${c.on ? 'on' : ''}`} style={{
+                flex: '1 1 calc(50% - 8px)', display: 'flex', flexDirection: 'column',
+                alignItems: 'flex-start', padding: '10px 14px' }}>
+                <div style={{ fontSize: 12, fontWeight: 600 }}>{c.l}</div>
+                <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>{c.v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="row" style={{ justifyContent: 'space-between',
+          padding: '12px 14px', borderRadius: 12, background: 'var(--rust-soft)' }}>
+          <div className="col gap-6">
+            <div className="small" style={{ color: 'var(--rust)', fontWeight: 600 }}>Plate will learn</div>
+            <div style={{ fontSize: 12, color: 'var(--ink-2)', maxWidth: 200, lineHeight: 1.4 }}>
+              Your rice portions usually run 20% larger than the visual estimate. We'll adjust next time.
+            </div>
+          </div>
+          <div className="serif" style={{ fontSize: 26, color: 'var(--rust)' }}>+20%</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 8. CORE — Usuals (one-tap entries)
+function CoreUsualsScreen() {
+  const usuals = [
+    { name: 'Your usual breakfast', sub: 'Oats, banana, peanut butter · logged 14×', kcal: 410, items: ['toast','egg'] },
+    { name: 'Tuesday lunch (work)', sub: 'Chicken, rice, salad · logged 9×', kcal: 640, items: ['chicken','rice','salad'] },
+    { name: 'Afternoon coffee', sub: 'Latte, oat milk · logged 22×', kcal: 160, items: [] },
+    { name: 'Yogurt & berries', sub: 'Greek yogurt, blueberries · logged 6×', kcal: 220, items: ['egg','berries'] },
+  ];
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'baseline', paddingTop: 12 }}>
+        <div className="col gap-6">
+          <div className="small">Faster than a photo</div>
+          <div className="h2 serif">Your usuals</div>
+        </div>
+        <div className="small" style={{ color: 'var(--rust)' }}>Edit</div>
+      </div>
+      <div className="pad" style={{ marginTop: 14 }}>
+        <div className="row gap-8" style={{
+          padding: '12px 14px', borderRadius: 12, background: 'var(--paper-dim)',
+          border: '1px solid var(--line)' }}>
+          {Ico.barcode}
+          <div className="col gap-6" style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600 }}>Scan a barcode</div>
+            <div className="small">Packaged snack or drink — exact macros, no photo needed</div>
+          </div>
+        </div>
+      </div>
+      <div className="pad col gap-10" style={{ marginTop: 18 }}>
+        {usuals.map((u, i) => (
+          <div key={i} className="row gap-12" style={{
+            padding: 12, borderRadius: 14, border: '1px solid var(--line)',
+            background: i === 1 ? 'var(--rust-soft)' : 'var(--paper)',
+            borderColor: i === 1 ? 'var(--rust)' : 'var(--line)',
+            alignItems: 'center',
+          }}>
+            <div style={{ width: 52, height: 52, borderRadius: 999, flexShrink: 0,
+              background: 'radial-gradient(circle at 35% 30%, #f6efe2 0%, #e8dcc4 60%, #d6c5a4 100%)',
+              boxShadow: 'inset 0 0 0 3px rgba(255,255,255,0.5)',
+              position: 'relative', overflow: 'hidden' }}>
+              {u.items.includes('chicken') && <div style={{ position: 'absolute', width: '40%', height: '32%',
+                left: '12%', top: '20%', borderRadius: '50%',
+                background: 'radial-gradient(circle at 40% 35%, #d9b079, #a3743f)' }} />}
+              {u.items.includes('rice') && <div style={{ position: 'absolute', width: '36%', height: '34%',
+                right: '10%', top: '18%', borderRadius: '50%',
+                background: 'radial-gradient(circle at 50% 40%, #f3ead6, #d9c89a)' }} />}
+              {u.items.includes('salad') && <div style={{ position: 'absolute', width: '52%', height: '30%',
+                left: '22%', bottom: '14%', borderRadius: '50%',
+                background: 'radial-gradient(circle at 30% 50%, #7fa05e, #4a6b34)' }} />}
+              {u.items.includes('toast') && <div style={{ position: 'absolute', width: '54%', height: '28%',
+                left: '22%', top: '20%', borderRadius: 6,
+                background: 'linear-gradient(135deg, #d8a86b, #a06d34)' }} />}
+              {u.items.includes('egg') && <div style={{ position: 'absolute', width: '26%', height: '26%',
+                left: '36%', top: '38%', borderRadius: '50%',
+                background: 'radial-gradient(circle at 45% 40%, #f6f1e3 55%, #f0c44a 56%, #d99a1a 75%)' }} />}
+              {u.items.includes('berries') && <div style={{ position: 'absolute', width: '28%', height: '22%',
+                right: '14%', bottom: '20%', borderRadius: '50%',
+                background: 'radial-gradient(circle at 30% 30%, #8a2b3a, #4a1320)' }} />}
+            </div>
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>{u.name}</div>
+              <div className="small">{u.sub}</div>
+            </div>
+            <div className="col" style={{ alignItems: 'flex-end', gap: 4 }}>
+              <div style={{ fontSize: 14, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{u.kcal}</div>
+              <div style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--rust)',
+                color: 'white', display: 'grid', placeItems: 'center' }}>{Ico.plus}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <NavBar active="history" />
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. A single stylised plate, no glossy food photo — the promise is friction removal, not appetite.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Pick a goal" caption="The Plate question is 'why are you tracking this time?' — quiet acknowledgement that the user has likely tried and quit before.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Daily target" caption="One number, three macros. The italic note sets the precision-vs-consistency contract up front: ±12% per meal, the 7-day average is what counts.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="First snap" caption="Plate edge as portion reference. Framing guides train the user to shoot top-down from session one — the model's accuracy bet.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Snap result" caption="1.8 seconds from photo to logged meal. Each item is tappable to correct — the wedge against pure black-box estimates.">
+        <CoreSnapResultScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Today" caption="A ring, three macro bars, and a 7-day average. No streaks, no badges, no 'you crushed it' — calm by design.">
+        <CoreTodayScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Correct portion" caption="Coarse buckets, not a gram dial. Plate learns your personal bias over time — addresses the trust-collapse risk the judge flagged.">
+        <CoreCorrectScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Your usuals" caption="After the third repeat, meals get promoted to one-tap entries. The barcode lane handles the packaged-food long tail.">
+        <CoreUsualsScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

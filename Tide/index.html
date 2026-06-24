@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tide · Pain Radar proto 15/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --shell:   #EDE7E0;
+    --paper:   #F5F1EA;
+    --paper-dim: #E7E0D5;
+    --ink:     #232733;
+    --ink-2:   #4A5060;
+    --ink-3:   #818796;
+    --line:    rgba(35, 39, 51, 0.10);
+    --line-strong: rgba(35, 39, 51, 0.20);
+    --tide:    #4A6E8A;     /* dusty blue */
+    --tide-soft: rgba(74, 110, 138, 0.12);
+    --tide-dim: #7C9AB1;
+    --moon:    #B9967E;     /* warm dusty rose-clay accent */
+    --sage:    #8FA68E;
+    --rust:    #A14B3A;     /* page eyebrow accent only */
+  }
+  html, body { margin: 0; padding: 0; background: var(--shell); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(237, 231, 224, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--tide); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--tide-soft); color: var(--tide);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles, scoped via #app */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--tide); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--tide); color: var(--paper);
+    border-color: var(--tide);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--tide); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--tide); margin-top: 2px; }
+
+  /* Cycle arc */
+  #app .arc-wrap { position: relative; display: flex; justify-content: center; }
+  #app .phase-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--tide-soft); color: var(--tide);
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  #app .phase-dot { width: 6px; height: 6px; border-radius: 999px; background: var(--tide); }
+  #app .read-card {
+    padding: 18px 18px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+  }
+  #app .read-quote {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 18px; line-height: 1.4;
+    color: var(--ink);
+  }
+  #app .qtext {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 19px; line-height: 1.35;
+    color: var(--ink);
+  }
+  #app .slider-track {
+    position: relative; height: 4px;
+    background: var(--paper-dim); border-radius: 999px;
+    margin: 20px 0 8px;
+  }
+  #app .slider-fill {
+    position: absolute; left: 0; top: 0; height: 100%;
+    background: var(--tide); border-radius: 999px;
+  }
+  #app .slider-thumb {
+    position: absolute; top: 50%; width: 18px; height: 18px;
+    border-radius: 999px; background: var(--paper);
+    border: 2px solid var(--tide);
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 6px rgba(35,39,51,0.18);
+  }
+  #app .ends {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--ink-3);
+  }
+  #app .pattern-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  #app .pattern-row:last-child { border-bottom: none; }
+  #app .day-strip {
+    display: flex; gap: 3px; align-items: flex-end; height: 28px;
+  }
+  #app .day-bar {
+    width: 4px; border-radius: 2px;
+    background: var(--tide-dim);
+  }
+  #app .privacy-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 11px; color: var(--ink-2);
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">15 / 45 — Tide</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Tether/index.html" title="Previous: Tether">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Tune/index.html" title="Next: Tune">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Mood lens on the cycle · introspective journaller</div>
+  <h1 class="page-title serif">Tide</h1>
+  <p class="page-tagline serif">Today's mood, explained by where you are in your cycle. Log a feeling, see the pattern, stop wondering why you feel like this.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photos.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Tide/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+
+const iosFrameStyles = {
+  wrapper: { padding: 12, background: 'transparent', display: 'inline-block' },
+  screen: { position: 'relative', borderRadius: 54, overflow: 'hidden',
+    background: 'var(--paper)', boxShadow: '0 28px 60px rgba(35,39,51,0.22), 0 0 0 12px #1c1f28, 0 0 0 13px #2b2f3a' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '7:14', battery = 84 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const Ico = {
+  plus: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1v12 M1 7h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/><circle cx="10" cy="10" r="1.6" fill="currentColor"/></svg>,
+  pattern: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 14c2-4 4-4 6 0s4 4 6 0 4-4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  log: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2.5" y="2.5" width="17" height="17" rx="5" stroke="currentColor" strokeWidth="1.5"/><path d="M7 11h8 M11 7v8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  lock: <svg width="11" height="11" viewBox="0 0 14 14" fill="none"><rect x="2" y="6" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M4.5 6V4a2.5 2.5 0 015 0v2" stroke="currentColor" strokeWidth="1.4" fill="none"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Today', icon: Ico.home },
+    { id: 'pattern', label: 'Pattern', icon: Ico.pattern },
+    { id: 'log', label: '', icon: Ico.log },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// --- Cycle arc SVG (a quiet semicircle showing today's position) ---
+function CycleArc({ day = 18, total = 29, label = 'Luteal · day 18' }) {
+  const r = 86, cx = 110, cy = 100;
+  const frac = day / total;
+  const angle = Math.PI - frac * Math.PI; // 180deg → 0deg
+  const x = cx + r * Math.cos(angle);
+  const y = cy - r * Math.sin(angle);
+  // segments for 4 phases
+  const seg = (a0, a1, color, w=3) => {
+    const x0 = cx + r * Math.cos(Math.PI - a0);
+    const y0 = cy - r * Math.sin(Math.PI - a0);
+    const x1 = cx + r * Math.cos(Math.PI - a1);
+    const y1 = cy - r * Math.sin(Math.PI - a1);
+    const large = (a1 - a0) > Math.PI ? 1 : 0;
+    return <path d={`M ${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`}
+      stroke={color} strokeWidth={w} fill="none" strokeLinecap="round" />;
+  };
+  return (
+    <svg viewBox="0 0 220 130" width="100%" height="auto" style={{ display: 'block' }}>
+      {/* baseline arc */}
+      <path d={`M ${cx - r} ${cy} A ${r} ${r} 0 0 1 ${cx + r} ${cy}`}
+        stroke="rgba(35,39,51,0.10)" strokeWidth="3" fill="none" strokeLinecap="round" />
+      {/* phase segments — menstrual / follicular / ovulation / luteal */}
+      {seg(0,         Math.PI*0.17, '#B9967E')}
+      {seg(Math.PI*0.17, Math.PI*0.48, '#8FA68E')}
+      {seg(Math.PI*0.48, Math.PI*0.58, '#D8B66F')}
+      {seg(Math.PI*0.58, Math.PI*1.0,  '#4A6E8A')}
+      {/* current marker */}
+      <circle cx={x} cy={y} r="7" fill="#F5F1EA" stroke="#4A6E8A" strokeWidth="2.5" />
+      <circle cx={x} cy={y} r="2.4" fill="#4A6E8A" />
+      {/* day numerals */}
+      <text x={cx - r} y={cy + 16} fontSize="9" fill="#818796" textAnchor="middle"
+        fontFamily="Newsreader, serif" fontStyle="italic">1</text>
+      <text x={cx} y={cy - r - 4} fontSize="9" fill="#818796" textAnchor="middle"
+        fontFamily="Newsreader, serif" fontStyle="italic">14</text>
+      <text x={cx + r} y={cy + 16} fontSize="9" fill="#818796" textAnchor="middle"
+        fontFamily="Newsreader, serif" fontStyle="italic">{total}</text>
+    </svg>
+  );
+}
+
+// 1. HERO
+function HeroScreen() {
+  return (
+    <div className="scr col" style={{ padding: '56px 28px 0', height: '100%',
+      background: 'linear-gradient(180deg, #EEF2F5 0%, #F5F1EA 55%)' }}>
+      <div className="col gap-16" style={{ marginTop: 12 }}>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 13,
+          color: 'var(--tide)', letterSpacing: '0.04em' }}>
+          a mood lens on your cycle
+        </div>
+        <div className="h1 serif" style={{ fontSize: 56, lineHeight: 0.95, letterSpacing: '-0.02em' }}>
+          Tide
+        </div>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+          fontSize: 20, lineHeight: 1.4, color: 'var(--ink-2)', marginTop: 6, maxWidth: 290 }}>
+          The day you feel like a stranger to yourself&nbsp;— there's usually a reason.
+        </div>
+      </div>
+      <div style={{ marginTop: 18, marginBottom: 8, alignSelf: 'center' }}>
+        <CycleArc day={18} total={29} />
+        <div className="meta" style={{ textAlign: 'center', marginTop: -2,
+          fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 14 }}>
+          today · day 18, luteal
+        </div>
+      </div>
+      <div className="col gap-12" style={{ marginTop: 'auto', marginBottom: 28 }}>
+        <button className="btn-primary">Begin my first cycle</button>
+        <button className="btn-secondary">I've been here before</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 4,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          {Ico.lock} Private by default · never sold, never shared
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 2. ONBOARDING 1 — When did your last period start
+function Onb1Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 1 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 26 }}>When did your last<br/>period start?</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5 }}>
+        Just a rough date. Tide uses this once to place you on the arc — you can correct it any time.
+      </div>
+      <div style={{ marginTop: 24, padding: 16, borderRadius: 16,
+        background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+        <div className="label" style={{ marginBottom: 10 }}>June 2026</div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4,
+          fontSize: 11, color: 'var(--ink-3)', textAlign: 'center', marginBottom: 6 }}>
+          {['M','T','W','T','F','S','S'].map((d,i) => <div key={i}>{d}</div>)}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 4 }}>
+          {Array.from({ length: 30 }, (_, i) => {
+            const day = i + 1;
+            const isSel = day === 6;
+            const isBleed = day >= 6 && day <= 10;
+            return (
+              <div key={i} style={{
+                aspectRatio: '1', display: 'grid', placeItems: 'center',
+                borderRadius: 999, fontSize: 12,
+                background: isSel ? 'var(--tide)' : (isBleed ? 'var(--tide-soft)' : 'transparent'),
+                color: isSel ? 'var(--paper)' : 'var(--ink)',
+                fontWeight: isSel ? 600 : 400,
+              }}>{day}</div>
+            );
+          })}
+        </div>
+      </div>
+      <div className="meta" style={{ marginTop: 14, fontFamily: 'Newsreader, serif',
+        fontStyle: 'italic', color: 'var(--ink-2)' }}>
+        Selected: <span style={{ color: 'var(--ink)' }}>Saturday, June 6</span> · cycle length 28-30 days
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 24, paddingBottom: 24 }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 3. ONBOARDING 2 — What are you here for (positioning vs Clue/Flo)
+function Onb2Screen() {
+  const opts = [
+    { t: 'Understand my moods', s: "Why today feels how it does", on: true },
+    { t: 'See my personal patterns', s: 'The shape of my luteal, my hard days', on: true },
+    { t: 'Plan around my cycle', s: 'Hold conversations for kinder days', on: false },
+    { t: 'Track my period', s: 'Just predict the next bleed', on: false, dim: true },
+    { t: 'Optimize for fertility', s: 'Tide isn\'t this — try Clue or Flo', on: false, dim: true },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 2 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 26 }}>What do you want<br/>from Tide?</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5 }}>
+        Pick what matters — this shapes your daily read. You can change it later.
+      </div>
+      <div className="col gap-8" style={{ marginTop: 20 }}>
+        {opts.map((o, i) => (
+          <div key={i} style={{
+            padding: '12px 14px', borderRadius: 14,
+            background: o.on ? 'var(--tide-soft)' : 'var(--paper-dim)',
+            border: `1px solid ${o.on ? 'var(--tide)' : 'var(--line)'}`,
+            opacity: o.dim ? 0.55 : 1,
+            display: 'flex', alignItems: 'center', gap: 12,
+          }}>
+            <div style={{ width: 18, height: 18, borderRadius: 5,
+              border: `1.5px solid ${o.on ? 'var(--tide)' : 'var(--line-strong)'}`,
+              background: o.on ? 'var(--tide)' : 'transparent',
+              display: 'grid', placeItems: 'center', color: 'var(--paper)', fontSize: 11 }}>
+              {o.on && '✓'}
+            </div>
+            <div className="col" style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{o.t}</div>
+              <div className="small" style={{ marginTop: 2 }}>{o.s}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 16, paddingBottom: 24 }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 4. ONBOARDING 3 — Set the morning ritual
+function Onb3Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 3 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 26 }}>One quiet check-in,<br/>most mornings.</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5 }}>
+        Two or three real questions, thirty seconds. Then one short read of your day.
+      </div>
+
+      <div style={{ marginTop: 22, padding: 18, borderRadius: 16,
+        background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+        <div className="label">Morning nudge</div>
+        <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="qtext" style={{ fontSize: 22 }}>7:15 am</div>
+          <div className="phase-pill"><span className="phase-dot"/>weekdays</div>
+        </div>
+        <div className="small" style={{ marginTop: 10, lineHeight: 1.5 }}>
+          You can miss days. The pattern survives a skipped week — no streaks, no nagging.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 14, padding: 16, borderRadius: 14,
+        border: '1px dashed var(--line-strong)', background: 'transparent' }}>
+        <div className="row" style={{ gap: 10 }}>
+          {Ico.lock}
+          <div className="col" style={{ flex: 1 }}>
+            <div style={{ fontSize: 13, fontWeight: 600 }}>Your logs stay on your phone</div>
+            <div className="small" style={{ marginTop: 2 }}>
+              End-to-end encrypted iCloud backup. No ads, no third parties, no health-data resale.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 'auto', paddingTop: 16, paddingBottom: 24 }}>
+        <button className="btn-primary">Set up morning ritual</button>
+        <button className="btn-secondary" style={{ marginTop: 10 }}>Not now — I'll log when I remember</button>
+      </div>
+    </div>
+  );
+}
+
+// 5. CORE — Daily check-in question (one of 2-3)
+function CoreCheckInScreen() {
+  return (
+    <div className="scr col" style={{ padding: '24px 22px 0', height: '100%' }}>
+      <div className="row" style={{ justifyContent: 'space-between' }}>
+        <div className="meta">Tuesday, July 7 · 7:14 am</div>
+        <div className="small">2 of 3</div>
+      </div>
+      <div style={{ marginTop: 4 }} className="phase-pill"><span className="phase-dot"/>day 22 · late luteal</div>
+
+      <div style={{ marginTop: 22 }} className="qtext">
+        Did small things land harder than usual today?
+      </div>
+
+      <div className="slider-track">
+        <div className="slider-fill" style={{ width: '72%' }} />
+        <div className="slider-thumb" style={{ left: '72%' }} />
+      </div>
+      <div className="ends">
+        <span>barely noticed</span>
+        <span>everything stung</span>
+      </div>
+
+      <div style={{ marginTop: 22, padding: 14, borderRadius: 14,
+        background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+        <div className="label" style={{ marginBottom: 8 }}>Anything you want to name?</div>
+        <div className="meta" style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', lineHeight: 1.5 }}>
+          Snapped at M. about the dishwasher. Cried at the bus ad. Felt better after a walk.
+        </div>
+      </div>
+
+      <div className="small" style={{ marginTop: 14, lineHeight: 1.5,
+        display: 'flex', alignItems: 'center', gap: 6 }}>
+        {Ico.lock} Only you ever see this.
+      </div>
+
+      <div style={{ marginTop: 'auto', paddingBottom: 70 }}>
+        <button className="btn-primary">Next question</button>
+      </div>
+      <NavBar active="log" />
+    </div>
+  );
+}
+
+// 6. CORE — Today's read (the payoff)
+function CoreReadScreen() {
+  return (
+    <div className="scr col" style={{ padding: '24px 22px 0', height: '100%' }}>
+      <div className="meta">Tuesday, July 7</div>
+      <div className="h2 serif" style={{ marginTop: 6 }}>Today's read</div>
+
+      <div style={{ marginTop: 14 }} className="phase-pill">
+        <span className="phase-dot"/>day 22 · late luteal
+      </div>
+
+      <div className="read-card" style={{ marginTop: 16 }}>
+        <div className="read-quote">
+          You're on day 22. Last cycle, this is when the small things started landing hard — you wrote about the dishwasher fight on day 23.
+        </div>
+        <div className="divider" style={{ margin: '14px 0' }} />
+        <div className="read-quote" style={{ fontSize: 16, color: 'var(--ink-2)' }}>
+          The text you're rereading is probably sharper today than it will feel by Saturday. Hold it lightly.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 16, padding: 14, borderRadius: 14,
+        background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+        <div className="label">A gentle suggestion</div>
+        <div style={{ marginTop: 8, fontSize: 14, lineHeight: 1.5,
+          fontFamily: 'Newsreader, serif' }}>
+          If you can move it, the budget call with Daniel might land easier on Friday.
+        </div>
+      </div>
+
+      <div className="row gap-8" style={{ marginTop: 14 }}>
+        <button className="btn-secondary" style={{ flex: 1, padding: '12px 14px',
+          fontSize: 13 }}>Felt about me</button>
+        <button className="btn-secondary" style={{ flex: 1, padding: '12px 14px',
+          fontSize: 13 }}>Not quite</button>
+      </div>
+
+      <div className="small" style={{ marginTop: 14, fontStyle: 'italic',
+        fontFamily: 'Newsreader, serif', color: 'var(--ink-3)' }}>
+        Drawn from your last 2 cycles · 41 logs
+      </div>
+
+      <div style={{ marginTop: 'auto', paddingBottom: 70 }} />
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// 7. CORE — Your pattern (the cycle profile, what makes month 2+ stick)
+function CorePatternScreen() {
+  const rows = [
+    { name: 'Brain feels sharp', when: 'days 7-13', tone: 'sage', text: 'follicular peak' },
+    { name: 'Untouchable energy', when: 'days 14-17', tone: 'gold', text: 'around ovulation' },
+    { name: 'Small things sting', when: 'days 21-26', tone: 'tide', text: 'late luteal — every cycle' },
+    { name: 'Quiet, want to be alone', when: 'days 27-2', tone: 'clay', text: 'late luteal into bleed' },
+  ];
+  const palette = { sage: '#8FA68E', gold: '#D8B66F', tide: '#4A6E8A', clay: '#B9967E' };
+  return (
+    <div className="scr col" style={{ padding: '24px 22px 0', height: '100%' }}>
+      <div className="meta">Your pattern · cycle 3 of tracking</div>
+      <div className="h2 serif" style={{ marginTop: 6 }}>What your cycle<br/>looks like, so far.</div>
+
+      <div style={{ marginTop: 16, alignSelf: 'center' }}>
+        <CycleArc day={22} total={29} />
+      </div>
+
+      <div style={{ marginTop: 4 }}>
+        {rows.map((r, i) => (
+          <div key={i} className="pattern-row">
+            <div style={{ width: 8, height: 8, borderRadius: 999,
+              background: palette[r.tone], flexShrink: 0 }} />
+            <div className="col" style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>{r.name}</div>
+              <div className="small" style={{ marginTop: 1 }}>{r.text}</div>
+            </div>
+            <div className="small" style={{ fontFamily: 'Newsreader, serif',
+              fontStyle: 'italic', color: 'var(--ink-2)' }}>{r.when}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="small" style={{ marginTop: 14, lineHeight: 1.5,
+        fontStyle: 'italic', fontFamily: 'Newsreader, serif', color: 'var(--ink-3)' }}>
+        These are patterns from your own logs. Not horoscopes — just what you've written, three cycles in a row.
+      </div>
+
+      <div style={{ marginTop: 'auto', paddingBottom: 70 }} />
+      <NavBar active="pattern" />
+    </div>
+  );
+}
+
+// 8. CORE — Anomaly flag (the "this cycle is unusual" signal)
+function CoreFlagScreen() {
+  // tiny line for energy across this cycle vs typical
+  const days = Array.from({ length: 28 }, (_, i) => i + 1);
+  const typical = days.map(d => 50 + 30 * Math.sin((d - 1) / 28 * Math.PI * 2 - 0.4));
+  const thisCycle = days.map(d => 45 + 22 * Math.sin((d - 1) / 28 * Math.PI * 2 - 1.2));
+  const toPath = (arr) => arr.map((v, i) => {
+    const x = 12 + (i / (arr.length - 1)) * 236;
+    const y = 80 - (v - 30) * 0.9;
+    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
+  }).join(' ');
+  return (
+    <div className="scr col" style={{ padding: '24px 22px 0', height: '100%' }}>
+      <div className="meta">Heads up · cycle 4</div>
+      <div className="h2 serif" style={{ marginTop: 6 }}>Your energy phase<br/>came a few days late.</div>
+
+      <div style={{ marginTop: 16, padding: 14, borderRadius: 16,
+        background: 'var(--paper)', border: '1px solid var(--line)' }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Energy · this cycle vs typical you</div>
+          <div className="small">days 1—28</div>
+        </div>
+        <svg viewBox="0 0 260 90" width="100%" style={{ marginTop: 8, display: 'block' }}>
+          <path d={toPath(typical)} stroke="rgba(35,39,51,0.20)" strokeWidth="1.6"
+            fill="none" strokeDasharray="3 3" />
+          <path d={toPath(thisCycle)} stroke="#4A6E8A" strokeWidth="2.2" fill="none"
+            strokeLinecap="round" strokeLinejoin="round" />
+          {/* flag dot */}
+          <circle cx="160" cy="42" r="4" fill="#A14B3A" />
+        </svg>
+        <div className="row gap-12" style={{ marginTop: 8 }}>
+          <div className="row gap-6"><div style={{ width: 14, height: 2, background: '#4A6E8A' }} /><span className="small">this cycle</span></div>
+          <div className="row gap-6"><div style={{ width: 14, height: 2, background: 'rgba(35,39,51,0.3)',
+            borderTop: '1px dashed' }} /><span className="small">your usual</span></div>
+        </div>
+      </div>
+
+      <div className="read-card" style={{ marginTop: 14 }}>
+        <div className="read-quote" style={{ fontSize: 16 }}>
+          You usually feel untouchable around day 14. This cycle, that lift hasn't shown up — you're on day 17 and still logging "smudgy" most mornings.
+        </div>
+        <div className="divider" style={{ margin: '12px 0' }} />
+        <div className="small" style={{ lineHeight: 1.5 }}>
+          One off-cycle doesn't mean much on its own. Worth noticing if it keeps happening.
+        </div>
+      </div>
+
+      <div style={{ marginTop: 'auto', paddingBottom: 70 }} />
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. A quiet semicircle places you on the cycle on first glance — no graphs, no fertility framing.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Anchor the cycle" caption="One date, picked once. The calendar shows the inferred bleed window so the user can correct it without a setup wizard.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Pick your lens" caption="Explicitly positions away from Clue/Flo: fertility and period-prediction are visibly not the job. Answers the 'why this and not Clue' question on day one.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Morning ritual" caption="Sets a soft cue, no streaks. The privacy line is load-bearing — Q6 from the user interview lives here.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Daily check-in" caption="Two or three real questions, not a 5-point emoji scale. The free-text line keeps the journaller's habit alive instead of replacing it.">
+        <CoreCheckInScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Today's read" caption="The payoff. References the user's own past log, not a generic phase blurb. 'Felt about me / Not quite' is the cold-start training signal.">
+        <CoreReadScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Your pattern" caption="The cycle profile, the thing Clue can't replicate without your logs. Four phases, in your own words, drawn only from what you wrote.">
+        <CorePatternScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Anomaly flag" caption="When this cycle drifts from your baseline, Tide says so — gently. Compares this cycle's energy curve against your typical, not against a textbook.">
+        <CoreFlagScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

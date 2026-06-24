@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Bare · Pain Radar proto 21/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EDEAE2;
+    --paper: #F6F3EC;
+    --paper-dim: #E6E1D4;
+    --accent: #234E4A;
+    --accent-soft: rgba(35, 78, 74, 0.10);
+    --accent-dim: #4A7773;
+    --ink: #1C211F;
+    --ink-2: #4E544F;
+    --ink-3: #868A82;
+    --line: rgba(28, 33, 31, 0.10);
+    --line-strong: rgba(28, 33, 31, 0.20);
+    --warn: #B45A2A;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(237, 234, 226, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 64px; letter-spacing: -0.03em;
+    line-height: 1.0; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+    font-weight: 400;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--accent); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink);
+    position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 32px; line-height: 1.05;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--accent); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--accent); color: var(--paper);
+    border-color: var(--accent);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--accent); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--accent); margin-top: 2px; }
+
+  /* Bare-specific */
+  #app .product-card {
+    padding: 18px; border-radius: 16px;
+    background: var(--paper); border: 1px solid var(--line);
+  }
+  #app .product-num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--accent); font-size: 14px;
+  }
+  #app .ingredient {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 19px;
+    letter-spacing: -0.01em;
+  }
+  #app .tier-dot {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 999px; background: var(--accent);
+    margin: 0 4px;
+  }
+  #app .step-circle {
+    width: 28px; height: 28px; border-radius: 999px;
+    background: var(--accent); color: var(--paper);
+    display: grid; place-items: center;
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 14px;
+  }
+  #app .step-circle.done {
+    background: var(--paper-dim); color: var(--accent);
+    border: 1.5px solid var(--accent);
+  }
+  #app .hold-banner {
+    padding: 16px; border-radius: 14px;
+    background: #F0EBDB; border: 1px solid rgba(180, 90, 42, 0.25);
+    color: var(--ink);
+  }
+  #app .hold-no {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-style: italic;
+    font-size: 28px; color: var(--warn); letter-spacing: -0.01em;
+  }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand serif">Pain Radar</span>
+    <span class="chrome-counter">21 / 45 — Bare</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Truce/index.html" title="Previous: Truce">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Cue/index.html" title="Next: Cue">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Radical subtraction · refusal-as-feature</div>
+  <h1 class="page-title serif">Bare</h1>
+  <p class="page-tagline serif">Three products. That's your routine. Bare cuts through the skincare noise and tells you the smallest possible thing that will work for your skin.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven Phase 1 prototype.
+  This is not a product spec. See <a href="../../Apps/_radar/Bare/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-24" style={{ paddingTop: 80, height: '100%', boxSizing: 'border-box' }}>
+        <div className="label" style={{ color: 'var(--accent)' }}>Bare</div>
+        <div style={{ flex: 1 }}>
+          <div className="h1 serif" style={{ fontSize: 38, lineHeight: 1.05 }}>
+            Three products.<br/>
+            <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>That's your routine.</span>
+          </div>
+          <div className="meta serif" style={{ marginTop: 18, fontSize: 16, fontStyle: 'italic', lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            We tell you the smallest thing that will work for your skin. Then we hold the line for ninety days.
+          </div>
+        </div>
+        <div className="col gap-12" style={{ paddingBottom: 60 }}>
+          <button className="btn-primary">Take the 4-minute quiz</button>
+          <div className="small" style={{ textAlign: 'center' }}>
+            No affiliate links. No upsells. Ever.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="small">2 of 6</div>
+          <div className="small">Skip</div>
+        </div>
+        <div className="h2 serif">What's your skin doing right now?</div>
+        <div className="meta">Pick everything that's true. Be honest, not aspirational.</div>
+        <div className="col gap-8" style={{ marginTop: 8 }}>
+          {[
+            ['Oily T-zone', true],
+            ['Breakouts on chin & jaw', true],
+            ['Dry patches near nose', false],
+            ['Red after I wash', true],
+            ['Hyperpigmentation marks', false],
+            ['Fine lines starting', false],
+            ['Stings with most products', false],
+          ].map(([t, on]) => (
+            <div key={t} className="field row" style={{ justifyContent: 'space-between',
+              background: on ? 'var(--accent-soft)' : 'var(--paper-dim)',
+              borderColor: on ? 'var(--accent)' : 'var(--line)' }}>
+              <span style={{ fontSize: 14, color: on ? 'var(--accent)' : 'var(--ink-2)', fontWeight: on ? 600 : 400 }}>{t}</span>
+              <div style={{ width: 18, height: 18, borderRadius: 6,
+                border: '1.5px solid ' + (on ? 'var(--accent)' : 'var(--line-strong)'),
+                background: on ? 'var(--accent)' : 'transparent',
+                display: 'grid', placeItems: 'center' }}>
+                {on && <span style={{ color: 'var(--paper)', fontSize: 11, lineHeight: 1 }}>✓</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ padding: '14px 22px 22px' }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="small">4 of 6</div>
+          <div className="small">Skip</div>
+        </div>
+        <div className="h2 serif">What have you already tried?</div>
+        <div className="meta">If something irritated you we'll route around it.</div>
+        <div className="col gap-12" style={{ marginTop: 8 }}>
+          <div className="label">Tried & it worked</div>
+          <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
+            <span className="chip on">CeraVe cleanser</span>
+            <span className="chip on">SPF 50</span>
+          </div>
+          <div className="label" style={{ marginTop: 6 }}>Tried & it stung</div>
+          <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
+            <span className="chip on" style={{ background: 'var(--warn)', borderColor: 'var(--warn)' }}>The Ordinary AHA 30%</span>
+            <span className="chip on" style={{ background: 'var(--warn)', borderColor: 'var(--warn)' }}>Retinol 1%</span>
+          </div>
+          <div className="label" style={{ marginTop: 6 }}>Currently using</div>
+          <div className="row" style={{ flexWrap: 'wrap', gap: 6 }}>
+            <span className="chip">Niacinamide</span>
+            <span className="chip">Hyaluronic acid</span>
+            <span className="chip">Vitamin C serum</span>
+            <span className="chip">Snail mucin</span>
+            <span className="chip">Beef tallow</span>
+            <span className="chip">+ 4 more</span>
+          </div>
+          <div className="field" style={{ marginTop: 8, background: '#F0EBDB', borderColor: 'rgba(180, 90, 42, 0.2)' }}>
+            <div className="meta serif" style={{ fontStyle: 'italic', fontSize: 13 }}>
+              "9 products is the median for new users. We'll ask you to put 6 away."
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ padding: '14px 22px 22px' }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="label" style={{ color: 'var(--accent)' }}>Your routine · day 1</div>
+        <div className="h2 serif" style={{ fontSize: 26 }}>
+          For the next <span style={{ fontStyle: 'italic' }}>ninety days</span>, this is everything.
+        </div>
+        <div className="col gap-12" style={{ marginTop: 4 }}>
+          <div className="product-card">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="product-num serif">No. 1 · Cleanse</span>
+              <span className="small">AM + PM</span>
+            </div>
+            <div className="ingredient serif" style={{ marginTop: 6 }}>Non-foaming ceramide wash</div>
+            <div className="meta" style={{ marginTop: 4 }}>$ tier · drugstore. Strips nothing.</div>
+          </div>
+          <div className="product-card">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="product-num serif">No. 2 · Treat</span>
+              <span className="small">PM only</span>
+            </div>
+            <div className="ingredient serif" style={{ marginTop: 6 }}>Adapalene 0.1%</div>
+            <div className="meta" style={{ marginTop: 4 }}>$ tier · OTC. The one ingredient doing the work.</div>
+          </div>
+          <div className="product-card">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="product-num serif">No. 3 · Protect</span>
+              <span className="small">AM only</span>
+            </div>
+            <div className="ingredient serif" style={{ marginTop: 6 }}>Mineral SPF 50, fragrance-free</div>
+            <div className="meta" style={{ marginTop: 4 }}>$$ tier · the one place to spend.</div>
+          </div>
+          <div className="meta" style={{ textAlign: 'center', marginTop: 4 }}>
+            That's it. Put the rest in a drawer.
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ padding: '14px 22px 22px' }}>
+        <button className="btn-primary">Start tonight</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreTonightScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70, paddingBottom: 90 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="col">
+            <div className="label">Tuesday · evening</div>
+            <div className="h1 serif" style={{ marginTop: 6, fontSize: 28 }}>Two taps tonight.</div>
+          </div>
+          <div className="serif" style={{ fontSize: 14, color: 'var(--accent)', fontStyle: 'italic' }}>day 17</div>
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 4 }}>
+          <div className="product-card row" style={{ justifyContent: 'space-between', gap: 12 }}>
+            <div className="col gap-6">
+              <span className="product-num serif">No. 1 · Cleanse</span>
+              <span className="ingredient serif">Ceramide wash</span>
+            </div>
+            <div className="step-circle done">✓</div>
+          </div>
+          <div className="product-card row" style={{ justifyContent: 'space-between', gap: 12,
+            border: '1.5px solid var(--accent)' }}>
+            <div className="col gap-6">
+              <span className="product-num serif">No. 2 · Treat</span>
+              <span className="ingredient serif">Adapalene 0.1%</span>
+              <span className="small" style={{ fontStyle: 'italic' }}>pea-sized · wait 20 min after washing</span>
+            </div>
+            <div className="step-circle" style={{ width: 36, height: 36 }}>2</div>
+          </div>
+          <div className="meta" style={{ padding: '0 4px', fontStyle: 'italic' }}>
+            No step 3 tonight. SPF is for the morning.
+          </div>
+        </div>
+
+        <div className="divider" style={{ margin: '8px 0' }}/>
+
+        <div className="col gap-8">
+          <div className="label">Streak</div>
+          <div className="row gap-6">
+            {Array.from({length: 17}).map((_, i) => (
+              <div key={i} style={{ width: 8, height: 14, borderRadius: 2,
+                background: i < 15 ? 'var(--accent)' : (i === 15 ? 'var(--accent-dim)' : 'var(--paper-dim)') }}/>
+            ))}
+          </div>
+          <div className="small">15 of 17 evenings. One missed on day 11, fine.</div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>Today</span><div className="nav-dot"/></div>
+        <div className="nav-item"><span>Skin</span></div>
+        <div className="nav-item"><span>Learn</span></div>
+        <div className="nav-item"><span>Routine</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreCheckinScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="label">Sunday · weekly check-in</div>
+        <div className="h2 serif">How is your skin doing this week?</div>
+        <div className="meta">One number. The whole loop.</div>
+
+        <div className="row" style={{ justifyContent: 'space-between', marginTop: 16, gap: 6 }}>
+          {[1,2,3,4,5].map(n => (
+            <div key={n} style={{ flex: 1, padding: '18px 0', borderRadius: 14,
+              background: n === 4 ? 'var(--accent)' : 'var(--paper-dim)',
+              color: n === 4 ? 'var(--paper)' : 'var(--ink-2)',
+              border: '1px solid ' + (n === 4 ? 'var(--accent)' : 'var(--line)'),
+              textAlign: 'center', fontFamily: 'Fraunces, serif',
+              fontWeight: 500, fontSize: 22 }}>
+              {n}
+            </div>
+          ))}
+        </div>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <span className="small">Worse</span>
+          <span className="small">Better</span>
+        </div>
+
+        <div className="divider" style={{ margin: '8px 0' }}/>
+
+        <div className="label">Side-by-side (optional)</div>
+        <div className="row gap-12">
+          <div style={{ flex: 1, aspectRatio: '3/4', borderRadius: 14,
+            background: 'linear-gradient(135deg, #E6E1D4, #D4CDB8)',
+            display: 'grid', placeItems: 'center', color: 'var(--ink-3)', fontSize: 11 }}>
+            day 1
+          </div>
+          <div style={{ flex: 1, aspectRatio: '3/4', borderRadius: 14,
+            background: 'linear-gradient(135deg, #DFE6DE, #C8D4C9)',
+            display: 'grid', placeItems: 'center', color: 'var(--accent)', fontSize: 11,
+            border: '1.5px solid var(--accent)' }}>
+            today · 24
+          </div>
+        </div>
+        <div className="meta serif" style={{ fontStyle: 'italic', textAlign: 'center', fontSize: 13 }}>
+          "Less red around the nose. Chin still loud."
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ padding: '14px 22px 22px' }}>
+        <button className="btn-primary">Log week 4</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreHoldScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="label" style={{ color: 'var(--warn)' }}>You opened: TikTok serum</div>
+        <div className="hold-banner col gap-12">
+          <div className="hold-no serif">No, don't add that.</div>
+          <div className="meta" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink)' }}>
+            You're on day 23 of adapalene. The skin you're seeing isn't done becoming. Adding tranexamic acid right now mixes two signals and we won't know which moved the needle.
+          </div>
+          <div className="meta" style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--ink-2)' }}>
+            Re-check in 19 days. If chin is still loud, we'll <em>swap</em> the treatment, not stack one on.
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{ marginTop: 4 }}>
+          <button className="btn-primary">Okay, keep my routine</button>
+          <button className="btn-secondary">Tell me why one more time</button>
+          <button className="btn-secondary" style={{ color: 'var(--ink-3)', borderColor: 'var(--line)' }}>
+            Add anyway (logged in journal)
+          </button>
+        </div>
+
+        <div className="divider" style={{ margin: '4px 0' }}/>
+
+        <div className="label">This week, other people held the line</div>
+        <div className="col gap-6">
+          <div className="row gap-8" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+            <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: 'var(--accent)', minWidth: 28 }}>412</span>
+            <span>said no to a new acid</span>
+          </div>
+          <div className="row gap-8" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+            <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: 'var(--accent)', minWidth: 28 }}>198</span>
+            <span>said no to a viral serum</span>
+          </div>
+          <div className="row gap-8" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+            <span style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', color: 'var(--accent)', minWidth: 28 }}>67</span>
+            <span>added anyway · we'll see</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreSwapScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="label" style={{ color: 'var(--accent)' }}>Day 63 · time to swap, not stack</div>
+        <div className="h2 serif">Your skin earned a move.</div>
+        <div className="meta" style={{ lineHeight: 1.55 }}>
+          T-zone is calmer. Chin is the holdout. Three weeks of adapalene at 0.1% has done what it can. We swap, we don't add.
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 4 }}>
+          <div className="product-card" style={{ opacity: 0.55 }}>
+            <div className="product-num serif">No. 2 · Treat · ending</div>
+            <div className="ingredient serif" style={{ marginTop: 6, textDecoration: 'line-through', color: 'var(--ink-3)' }}>
+              Adapalene 0.1%
+            </div>
+            <div className="small" style={{ marginTop: 4 }}>Days 1–63. Did its job on the T-zone.</div>
+          </div>
+          <div style={{ textAlign: 'center', color: 'var(--accent)', fontSize: 18 }}>↓</div>
+          <div className="product-card" style={{ border: '1.5px solid var(--accent)' }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="product-num serif">No. 2 · Treat · starting</span>
+              <span className="small" style={{ color: 'var(--accent)' }}>new</span>
+            </div>
+            <div className="ingredient serif" style={{ marginTop: 6 }}>Azelaic acid 10%</div>
+            <div className="small serif" style={{ fontStyle: 'italic', marginTop: 6, lineHeight: 1.5 }}>
+              The one sentence: azelaic calms the redness and bumps on the chin without bleaching the rest of your face.
+            </div>
+          </div>
+        </div>
+
+        <div className="meta" style={{ marginTop: 8, padding: '0 4px' }}>
+          Still three products. Cleanser and SPF don't move.
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ padding: '14px 22px 22px' }}>
+        <button className="btn-primary">Make the swap</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile (label + IosFrame + caption) ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. Sage neutrals, one calming accent. No product shots, no influencers — the promise carries the screen.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Honest read" caption="The quiz refuses aspirational answers. Pick what your skin is actually doing right now, not the version of it you wish you had.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Shelf inventory" caption="What stung gets routed around. The 9-products median doubles as a gentle confrontation — 6 of yours are going in a drawer.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Three products" caption="Named by ingredient, not brand. Price tier instead of a deal link. The whole verdict fits on one screen.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Tonight, two taps" caption="The daily surface is tiny on purpose. Streak shows up but doesn't shame — a missed day is annotated, not punished.">
+        <CoreTonightScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Weekly check-in" caption="One number, one optional photo pair. The whole feedback loop, no more, no less. Side-by-side is the slow reward.">
+        <CoreCheckinScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="The hold-the-line moment" caption="When you open the app intending to add, Bare blocks the addition and shows you why. The bottom strip is the social fabric the judges asked for, without a feed.">
+        <CoreHoldScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Earned swap" caption="The treatment moves once the skin has spoken. Cleanser and SPF don't. The number on the page is always three.">
+        <CoreSwapScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

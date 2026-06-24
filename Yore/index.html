@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Yore · Pain Radar proto 41/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F1E7DA;
+    --paper: #F7EFE2;
+    --paper-dim: #E9DCC6;
+    --rust: #8A4A3C;
+    --rust-soft: rgba(138, 74, 60, 0.12);
+    --plum: #5B3A4E;
+    --plum-soft: rgba(91, 58, 78, 0.12);
+    --ink: #2A211B;
+    --ink-2: #5A4B40;
+    --ink-3: #8C7B6C;
+    --line: rgba(42, 33, 27, 0.12);
+    --line-strong: rgba(42, 33, 27, 0.22);
+    --accent: #C9885A;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; }
+  a { color: inherit; }
+
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(241, 231, 218, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rust); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .chip {
+    padding: 7px 12px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--rust); color: var(--paper);
+    border-color: var(--rust);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+
+  #app .card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  #app .card-postage {
+    position: relative;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 18px 16px 14px;
+    box-shadow: 0 1px 0 rgba(42,33,27,0.04), 0 8px 24px rgba(42,33,27,0.06);
+  }
+  #app .stamp {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 9px; letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rust);
+    border: 1px dashed var(--rust);
+    padding: 3px 8px;
+    border-radius: 2px;
+  }
+  #app .year-tag {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: 0.14em;
+    color: var(--ink-3);
+  }
+  #app .reaction-row {
+    display: flex; gap: 6px; flex-wrap: wrap;
+  }
+  #app .react-pill {
+    padding: 5px 9px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 11px; color: var(--ink-2);
+    display: inline-flex; gap: 4px; align-items: center;
+  }
+  #app .react-pill.hot {
+    background: var(--rust-soft);
+    border-color: rgba(138,74,60,0.3);
+    color: var(--rust);
+    font-weight: 600;
+  }
+  #app .memory-body {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 16px; line-height: 1.45;
+    color: var(--ink);
+  }
+  #app .memory-body.short {
+    font-size: 19px; line-height: 1.35;
+  }
+  #app .author-line {
+    font-size: 11px; color: var(--ink-3);
+    display: flex; align-items: center; gap: 6px;
+  }
+  #app .author-dot {
+    width: 4px; height: 4px; border-radius: 999px;
+    background: var(--ink-3);
+  }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 9px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--rust); }
+
+  #app .cohort-band {
+    background: var(--plum); color: var(--paper);
+    padding: 10px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  #app .cohort-band .y { font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+
+  #app .scroll-hint {
+    text-align: center; padding: 14px 0 6px;
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  #app .post-card-mini {
+    background: var(--paper-dim);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--ink-2);
+    border-left: 3px solid var(--rust);
+  }
+  #app .quote {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 13px;
+    line-height: 1.4; color: var(--ink-2);
+  }
+  #app .grain {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: radial-gradient(rgba(42,33,27,0.06) 1px, transparent 1px);
+    background-size: 3px 3px;
+    opacity: 0.5;
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">41 / 45 — Yore</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Worth/index.html" title="Previous: Worth">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Cast/index.html" title="Next: Cast">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Cohort feed · generational memory</div>
+  <h1 class="page-title serif">Yore</h1>
+  <p class="page-tagline serif">The inside jokes only your generation gets, in one feed. Yore remembers the things you forgot you remembered.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline. This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Yore/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+
+// ---------------- IosFrame (verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function NavBottom({ on }) {
+  const items = [
+    { k: 'feed', label: 'Feed' },
+    { k: 'post', label: 'Add' },
+    { k: 'browse', label: 'Cohorts' },
+    { k: 'me', label: 'You' },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.k} className={'nav-item ' + (on === it.k ? 'on' : '')}>
+          <span>{it.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HeroScreen() {
+  return (
+    <div className="scr" style={{ background: 'linear-gradient(180deg, #F1E7DA 0%, #E9DCC6 100%)' }}>
+      <div className="grain"></div>
+      <div className="pad col" style={{ paddingTop: 60, height: '100%', justifyContent: 'space-between', paddingBottom: 60 }}>
+        <div className="col gap-16">
+          <span className="year-tag" style={{ color: '#8A4A3C' }}>YORE · EST. 2026</span>
+          <div className="h1 serif" style={{ fontSize: 38, lineHeight: 1.05 }}>
+            The things you<br/>
+            <em style={{ color: '#8A4A3C' }}>forgot</em><br/>
+            you remembered.
+          </div>
+          <div style={{ fontFamily: 'Fraunces, serif', fontStyle: 'italic', fontSize: 15, lineHeight: 1.5, color: '#5A4B40', maxWidth: 280 }}>
+            A feed made entirely of the small, specific things your generation grew up inside.
+          </div>
+        </div>
+
+        <div className="col gap-12">
+          <div className="card-postage" style={{ transform: 'rotate(-1.2deg)' }}>
+            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 8 }}>
+              <span className="year-tag">1996 · WEDNESDAY</span>
+              <span className="stamp">cohort</span>
+            </div>
+            <div className="memory-body short">
+              "The exact sound the dial-up modem made when it finally connected."
+            </div>
+          </div>
+
+          <button className="btn-primary">Tell me when I was born</button>
+          <div className="small" style={{ textAlign: 'center', marginTop: 4 }}>
+            We'll build your feed from there.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // Pick birth year + school years
+  const years = [1988, 1989, 1990, 1991, 1992, 1993];
+  const selected = 1991;
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 28 }}>
+        <div className="col gap-6">
+          <span className="label">step 1 of 3</span>
+          <div className="h1 serif">When were<br/>you born?</div>
+          <div className="meta">Your feed leans into the years you grew up in. A 1989 baby and a 2002 baby don't see the same Yore.</div>
+        </div>
+
+        <div className="card" style={{ background: 'var(--paper-dim)', padding: 0, overflow: 'hidden' }}>
+          {years.map((y, i) => (
+            <div key={y} style={{
+              padding: '14px 18px',
+              borderBottom: i < years.length - 1 ? '1px solid rgba(42,33,27,0.08)' : 'none',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              background: y === selected ? '#8A4A3C' : 'transparent',
+              color: y === selected ? 'var(--paper)' : 'var(--ink)',
+            }}>
+              <span className="serif" style={{ fontSize: 22, fontWeight: 500 }}>{y}</span>
+              <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, opacity: 0.7 }}>
+                {y === selected ? '✓ you' : `age ${2026 - y}`}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="quote" style={{ textAlign: 'center' }}>
+          "I want the feed of an 11-year-old in 2002."
+        </div>
+      </div>
+      <NavBottom on="" />
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  // Pick the eras / themes that hit
+  const themes = [
+    { name: 'School', on: true, sub: 'cafeteria, bells, bus' },
+    { name: 'TV after school', on: true, sub: 'cartoons, ads, snacks' },
+    { name: 'Early internet', on: true, sub: 'MSN, AIM, dial-up' },
+    { name: 'Brands gone', on: false, sub: 'candy, soda, stores' },
+    { name: 'Music', on: true, sub: 'ringtones, MTV, CDs' },
+    { name: 'Toys & gear', on: false, sub: 'Tamagotchi, gameboy' },
+    { name: 'Saturdays', on: false, sub: 'weekends, friends' },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 28, paddingBottom: 80 }}>
+        <div className="col gap-6">
+          <span className="label">step 2 of 3</span>
+          <div className="h1 serif">What pulls<br/>at you most?</div>
+          <div className="meta">Pick a few. We'll surface the cards that hit hardest in these corners first. You can change this anytime.</div>
+        </div>
+
+        <div className="col gap-8">
+          {themes.map(t => (
+            <div key={t.name} className="row" style={{
+              padding: '14px 16px', borderRadius: 12,
+              background: t.on ? 'rgba(138,74,60,0.08)' : 'var(--paper-dim)',
+              border: t.on ? '1px solid rgba(138,74,60,0.3)' : '1px solid var(--line)',
+              justifyContent: 'space-between',
+            }}>
+              <div className="col gap-6" style={{ gap: 2 }}>
+                <span className="serif" style={{ fontSize: 16, fontWeight: 600 }}>{t.name}</span>
+                <span className="small" style={{ fontSize: 11 }}>{t.sub}</span>
+              </div>
+              <div style={{
+                width: 22, height: 22, borderRadius: 999,
+                background: t.on ? '#8A4A3C' : 'transparent',
+                border: t.on ? 'none' : '1.5px solid rgba(42,33,27,0.22)',
+                color: 'var(--paper)', display: 'grid', placeItems: 'center',
+                fontSize: 12,
+              }}>{t.on ? '✓' : ''}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <NavBottom on="" />
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  // Cold-start: drop the first memory before entering
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 28, paddingBottom: 80 }}>
+        <div className="col gap-6">
+          <span className="label">step 3 of 3 · last one</span>
+          <div className="h1 serif">Drop one in.</div>
+          <div className="meta">Before you scroll, leave a memory of your own. One sentence is enough. The feed gets better the more rememberers it has.</div>
+        </div>
+
+        <div className="card-postage">
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <span className="year-tag">YOUR YEAR · 1991</span>
+            <span className="stamp">draft</span>
+          </div>
+          <div style={{
+            fontFamily: 'Fraunces, serif', fontSize: 16, lineHeight: 1.5,
+            color: 'var(--ink)', minHeight: 90,
+          }}>
+            The smell of a brand new<br/>
+            <span style={{ background: 'rgba(201,136,90,0.22)' }}>Lisa Frank Trapper Keeper</span><br/>
+            on the first day of school.
+          </div>
+          <div className="row gap-6" style={{ flexWrap: 'wrap', marginTop: 12 }}>
+            <span className="chip" style={{ fontSize: 10 }}>1991</span>
+            <span className="chip" style={{ fontSize: 10 }}>school</span>
+            <span className="chip" style={{ fontSize: 10 }}>+ add tag</span>
+          </div>
+        </div>
+
+        <div className="quote" style={{ textAlign: 'center', fontSize: 12 }}>
+          A photo with no caption is also enough.
+        </div>
+
+        <button className="btn-primary">Drop it & open Yore</button>
+      </div>
+    </div>
+  );
+}
+
+function FeedScreen() {
+  // Core: the cohort feed
+  return (
+    <div className="scr" style={{ paddingBottom: 60 }}>
+      <div className="cohort-band">
+        <div className="row gap-8">
+          <span style={{ fontWeight: 600 }}>your cohort</span>
+          <span className="y">1991 · age 11 in 2002</span>
+        </div>
+        <span style={{ opacity: 0.7 }}>resonance ↑</span>
+      </div>
+
+      <div className="pad col gap-12" style={{ paddingTop: 18, paddingBottom: 30 }}>
+
+        <div className="card-postage" style={{ transform: 'rotate(-0.4deg)' }}>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <span className="year-tag">2001 · MSN era</span>
+            <span className="stamp">428 felt it</span>
+          </div>
+          <div className="memory-body">
+            The "nudge" button on MSN Messenger. The way the whole window would shake when someone gave up trying to get your attention.
+          </div>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 12 }}>
+            <div className="author-line">
+              <span>maya · 1990</span>
+              <span className="author-dot"></span>
+              <span>3h</span>
+            </div>
+            <div className="reaction-row">
+              <span className="react-pill hot">oh my god yes · 412</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="card-postage" style={{ transform: 'rotate(0.6deg)' }}>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <span className="year-tag">1998 · saturdays</span>
+            <span className="stamp">196 felt it</span>
+          </div>
+          <div className="memory-body short">
+            "The carpet in front of the TV on a Saturday morning, knees on it for hours."
+          </div>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 12 }}>
+            <div className="author-line">
+              <span>tomás · 1992</span>
+              <span className="author-dot"></span>
+              <span>yesterday</span>
+            </div>
+            <div className="reaction-row">
+              <span className="react-pill">me too · 184</span>
+              <span className="react-pill">💔 12</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="scroll-hint">— quiet stretch —</div>
+
+        <div className="card-postage" style={{ transform: 'rotate(-0.8deg)' }}>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <span className="year-tag">2003 · brands gone</span>
+            <span className="stamp">71 felt it</span>
+          </div>
+          <div className="memory-body" style={{ fontSize: 15 }}>
+            Wonderballs. The chocolate ones with the weird crunchy candy shapes inside. Banned for being a choking hazard. I think about them often.
+          </div>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 12 }}>
+            <div className="author-line">
+              <span>elena · 1991</span>
+              <span className="author-dot"></span>
+              <span>2d</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <NavBottom on="feed" />
+    </div>
+  );
+}
+
+function CardZoomScreen() {
+  // Tap a card → small reactions, replies, share into group chat (H3)
+  return (
+    <div className="scr" style={{ paddingBottom: 60 }}>
+      <div className="cohort-band">
+        <span style={{ opacity: 0.8 }}>← back to feed</span>
+        <span className="y">1991</span>
+      </div>
+
+      <div className="pad col gap-16" style={{ paddingTop: 22, paddingBottom: 30 }}>
+
+        <div className="card-postage">
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12 }}>
+            <span className="year-tag">2001 · MSN era</span>
+            <span className="stamp">428 felt it</span>
+          </div>
+          <div className="memory-body" style={{ fontSize: 18 }}>
+            The "nudge" button on MSN Messenger. The way the whole window would shake when someone gave up trying to get your attention.
+          </div>
+          <div className="row gap-6" style={{ flexWrap: 'wrap', marginTop: 14 }}>
+            <span className="chip" style={{ fontSize: 11 }}>1991-2003</span>
+            <span className="chip" style={{ fontSize: 11 }}>early internet</span>
+            <span className="chip" style={{ fontSize: 11 }}>MSN</span>
+          </div>
+        </div>
+
+        <div className="row gap-6" style={{ flexWrap: 'wrap' }}>
+          <span className="react-pill hot">oh my god yes · 412</span>
+          <span className="react-pill">me too · 84</span>
+          <span className="react-pill">💔 22</span>
+          <span className="react-pill">+ react</span>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">three short replies</span>
+          <div className="post-card-mini">
+            <div style={{ fontStyle: 'italic', fontFamily: 'Fraunces, serif', fontSize: 13 }}>
+              "the sound it made. tk-tk-tk-tk."
+            </div>
+            <div className="small" style={{ marginTop: 4 }}>jonas · 1989 · 1h</div>
+          </div>
+          <div className="post-card-mini">
+            <div style={{ fontStyle: 'italic', fontFamily: 'Fraunces, serif', fontSize: 13 }}>
+              "i nudged my crush 40 times in a row. she blocked me."
+            </div>
+            <div className="small" style={{ marginTop: 4 }}>priya · 1992 · 2h</div>
+          </div>
+        </div>
+
+        <button className="btn-primary" style={{ background: 'var(--plum)' }}>
+          Send this to a group chat
+        </button>
+        <div className="small" style={{ textAlign: 'center', marginTop: -4 }}>
+          Replies are 280 chars. The energy goes back into adding your own.
+        </div>
+      </div>
+      <NavBottom on="feed" />
+    </div>
+  );
+}
+
+function AddScreen() {
+  // The contribute screen — direct H2 retention play
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 28, paddingBottom: 90 }}>
+        <div className="col gap-6">
+          <span className="label">add a memory</span>
+          <div className="h1 serif">Came to you<br/>in the shower?</div>
+          <div className="meta">One sentence and a tag. We handle the year and the matching.</div>
+        </div>
+
+        <div className="card-postage">
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+            <span className="year-tag">YOUR YEAR · 1991</span>
+            <span className="stamp">writing</span>
+          </div>
+          <div style={{
+            fontFamily: 'Fraunces, serif', fontSize: 16, lineHeight: 1.5,
+            color: 'var(--ink)', minHeight: 80,
+          }}>
+            The way the school librarian whispered "<span style={{ background: 'rgba(201,136,90,0.22)' }}>shhhh</span>" but with a smile, like she was in on the joke|
+          </div>
+          <div className="row gap-6" style={{ flexWrap: 'wrap', marginTop: 12 }}>
+            <span className="chip on" style={{ fontSize: 10 }}>school</span>
+            <span className="chip" style={{ fontSize: 10 }}>+ year</span>
+            <span className="chip" style={{ fontSize: 10 }}>+ theme</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">prompts when you're stuck</span>
+          <div className="post-card-mini" style={{ borderLeftColor: 'var(--plum)' }}>
+            <span className="quote">"A smell from your childhood kitchen on a Sunday."</span>
+          </div>
+          <div className="post-card-mini" style={{ borderLeftColor: 'var(--plum)' }}>
+            <span className="quote">"A teacher's exact phrase."</span>
+          </div>
+          <div className="post-card-mini" style={{ borderLeftColor: 'var(--plum)' }}>
+            <span className="quote">"A song from one specific car ride."</span>
+          </div>
+        </div>
+
+        <button className="btn-primary">Drop it in</button>
+      </div>
+      <NavBottom on="post" />
+    </div>
+  );
+}
+
+function CohortsScreen() {
+  // Browse other cohorts — addresses dunkaroos exhaustion by widening fresh wells
+  const cohorts = [
+    { y: '1985', who: 'older sibling', n: '2.1k', hot: false },
+    { y: '1991', who: 'you', n: '4.7k', hot: true },
+    { y: '1998', who: 'younger cousin', n: '6.0k', hot: false },
+    { y: '2004', who: 'gen z cusps', n: '5.3k', hot: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 28, paddingBottom: 80 }}>
+        <div className="col gap-6">
+          <span className="label">browse other cohorts</span>
+          <div className="h1 serif">What your sister grew up inside.</div>
+          <div className="meta">Curious about what hit your older brother or younger cousin? Visit. Your home feed stays yours.</div>
+        </div>
+
+        <div className="col gap-8">
+          {cohorts.map(c => (
+            <div key={c.y} className="card" style={{
+              padding: '14px 16px',
+              background: c.hot ? 'rgba(138,74,60,0.08)' : 'var(--paper)',
+              border: c.hot ? '1px solid rgba(138,74,60,0.3)' : '1px solid var(--line)',
+            }}>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <div className="col" style={{ gap: 2 }}>
+                  <div className="row gap-8">
+                    <span className="serif" style={{ fontSize: 22, fontWeight: 600 }}>{c.y}</span>
+                    {c.hot && <span className="stamp" style={{ marginLeft: 4 }}>your home</span>}
+                  </div>
+                  <span className="small">{c.who} · {c.n} rememberers</span>
+                </div>
+                <span style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11, color: 'var(--ink-3)' }}>→</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="card" style={{ background: 'var(--plum)', color: 'var(--paper)', border: 'none' }}>
+          <div className="label" style={{ color: 'rgba(247,239,226,0.6)' }}>this week, across cohorts</div>
+          <div className="serif" style={{ fontSize: 17, lineHeight: 1.35, marginTop: 6, fontStyle: 'italic' }}>
+            "The specific exhaustion of unrolling a CRT TV cart in homeroom."
+          </div>
+          <div className="small" style={{ color: 'rgba(247,239,226,0.7)', marginTop: 8 }}>
+            1,847 felt it · spans 1979 — 2005
+          </div>
+        </div>
+      </div>
+      <NavBottom on="browse" />
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. A single torn postcard. No app icon, no badges — just the promise and a real memory under glass.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Birth year" caption="The first and most important question. Cohort, not account. A 1989 baby and a 2002 baby should not see the same Yore.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Pick your corners" caption="Themes, not interests. We bias the first feed toward the corners where a 1991 brain lights up hardest.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Drop one in" caption="Posting comes before scrolling. Directly attacks the H2 contribution risk: rememberers are made on day one, not month two.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Cohort feed" caption="Postcard cards, not posts. 'Felt it' counts replace likes. Resonance, not recency. The quiet stretch is a feature, not a bug.">
+        <FeedScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Card zoom" caption="Replies are 280 chars. The big button is 'Send to group chat' — H3 baked into the surface, sharing is the primary action, not commenting.">
+        <CardZoomScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Add memory" caption="Three shower-thought prompts on standby. Counters the dry-well risk — the feed earns its right to exist by making you produce, not just consume.">
+        <AddScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Other cohorts" caption="Visit, don't merge. Lets you peek at your older sister's 1985 without polluting your 1991. Widens the well without flattening the feed.">
+        <CohortsScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

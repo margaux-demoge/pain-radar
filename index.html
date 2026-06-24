@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Pain Radar · 45 app ideas</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F4ECDC;
+    --paper: #FAF6EE;
+    --paper-dim: #EFE7D5;
+    --rust: #A14B3A;
+    --ink: #2E2920;
+    --ink-2: #5C5448;
+    --ink-3: #8B8273;
+    --line: rgba(46, 41, 32, 0.12);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body { font-family: -apple-system, "SF Pro Text", "Inter", sans-serif; }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+
+  .hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 72px 32px 24px;
+  }
+  .hero-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 80px; letter-spacing: -0.02em;
+    line-height: 0.95; margin: 0 0 22px;
+  }
+  .hero-lede {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-style: italic; line-height: 1.5;
+    color: var(--ink-2); max-width: 760px; margin: 0 0 28px;
+  }
+  .hero-meta {
+    display: flex; gap: 22px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .hero-meta strong { color: var(--ink); font-weight: 600; }
+
+  .filters {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px 32px 8px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+    border-top: 1px solid var(--line); margin-top: 32px; padding-top: 28px;
+  }
+  .filter {
+    padding: 8px 16px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--paper);
+    font-size: 13px; cursor: pointer; user-select: none;
+    color: var(--ink-2);
+  }
+  .filter.active {
+    background: var(--rust); color: var(--paper); border-color: var(--rust);
+  }
+  .filter .count { opacity: 0.6; margin-left: 4px; }
+
+  .grid {
+    max-width: 1680px; margin: 0 auto;
+    padding: 24px 32px 96px;
+    display: grid; gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+  .card {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--paper); border-radius: 14px;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+  }
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(46,41,32,0.12);
+    border-color: rgba(46,41,32,0.22);
+  }
+  .card-thumb {
+    aspect-ratio: 7/9;
+    background: var(--paper-dim);
+    overflow: hidden;
+  }
+  .card-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .card-body { padding: 14px 16px 16px; }
+  .card-row { display: flex; justify-content: space-between; align-items: center; }
+  .card-app {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.005em;
+  }
+  .card-score {
+    color: white; font-size: 11px; font-weight: 700;
+    padding: 3px 9px; border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+  }
+  .card-typology {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--rust); font-weight: 600;
+    margin-top: 6px;
+  }
+  .card-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 13.5px; line-height: 1.45;
+    color: var(--ink-2); margin-top: 8px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 56px;
+  }
+  .card-verdicts {
+    margin-top: 12px; display: flex; gap: 6px;
+    font-size: 14px;
+  }
+
+  footer {
+    max-width: 1680px; margin: 0 auto;
+    padding: 24px 32px 64px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  footer a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-eyebrow">Pain Radar · v1</div>
+  <h1 class="serif">45 app ideas, mined and judged.</h1>
+  <p class="hero-lede">Scanned 13,737 Reddit posts across 29 subreddits over 90 days. Filtered to 1,878 complaint-shaped posts. Clustered into 45 themes. Each theme became a Phase 1 spec, then ran a gauntlet of 3 Amon judges. The protos below are sorted best to worst.</p>
+  <div class="hero-meta">
+    <span><strong>13,737</strong> posts scanned</span>
+    <span><strong>1,878</strong> complaint-shaped</span>
+    <span><strong>45</strong> spec stubs</span>
+    <span><strong>135</strong> judge verdicts (3 × 45)</span>
+  </div>
+</section>
+
+<div class="filters" id="filters">
+  <div class="filter active" data-typ="all">All <span class="count">45</span></div>
+  <div class="filter" data-typ="community-niche">Community as 10x <span class="count">5</span></div>
+  <div class="filter" data-typ="app-criticism">App criticism <span class="count">5</span></div>
+  <div class="filter" data-typ="daily-life">Daily life · emotional <span class="count">15</span></div>
+  <div class="filter" data-typ="community-trend">Community trend <span class="count">9</span></div>
+  <div class="filter" data-typ="relational">Relational <span class="count">11</span></div>
+</div>
+
+<div class="grid" id="grid">
+
+    <a class="card" href="./Loom/index.html" data-typology="community-niche" data-score="3">
+      <div class="card-thumb"><img src="_thumbs/Loom.jpg" alt="Loom" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Loom</div>
+          <div class="card-score" style="background: #2E8B57">3</div>
+        </div>
+        <div class="card-typology">Community as 10x</div>
+        <div class="card-tagline">Eyes on the piece before you've stitched another fifty rows. Post a WIP, get the tension and colour read, finish what you started.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · EMERGING">🟢</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Anchor/index.html" data-typology="relational" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Anchor.jpg" alt="Anchor" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Anchor</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">The app that catches the thought before the spiral. Tell Anchor what's looping in your head about your partner, and it walks you back to ground before you send the text you'll regret.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Beta/index.html" data-typology="community-niche" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Beta.jpg" alt="Beta" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Beta</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Community as 10x</div>
+        <div class="card-tagline">Someone watching you climb, every send. Film a 30-second attempt, get the wall read, learn the beta your body actually needs.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Cradle/index.html" data-typology="daily-life" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Cradle.jpg" alt="Cradle" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Cradle</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">A health plan that respects the fact you just had a baby. Cradle is the postpartum coach that lowers the bar on purpose, so you actually clear it.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Crest/index.html" data-typology="daily-life" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Crest.jpg" alt="Crest" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Crest</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">The plateau isn't the end of the story. Crest is the coach that meets you on the flat part of the curve and shows you what your body is actually doing when the scale stops moving.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Crumb/index.html" data-typology="community-niche" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Crumb.jpg" alt="Crumb" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Crumb</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Community as 10x</div>
+        <div class="card-tagline">A trained eye on every loaf you bake. Post your crumb, get diagnosed by bakers who have been there, learn faster than three months of guessing alone.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Even/index.html" data-typology="daily-life" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Even.jpg" alt="Even" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Even</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">The binge isn't the failure, the restriction is. Even tracks the loop you're actually in and helps you exit it from the front end, not the back.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Lex/index.html" data-typology="community-niche" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Lex.jpg" alt="Lex" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Lex</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Community as 10x</div>
+        <div class="card-tagline">A human on the other side, three times a week. Matched on language, level, and timezone, with the streak that keeps you both showing up.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Loop/index.html" data-typology="daily-life" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Loop.jpg" alt="Loop" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Loop</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Seven meals. That's your week. Loop helps you find the small set of meals you actually cook and rotate them on repeat, guilt-free.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Lull/index.html" data-typology="daily-life" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Lull.jpg" alt="Lull" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Lull</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">A bedtime routine that adapts to your kid, not the other way around. Lull learns what works in your house and stops you from white-knuckling the same broken routine every night.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Plate/index.html" data-typology="app-criticism" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Plate.jpg" alt="Plate" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Plate</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">App criticism</div>
+        <div class="card-tagline">Point your camera at your food, and it logs itself. Calorie tracking without the search bar, the database, or the gram-by-gram weighing.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Slate/index.html" data-typology="app-criticism" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Slate.jpg" alt="Slate" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Slate</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">App criticism</div>
+        <div class="card-tagline">The notes app that does one thing. No databases, no templates, no toggles, no AI. You write, you find it later, that's it.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Span/index.html" data-typology="relational" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Span.jpg" alt="Span" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Span</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">The shape of the time between visits. Span turns the gap of being apart into something you're building together, not just enduring.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Tether/index.html" data-typology="daily-life" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Tether.jpg" alt="Tether" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Tether</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Five minutes of you, fully there, counts. Tether helps you stitch together the small presence moments that actually build a kid who feels held.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Tide/index.html" data-typology="community-trend" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Tide.jpg" alt="Tide" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Tide</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">Today's mood, explained by where you are in your cycle. Log a feeling, see the pattern, stop wondering why you feel like this.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Tune/index.html" data-typology="community-trend" data-score="4">
+      <div class="card-thumb"><img src="_thumbs/Tune.jpg" alt="Tune" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Tune</div>
+          <div class="card-score" style="background: #2E8B57">4</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">The feeling under the feeling, named. Tune teaches you to read what's happening inside you before it leaks out everywhere else.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Ledger/index.html" data-typology="relational" data-score="5">
+      <div class="card-thumb"><img src="_thumbs/Ledger.jpg" alt="Ledger" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Ledger</div>
+          <div class="card-score" style="background: #C8923D">5</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">A private record of who's been carrying the relationship. Not to keep score, to stop pretending the scoring isn't already happening in your head.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · EMERGING">🟢</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Mirror/index.html" data-typology="community-trend" data-score="5">
+      <div class="card-thumb"><img src="_thumbs/Mirror.jpg" alt="Mirror" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Mirror</div>
+          <div class="card-score" style="background: #C8923D">5</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">The flaw you can't stop seeing isn't the one anyone else sees. Mirror catches the spiral, names what's happening, and gets you out before the day is gone.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · EMERGING">🟢</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Mull/index.html" data-typology="relational" data-score="5">
+      <div class="card-thumb"><img src="_thumbs/Mull.jpg" alt="Mull" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Mull</div>
+          <div class="card-score" style="background: #C8923D">5</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">A place to think honestly about whether this is the right person. Not a decision tool, a thinking tool, for the question you can't ask anyone you know.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · EMERGING">🟢</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Truce/index.html" data-typology="daily-life" data-score="5">
+      <div class="card-thumb"><img src="_thumbs/Truce.jpg" alt="Truce" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Truce</div>
+          <div class="card-score" style="background: #C8923D">5</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Is this actually a deal? Truce checks any price against its real history before you buy, so the word "sale" stops being able to lie to you.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Bare/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Bare.jpg" alt="Bare" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Bare</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Three products. That's your routine. Bare cuts through the skincare noise and tells you the smallest possible thing that will work for your skin.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Cue/index.html" data-typology="community-trend" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Cue.jpg" alt="Cue" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Cue</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">The conversation about sex you've been avoiding, broken into pieces small enough to actually have. Cue gives you and your partner a way in, one cue at a time.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Ember/index.html" data-typology="relational" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Ember.jpg" alt="Ember" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Ember</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">Proof you still love each other, even when it doesn't feel like it. Ember catches the small moments your brain forgets and shows you the relationship your feed-state can't see.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · EMERGING">🟢</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Hold/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Hold.jpg" alt="Hold" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Hold</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">The people you love deserve to be remembered. Hold makes sure the birthday, anniversary, and follow-up doesn't slip past you again.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Inlaw/index.html" data-typology="relational" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Inlaw.jpg" alt="Inlaw" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Inlaw</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">The family you didn't choose, navigated. Inlaw maps the politics, drafts the lines, and tracks the small wins that turn five years of tension into a stable peace.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Lean/index.html" data-typology="relational" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Lean.jpg" alt="Lean" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Lean</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">You know you push people away. You don't know how to stop in the moment. Lean catches the urge to bolt and asks one question that lets you stay.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Mend/index.html" data-typology="relational" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Mend.jpg" alt="Mend" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Mend</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">The bridge back when you've gone quiet on each other. Mend gives you the first sentence after the silence, so you don't have to invent it from scratch.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Norm/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Norm.jpg" alt="Norm" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Norm</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Is this a phase or a flag? Norm walks you through the behavior you're worried about and tells you, honestly, where it sits on the concern spectrum.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Orbit/index.html" data-typology="relational" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Orbit.jpg" alt="Orbit" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Orbit</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">One person can't be your whole world, even if you want them to be. Orbit is the gentle pressure that keeps the rest of your life alive when you're falling deep into one person.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Pare/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Pare.jpg" alt="Pare" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Pare</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Decide once, donate the rest. Pare walks you through your closet item by item and makes the keep/donate call feel light instead of heavy.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Plain/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Plain.jpg" alt="Plain" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Plain</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Eat like a normal person. Plain ignores the diet wars and gives you the simple eating rules your body actually needs.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Pulse/index.html" data-typology="relational" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Pulse.jpg" alt="Pulse" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Pulse</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">The conversation about sex you and your partner keep almost having. Pulse opens it, gently, with both of you in the room.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Range/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Range.jpg" alt="Range" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Range</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">Your kid is probably fine. Range shows you the real normal range for their age and tells you, honestly, when intervention actually helps.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Sprout/index.html" data-typology="community-niche" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Sprout.jpg" alt="Sprout" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Sprout</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Community as 10x</div>
+        <div class="card-tagline">A second opinion before the plant dies. Photo, conditions, diagnosis in under an hour, while there is still time to save it.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Sync/index.html" data-typology="app-criticism" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Sync.jpg" alt="Sync" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Sync</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">App criticism</div>
+        <div class="card-tagline">A dating app whose algorithm works for you, not against you. No artificial scarcity, no "boost to be seen," no shadow throttling. The matching logic is published.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · GRAVEYARD">🔴</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Tally/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Tally.jpg" alt="Tally" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Tally</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">One number. That's the whole app. Tally tells you how much you've spent this month and stops there, because the categories were never the point.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Tell/index.html" data-typology="community-trend" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Tell.jpg" alt="Tell" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Tell</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">The honest read on whether they like you back. Drop in what they did, what they said, how it felt, and Tell tells you what it actually means.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Tier/index.html" data-typology="app-criticism" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Tier.jpg" alt="Tier" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Tier</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">App criticism</div>
+        <div class="card-tagline">A dating app where the free version actually works. No paywalled likes, no hidden matches, no "upgrade to see who liked you." You pay only if you want to skip the queue.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · GRAVEYARD">🔴</span>
+          <span title="retention · STRUCTURAL_RETURN">🟢</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Voice/index.html" data-typology="community-trend" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Voice.jpg" alt="Voice" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Voice</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">The exact words for the thing you can't bring yourself to say. Tell Voice what's wrong and who it's with, get a script that sounds like you.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Worth/index.html" data-typology="daily-life" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Worth.jpg" alt="Worth" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Worth</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Daily life · emotional</div>
+        <div class="card-tagline">You don't owe a number on a scale your dating life. Worth is the coach that uncouples your value from your weight loss timeline.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · EMERGING">🟢</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Yore/index.html" data-typology="community-trend" data-score="6">
+      <div class="card-thumb"><img src="_thumbs/Yore.jpg" alt="Yore" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Yore</div>
+          <div class="card-score" style="background: #C8923D">6</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">The inside jokes only your generation gets, in one feed. Yore remembers the things you forgot you remembered.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · WEAK_ON_ASSUMPTIONS">🟡</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Cast/index.html" data-typology="community-trend" data-score="7">
+      <div class="card-thumb"><img src="_thumbs/Cast.jpg" alt="Cast" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Cast</div>
+          <div class="card-score" style="background: #A14B3A">7</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">The man, woman, or person you actually want to be. Cast helps you pick the traits, drop the ones that aren't yours, and live in the version that fits.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Held/index.html" data-typology="community-trend" data-score="7">
+      <div class="card-thumb"><img src="_thumbs/Held.jpg" alt="Held" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Held</div>
+          <div class="card-score" style="background: #A14B3A">7</div>
+        </div>
+        <div class="card-typology">Community trend</div>
+        <div class="card-tagline">Touch is a basic human need, and nobody talks about not getting any. Held finds the people near you who are missing it too, and gets you in a room together.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Compass/index.html" data-typology="relational" data-score="8">
+      <div class="card-thumb"><img src="_thumbs/Compass.jpg" alt="Compass" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Compass</div>
+          <div class="card-score" style="background: #A14B3A">8</div>
+        </div>
+        <div class="card-typology">Relational</div>
+        <div class="card-tagline">The map between cold feet and real incompatibility. Compass tells you which differences are growth edges and which ones are the door.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · CROWDED_SPACE">🟡</span>
+          <span title="retention · NO_RETURN">🔴</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+
+    <a class="card" href="./Prose/index.html" data-typology="app-criticism" data-score="8">
+      <div class="card-thumb"><img src="_thumbs/Prose.jpg" alt="Prose" loading="lazy" /></div>
+      <div class="card-body">
+        <div class="card-row">
+          <div class="card-app">Prose</div>
+          <div class="card-score" style="background: #A14B3A">8</div>
+        </div>
+        <div class="card-typology">App criticism</div>
+        <div class="card-tagline">Dating that starts with what you wrote, not how you look. Photos are blurred until you have exchanged real messages. You judge each other on words first.</div>
+        <div class="card-verdicts">
+          <span title="benchmark · GRAVEYARD">🔴</span>
+          <span title="retention · WEAK_RETURN">🟡</span>
+          <span title="interview · BUILT_ON_SAND">🔴</span>
+        </div>
+      </div>
+    </a>
+</div>
+
+<footer>
+  Pain Radar · generated by Amon Studio pipeline · taglines from spec.md, judge verdicts from benchmark-scanner · retention-validator · user-interview-simulator. Score = sum of severities, lower is better.
+</footer>
+
+<script>
+const filters = document.querySelectorAll('.filter');
+const cards = document.querySelectorAll('.card');
+filters.forEach(f => {
+  f.addEventListener('click', () => {
+    filters.forEach(x => x.classList.remove('active'));
+    f.classList.add('active');
+    const typ = f.dataset.typ;
+    cards.forEach(c => {
+      c.style.display = (typ === 'all' || c.dataset.typology === typ) ? '' : 'none';
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Hold · Pain Radar proto 24/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F1EDE4;
+    --paper: #F8F4EB;
+    --paper-dim: #ECE6D8;
+    --rust: #34625C;        /* deep teal accent (calming) */
+    --rust-soft: rgba(52, 98, 92, 0.12);
+    --rust-dim: #6A8E89;
+    --rose: #B47A6A;        /* dusty rose for warm moments */
+    --ink: #2A2C2A;
+    --ink-2: #565956;
+    --ink-3: #878A85;
+    --line: rgba(42, 44, 42, 0.12);
+    --line-strong: rgba(42, 44, 42, 0.22);
+    --sage: #DCE3D5;
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(241, 237, 228, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App scoped */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative;}
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rust); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--rust); color: var(--paper);
+    border-color: var(--rust);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--rust); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--rust); margin-top: 2px; }
+
+  /* Avatar — type-driven, no photos */
+  #app .avatar {
+    width: 44px; height: 44px; border-radius: 999px;
+    display: grid; place-items: center;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 17px;
+    color: var(--paper); flex-shrink: 0;
+  }
+  #app .avatar.lg { width: 64px; height: 64px; font-size: 24px; }
+  #app .avatar.sm { width: 32px; height: 32px; font-size: 13px; }
+  #app .avatar.a1 { background: #6A8E89; }
+  #app .avatar.a2 { background: #B47A6A; }
+  #app .avatar.a3 { background: #8C9A77; }
+  #app .avatar.a4 { background: #C49A6C; }
+  #app .avatar.a5 { background: #7B8AA6; }
+  #app .avatar.a6 { background: #5C6E5A; }
+  #app .avatar.a7 { background: #A07E92; }
+
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; padding: 14px;
+  }
+  #app .card-warm {
+    background: linear-gradient(180deg, #F4ECD8 0%, #ECE0C8 100%);
+    border: 1px solid rgba(180, 122, 106, 0.2);
+    border-radius: 18px; padding: 16px;
+  }
+  #app .tag-grief {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 6px;
+    background: rgba(180, 122, 106, 0.14);
+    color: var(--rose);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">24 / 45 — Hold</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Ember/index.html" title="Previous: Ember">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Inlaw/index.html" title="Next: Inlaw">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Relational memory · the warm-but-disorganized</div>
+  <h1 class="page-title serif">Hold</h1>
+  <p class="page-tagline serif">The people you love deserve to be remembered. Hold makes sure the birthday, anniversary, and follow-up doesn't slip past you again.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven mockups, no photography.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Hold/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const Ico = {
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  people: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="7" cy="7" r="2.5" stroke="currentColor" strokeWidth="1.5"/><circle cx="14" cy="8" r="2" stroke="currentColor" strokeWidth="1.5"/><path d="M2 17c0-3 2-5 5-5s5 2 5 5 M12 17c0-2 1.5-3.5 3.5-3.5S19 15 19 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  add: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.5"/><path d="M11 7v8 M7 11h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  bell: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11h8M5 11V6a2 2 0 014 0v5M6.5 13h1" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/></svg>,
+  check: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  heart: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 10S1.5 7.5 1.5 4.5A2.5 2.5 0 016 3a2.5 2.5 0 014.5 1.5C10.5 7.5 6 10 6 10z" stroke="currentColor" strokeWidth="1.3" fill="none"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Today', icon: Ico.home },
+    { id: 'people', label: 'People', icon: Ico.people },
+    { id: 'add', label: '', icon: Ico.add },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------- 01. HERO ----------------
+function HeroScreen() {
+  return (
+    <div className="scr col" style={{ padding: '70px 28px 0', height: '100%', justifyContent: 'space-between' }}>
+      <div className="col gap-16" style={{ marginTop: 32 }}>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 13,
+          color: 'var(--rust)', letterSpacing: '0.04em' }}>
+          for the warm-but-disorganized
+        </div>
+        <div className="h1 serif" style={{ fontSize: 60, lineHeight: 0.95, letterSpacing: '-0.02em' }}>
+          Hold
+        </div>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+          fontSize: 20, lineHeight: 1.45, color: 'var(--ink-2)', marginTop: 12, maxWidth: 300 }}>
+          The people you love<br/>deserve to be<br/>remembered.
+        </div>
+      </div>
+
+      {/* Soft visual — concentric arcs as "rings of relationships" */}
+      <div style={{ position: 'relative', height: 240, margin: '0 -28px' }}>
+        <svg viewBox="0 0 360 240" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}>
+          <defs>
+            <radialGradient id="rg" cx="50%" cy="60%" r="60%">
+              <stop offset="0%" stopColor="#34625C" stopOpacity="0.18"/>
+              <stop offset="100%" stopColor="#34625C" stopOpacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="180" cy="170" r="140" fill="url(#rg)"/>
+          <circle cx="180" cy="170" r="40" fill="none" stroke="#34625C" strokeWidth="0.6" opacity="0.4"/>
+          <circle cx="180" cy="170" r="70" fill="none" stroke="#34625C" strokeWidth="0.6" opacity="0.3"/>
+          <circle cx="180" cy="170" r="105" fill="none" stroke="#34625C" strokeWidth="0.6" opacity="0.22"/>
+          <circle cx="180" cy="170" r="145" fill="none" stroke="#34625C" strokeWidth="0.6" opacity="0.14"/>
+          {/* small dots representing people */}
+          <circle cx="180" cy="130" r="5" fill="#B47A6A"/>
+          <circle cx="220" cy="155" r="4" fill="#6A8E89"/>
+          <circle cx="148" cy="160" r="4" fill="#8C9A77"/>
+          <circle cx="225" cy="200" r="3.5" fill="#C49A6C"/>
+          <circle cx="135" cy="200" r="3.5" fill="#7B8AA6"/>
+          <circle cx="260" cy="135" r="3" fill="#A07E92"/>
+          <circle cx="100" cy="140" r="3" fill="#5C6E5A"/>
+        </svg>
+      </div>
+
+      <div className="col gap-12" style={{ paddingBottom: 48 }}>
+        <button className="btn-primary">Start with one person</button>
+        <div className="small" style={{ textAlign: 'center' }}>No CRM. No streaks. Just remembering.</div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 02. ONBOARDING — Pick a person ----------------
+function Onb1Screen() {
+  const people = [
+    { name: 'Mom', sub: 'Birthday · March 14', a: 'a2' },
+    { name: 'Léa', sub: 'Best friend · NYC', a: 'a1' },
+    { name: 'Dad', sub: 'Birthday · Nov 2', a: 'a4' },
+    { name: 'Tom', sub: 'Brother · Lyon', a: 'a3' },
+    { name: 'Nora', sub: 'Anniversary · June 8', a: 'a7' },
+    { name: 'Sam', sub: 'College friend', a: 'a5' },
+  ];
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad" style={{ paddingTop: 24, paddingBottom: 8 }}>
+        <div className="small">Step 1 of 3</div>
+        <div className="h2 serif" style={{ marginTop: 10 }}>Start with one person<br/>you keep forgetting.</div>
+        <div className="meta" style={{ marginTop: 10, lineHeight: 1.5 }}>
+          We pulled a few from your contacts. Pick one — you can add more later.
+        </div>
+      </div>
+      <div className="pad col gap-8" style={{ marginTop: 18, flex: 1 }}>
+        {people.map((p, i) => (
+          <div key={p.name} className="row" style={{
+            padding: '12px 14px', borderRadius: 14,
+            background: i === 1 ? 'var(--rust-soft)' : 'var(--paper-dim)',
+            border: i === 1 ? '1px solid var(--rust)' : '1px solid var(--line)',
+            gap: 12,
+          }}>
+            <div className={`avatar ${p.a}`}>{p.name[0]}</div>
+            <div className="col" style={{ flex: 1 }}>
+              <div style={{ fontSize: 15, fontWeight: 500 }}>{p.name}</div>
+              <div className="small" style={{ marginTop: 2 }}>{p.sub}</div>
+            </div>
+            {i === 1 && <div style={{ color: 'var(--rust)' }}>{Ico.check}</div>}
+          </div>
+        ))}
+      </div>
+      <div className="pad" style={{ paddingBottom: 24 }}>
+        <button className="btn-primary">Continue with Léa</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 03. ONBOARDING — Add the dates ----------------
+function Onb2Screen() {
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="small">Step 2 of 3 · Léa</div>
+        <div className="h2 serif" style={{ marginTop: 10 }}>What should I keep<br/>an eye on?</div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 22 }}>
+        <div className="field">
+          <div className="field-label">Birthday</div>
+          <div className="field-value">April 22</div>
+        </div>
+        <div className="field">
+          <div className="field-label">Last gesture</div>
+          <div className="field-value" style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: 'var(--ink-2)' }}>
+            voice note from the train, May '25
+          </div>
+        </div>
+        <div className="field">
+          <div className="field-label">Anything else? (optional)</div>
+          <div className="field-value" style={{ color: 'var(--ink-3)', fontSize: 13 }}>
+            e.g. "her mom's cancer scan, every October"
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{ marginTop: 6 }}>
+          <div className="label">Suggest from the past</div>
+          <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+            <span className="chip">+ Friendship-versary</span>
+            <span className="chip">+ Annual checkup</span>
+            <span className="chip">+ Move-in date</span>
+          </div>
+        </div>
+      </div>
+      <div style={{ flex: 1 }} />
+      <div className="pad" style={{ paddingBottom: 24 }}>
+        <button className="btn-primary">Save Léa</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 10 }}>
+          One date is enough to start.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 04. ONBOARDING — When to ping ----------------
+function Onb3Screen() {
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="small">Step 3 of 3</div>
+        <div className="h2 serif" style={{ marginTop: 10 }}>When should Hold<br/>tap you?</div>
+        <div className="meta" style={{ marginTop: 10, lineHeight: 1.5 }}>
+          Not on the day. Early enough to do something about it.
+        </div>
+      </div>
+      <div className="pad col gap-10" style={{ marginTop: 24 }}>
+        {[
+          { d: '1 day before', sub: 'Frantic. You\'ll text "happy birthday."' },
+          { d: '3 days before', sub: 'Enough time for a thought. Recommended.', on: true },
+          { d: '1 week before', sub: 'For gifts that need shipping.' },
+          { d: 'Morning of', sub: 'You\'ll forget. That\'s why you\'re here.' },
+        ].map(o => (
+          <div key={o.d} className="col" style={{
+            padding: '14px 16px', borderRadius: 14,
+            background: o.on ? 'var(--rust-soft)' : 'var(--paper-dim)',
+            border: o.on ? '1.5px solid var(--rust)' : '1px solid var(--line)',
+            gap: 4,
+          }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div style={{ fontSize: 15, fontWeight: 600, color: o.on ? 'var(--rust)' : 'var(--ink)' }}>{o.d}</div>
+              {o.on && <div style={{ color: 'var(--rust)' }}>{Ico.check}</div>}
+            </div>
+            <div className="small" style={{ fontStyle: o.on ? 'normal' : 'italic' }}>{o.sub}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ flex: 1 }} />
+      <div className="pad" style={{ paddingBottom: 24 }}>
+        <button className="btn-primary">That's it. I'm in.</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 05. CORE — The ping (3 days before) ----------------
+function CorePingScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="row gap-8" style={{ alignItems: 'center' }}>
+          <div style={{ color: 'var(--rust)' }}>{Ico.bell}</div>
+          <div className="label" style={{ color: 'var(--rust)' }}>3 days from now · Saturday</div>
+        </div>
+        <div className="h2 serif" style={{ marginTop: 14, fontSize: 26, lineHeight: 1.2 }}>
+          Sara's birthday is Saturday.
+        </div>
+      </div>
+
+      <div className="pad" style={{ marginTop: 18 }}>
+        <div className="card-warm col gap-10">
+          <div className="row gap-10">
+            <div className="avatar a2">S</div>
+            <div className="col" style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Sara Mendez · turning 33</div>
+              <div className="small">You've remembered her birthday 4 years running.</div>
+            </div>
+          </div>
+          <div className="divider" style={{ background: 'rgba(180,122,106,0.25)' }}/>
+          <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+            fontSize: 15, lineHeight: 1.5, color: 'var(--ink)' }}>
+            "Last year you sent her a voice note from the train —<br/>she replied <span style={{ color: 'var(--rose)' }}>this made my week</span>."
+          </div>
+        </div>
+      </div>
+
+      <div className="pad col gap-8" style={{ marginTop: 18 }}>
+        <div className="label">What feels right this time?</div>
+        <div className="col gap-8" style={{ marginTop: 6 }}>
+          <div className="row gap-10" style={{
+            padding: '12px 14px', borderRadius: 12,
+            background: 'var(--paper-dim)', border: '1px solid var(--line)',
+          }}>
+            <div style={{ fontSize: 18 }}>🎙</div>
+            <div style={{ fontSize: 14, flex: 1 }}>Another voice note</div>
+            <div className="small">7 min</div>
+          </div>
+          <div className="row gap-10" style={{
+            padding: '12px 14px', borderRadius: 12,
+            background: 'var(--paper-dim)', border: '1px solid var(--line)',
+          }}>
+            <div style={{ fontSize: 18 }}>📮</div>
+            <div style={{ fontSize: 14, flex: 1 }}>Order a card — arrives Friday</div>
+            <div className="small">via Papier</div>
+          </div>
+          <div className="row gap-10" style={{
+            padding: '12px 14px', borderRadius: 12,
+            background: 'var(--paper-dim)', border: '1px solid var(--line)',
+          }}>
+            <div style={{ fontSize: 18 }}>✏️</div>
+            <div style={{ fontSize: 14, flex: 1 }}>I'll do my own thing</div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <div className="pad" style={{ paddingBottom: 88 }}>
+        <div className="small" style={{ textAlign: 'center' }}>Snooze 24h · Already done it</div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// ---------------- 06. CORE — Person page (the log) ----------------
+function CorePersonScreen() {
+  const log = [
+    { date: 'May 18, 2025', what: 'Voice note from the train', resp: '"this made my week"', emoji: '🎙' },
+    { date: 'Jan 3, 2025', what: 'Sent photo of her plant', resp: 'sent 3 plant photos back', emoji: '🪴' },
+    { date: 'Dec 24, 2024', what: 'Checked in after the move', resp: 'long call, 47 min', emoji: '📞' },
+    { date: 'May 18, 2024', what: 'Handwritten card', resp: '"crying at my desk"', emoji: '✉️' },
+  ];
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad" style={{ paddingTop: 22 }}>
+        <div className="small" style={{ color: 'var(--rust)' }}>‹ People</div>
+      </div>
+      <div className="pad row gap-14" style={{ marginTop: 14 }}>
+        <div className="avatar lg a2">S</div>
+        <div className="col" style={{ flex: 1 }}>
+          <div className="h2 serif" style={{ fontSize: 22 }}>Sara Mendez</div>
+          <div className="small" style={{ marginTop: 3 }}>Best friend since 2014 · Madrid</div>
+        </div>
+      </div>
+
+      <div className="pad row gap-8" style={{ marginTop: 16, flexWrap: 'wrap' }}>
+        <div className="chip" style={{ background: 'var(--rust-soft)', borderColor: 'transparent', color: 'var(--rust)', fontWeight: 600 }}>
+          🎂 May 21
+        </div>
+        <div className="chip">📞 Last spoke 11 days ago</div>
+      </div>
+
+      <div className="pad" style={{ marginTop: 22 }}>
+        <div className="label" style={{ marginBottom: 10 }}>What you've done</div>
+        <div className="col gap-10">
+          {log.map(l => (
+            <div key={l.date} className="row gap-12" style={{
+              padding: '10px 12px', borderRadius: 12,
+              background: 'var(--paper)', border: '1px solid var(--line)',
+            }}>
+              <div style={{ fontSize: 20, lineHeight: 1 }}>{l.emoji}</div>
+              <div className="col" style={{ flex: 1, gap: 2 }}>
+                <div style={{ fontSize: 13, fontWeight: 500 }}>{l.what}</div>
+                <div style={{ fontSize: 11, color: 'var(--ink-3)', fontStyle: 'italic' }}>{l.resp}</div>
+              </div>
+              <div className="small" style={{ fontVariantNumeric: 'tabular-nums' }}>{l.date.split(',')[0]}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ flex: 1 }} />
+      <NavBar active="people" />
+    </div>
+  );
+}
+
+// ---------------- 07. CORE — Asymmetric (grief / illness) ----------------
+function CoreAsymScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="row gap-8" style={{ alignItems: 'center' }}>
+          <div style={{ color: 'var(--rose)' }}>{Ico.bell}</div>
+          <div className="label" style={{ color: 'var(--rose)' }}>Tomorrow · the harder kind</div>
+        </div>
+        <div className="h2 serif" style={{ marginTop: 14, fontSize: 24, lineHeight: 1.25 }}>
+          One year since David's dad<br/>passed away.
+        </div>
+      </div>
+
+      <div className="pad" style={{ marginTop: 18 }}>
+        <div className="card col gap-10" style={{
+          background: 'var(--paper-dim)',
+          borderColor: 'rgba(180, 122, 106, 0.3)',
+        }}>
+          <div className="row gap-10">
+            <div className="avatar a5">D</div>
+            <div className="col" style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>David Park</div>
+              <div className="small">You added this on Sept 4, 2025.</div>
+            </div>
+            <span className="tag-grief">Private</span>
+          </div>
+          <div className="divider"/>
+          <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+            fontSize: 14, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            Your note: "he'll pretend he's fine. text him on the day, not the day after."
+          </div>
+        </div>
+      </div>
+
+      <div className="pad col gap-10" style={{ marginTop: 18 }}>
+        <div className="label">A small thing, nothing big</div>
+        <div className="col gap-8" style={{ marginTop: 4 }}>
+          <div className="card" style={{ padding: '12px 14px' }}>
+            <div style={{ fontSize: 13, lineHeight: 1.5, fontFamily: 'Newsreader, serif' }}>
+              "Thinking of you and your dad tomorrow. No need to write back."
+            </div>
+            <div className="small" style={{ marginTop: 8, color: 'var(--rust)' }}>Send · or edit first</div>
+          </div>
+          <div className="card" style={{ padding: '12px 14px' }}>
+            <div style={{ fontSize: 13, lineHeight: 1.5, fontFamily: 'Newsreader, serif' }}>
+              "Free for a walk this week?"
+            </div>
+            <div className="small" style={{ marginTop: 8, color: 'var(--rust)' }}>Send · or edit first</div>
+          </div>
+        </div>
+        <div className="small" style={{ marginTop: 8, lineHeight: 1.5, fontStyle: 'italic', color: 'var(--ink-3)' }}>
+          Hold never tells David you used an app.<br/>It's between you and him.
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// ---------------- 08. CORE — People view (the calendar of humans) ----------------
+function CorePeopleScreen() {
+  const this_week = [
+    { name: 'Sara Mendez', when: 'Sat · 3 days', what: '🎂 Birthday · 33', a: 'a2', urgent: true },
+    { name: 'Mom', when: 'Sun · 4 days', what: '📞 Weekly call', a: 'a3' },
+  ];
+  const this_month = [
+    { name: 'Léa Bertrand', when: 'Apr 22', what: '🎂 Birthday · 30', a: 'a1' },
+    { name: 'David Park', when: 'Apr 11', what: '🕊 Dad — 1 year', a: 'a5', tag: 'grief' },
+    { name: 'Nora & Tom', when: 'Apr 28', what: '💍 5 years', a: 'a7' },
+    { name: 'Jules', when: 'Apr 30', what: '🩺 Surgery follow-up', a: 'a4', tag: 'care' },
+  ];
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="small" style={{ color: 'var(--ink-3)' }}>April 2026</div>
+        <div className="h2 serif" style={{ marginTop: 6, fontSize: 26 }}>
+          12 people<br/>this month.
+        </div>
+      </div>
+
+      <div className="pad" style={{ marginTop: 22 }}>
+        <div className="label" style={{ marginBottom: 10, color: 'var(--rust)' }}>This week</div>
+        <div className="col gap-8">
+          {this_week.map(p => (
+            <div key={p.name} className="row gap-10" style={{
+              padding: '11px 12px', borderRadius: 12,
+              background: p.urgent ? 'var(--rust-soft)' : 'var(--paper)',
+              border: '1px solid var(--line)',
+            }}>
+              <div className={`avatar sm ${p.a}`}>{p.name[0]}</div>
+              <div className="col" style={{ flex: 1, gap: 2 }}>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{p.name}</div>
+                <div className="small">{p.what}</div>
+              </div>
+              <div className="small" style={{ fontWeight: 600, color: p.urgent ? 'var(--rust)' : 'var(--ink-3)' }}>{p.when}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="pad" style={{ marginTop: 18 }}>
+        <div className="label" style={{ marginBottom: 10 }}>Later this month</div>
+        <div className="col gap-8">
+          {this_month.map(p => (
+            <div key={p.name} className="row gap-10" style={{
+              padding: '11px 12px', borderRadius: 12,
+              background: 'var(--paper)',
+              border: '1px solid var(--line)',
+            }}>
+              <div className={`avatar sm ${p.a}`}>{p.name[0]}</div>
+              <div className="col" style={{ flex: 1, gap: 2 }}>
+                <div className="row gap-6" style={{ alignItems: 'center' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600 }}>{p.name}</div>
+                  {p.tag === 'grief' && <span className="tag-grief">grief</span>}
+                  {p.tag === 'care' && <span className="tag-grief" style={{ background: 'rgba(106,142,137,0.16)', color: 'var(--rust)' }}>care</span>}
+                </div>
+                <div className="small">{p.what}</div>
+              </div>
+              <div className="small" style={{ fontWeight: 500 }}>{p.when}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <NavBar active="people" />
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Concentric rings, not a contact list — Hold is about depth of attention, not breadth. No streaks, no CRM language.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="One person first" caption="Defuses the data-entry assumption. Pick one person you keep forgetting — the rest can wait until the app has proven anything.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="A date and a memory" caption="One date, one memory of the last gesture. The log starts with what you bring, not what the LLM guesses.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Three days before" caption="The whole product is in this choice. Hold defaults to 3-days-out and names why same-day is the wrong answer.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The 3-day ping" caption="The suggested action references your own past gesture, not a generic template. The line in italics is verbatim from her reply last year.">
+        <CorePingScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Person page" caption="A quiet record of the relationship, made of small acts. The reason to open Hold between pings is to scroll back through what's already there.">
+        <CorePersonScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="The harder kind" caption="Asymmetric reminders handled with care. The note you wrote yourself shows up, the suggested message is short, and Hold names the surveillance fear out loud.">
+        <CoreAsymScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="People, not events" caption="The whole month at a glance — people, not events. Grief and care get their own quiet tags. This is the home screen between pings.">
+        <CorePeopleScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

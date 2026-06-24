@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Lean · Pain Radar proto 26/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EDE6E0;
+    --paper: #F4EFEA;
+    --paper-dim: #E4DBD3;
+    --accent: #5E6E64;        /* sage */
+    --accent-soft: rgba(94, 110, 100, 0.12);
+    --accent-dim: #8AA194;
+    --rose: #B07A77;          /* dusty rose */
+    --rose-soft: rgba(176, 122, 119, 0.14);
+    --ink: #29282A;
+    --ink-2: #5A565A;
+    --ink-3: #8A8588;
+    --line: rgba(41, 40, 42, 0.10);
+    --line-strong: rgba(41, 40, 42, 0.20);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(237, 230, 224, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rose); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rose); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rose-soft); color: var(--rose);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 24px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 30px; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  #app .quiet { color: var(--ink-3); font-size: 12px; letter-spacing: 0.04em; }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--accent); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .btn-ghost {
+    background: transparent; color: var(--ink-2);
+    padding: 10px 14px; font-weight: 500; font-size: 13px;
+    border: none; cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .chip {
+    padding: 9px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+    cursor: pointer;
+  }
+  #app .chip.on {
+    background: var(--accent); color: var(--paper);
+    border-color: var(--accent);
+  }
+  #app .chip.rose.on { background: var(--rose); border-color: var(--rose); }
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .card-dim {
+    background: var(--paper-dim); border: 1px solid var(--line);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--accent); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--accent); margin-top: 2px; }
+
+  /* The Lean "breath ring" — slow expanding circle on hero */
+  #app .ring {
+    width: 220px; height: 220px; border-radius: 50%;
+    border: 1px solid var(--accent-dim);
+    display: grid; place-items: center;
+    position: relative;
+  }
+  #app .ring:before, #app .ring:after {
+    content: ""; position: absolute; inset: -22px;
+    border-radius: 50%;
+    border: 1px solid var(--accent-soft);
+  }
+  #app .ring:after { inset: -44px; border-color: rgba(94,110,100,0.06); }
+
+  /* Receipt list line */
+  #app .receipt {
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 14px 0; border-bottom: 1px solid var(--line);
+  }
+  #app .receipt .date {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; color: var(--rose); font-size: 13px;
+  }
+  #app .receipt .what {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 16px; color: var(--ink); line-height: 1.35;
+  }
+  #app .receipt .tag {
+    font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em;
+  }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">26 / 45 — Lean</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Inlaw/index.html" title="Previous: Inlaw">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Mend/index.html" title="Next: Mend">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Behaviour-change · pattern interrupt for avoidants</div>
+  <h1 class="page-title serif">Lean</h1>
+  <p class="page-tagline serif">You know you push people away. You don't know how to stop in the moment. Lean catches the urge to bolt and asks one question that lets you stay.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven Phase 1 prototype, no photographs.
+  See <a href="../../Apps/_radar/Lean/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Icons ----------------
+const Ico = {
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  pulse: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10h3l2-5 3 10 2-6 2 3h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  book: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 4h6a3 3 0 013 3v10H6a2 2 0 01-2-2V4z M16 4h-3a3 3 0 00-3 3v10h4a2 2 0 002-2V4z" stroke="currentColor" strokeWidth="1.4"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  alert: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="1.5"/><path d="M11 7v5 M11 14.5v.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  check: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7l3 3 5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Now', icon: Ico.home },
+    { id: 'pulse', label: 'Receipts', icon: Ico.pulse },
+    { id: 'book', label: 'Patterns', icon: Ico.book },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={'nav-item ' + (active === it.id ? 'on' : '')}>
+          {it.icon}
+          <span>{it.label}</span>
+          {active === it.id && <div className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{ paddingTop: 80, height: '100%', boxSizing: 'border-box' }}>
+        <div className="label" style={{ color: 'var(--rose)' }}>Lean</div>
+        <div style={{ height: 24 }} />
+        <div className="h1 serif" style={{ fontSize: 32, lineHeight: 1.15 }}>
+          The eight seconds<br/>
+          <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>before you bolt.</span>
+        </div>
+        <div style={{ height: 18 }} />
+        <div style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--ink-2)', fontFamily: '"Newsreader", Georgia, serif' }}>
+          You've done the reading. You know the pattern. Lean is the hand on your shoulder in the moment it actually matters.
+        </div>
+        <div style={{ flex: 1 }} />
+        <div className="row" style={{ justifyContent: 'center', marginBottom: 28 }}>
+          <div className="ring">
+            <div className="serif" style={{ fontStyle: 'italic', fontSize: 16, color: 'var(--accent)', textAlign: 'center', lineHeight: 1.4 }}>
+              breathe.<br/>stay.
+            </div>
+          </div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <button className="btn-primary">I'm ready to stop bolting</button>
+        <button className="btn-ghost" style={{ marginTop: 6 }}>I want to know more first</button>
+        <div style={{ height: 18 }} />
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // Pattern triggers — pick yours
+  const triggers = [
+    { t: "She sends a long emotional text", on: true },
+    { t: "He asks where this is going", on: true },
+    { t: "Plans get made more than a week ahead", on: false },
+    { t: "I'm asked to meet their friends/family", on: true },
+    { t: "Sex got too tender, not playful", on: false },
+    { t: "They say 'I love you' first", on: false },
+    { t: "A fight feels unresolved overnight", on: true },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label">Step 1 of 3 · Your triggers</div>
+          <div className="h2 serif">When does the urge to pull away usually hit?</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5, fontFamily: '"Newsreader", Georgia, serif', fontStyle: 'italic' }}>
+            Pick the ones that feel like yours. You can edit these later — most people add one after the first time it happens.
+          </div>
+        </div>
+        <div className="col gap-8">
+          {triggers.map((tr, i) => (
+            <div key={i} className={'chip ' + (tr.on ? 'on' : '')} style={{ textAlign: 'left' }}>
+              <span style={{ marginRight: 8 }}>{tr.on ? '✓' : '○'}</span>{tr.t}
+            </div>
+          ))}
+          <div className="chip" style={{ textAlign: 'left', color: 'var(--ink-3)' }}>+ Add your own</div>
+        </div>
+        <div style={{ height: 4 }} />
+        <button className="btn-primary">Continue — 4 picked</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  const moves = [
+    { t: "Go cold for a few days", on: true },
+    { t: "Pick a small fight", on: true },
+    { t: "Ghost a thread mid-conversation", on: true },
+    { t: "Withdraw affection (no touch, no warmth)", on: false },
+    { t: "Suddenly need 'space'", on: true },
+    { t: "Sleep with someone else", on: false },
+    { t: "Quietly start lining up an exit", on: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label">Step 2 of 3 · Your moves</div>
+          <div className="h2 serif">And what do you tend to do?</div>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5, fontFamily: '"Newsreader", Georgia, serif', fontStyle: 'italic' }}>
+            Be honest. Nothing here goes anywhere — this stays on your phone. Lean uses it to ask better questions in the moment.
+          </div>
+        </div>
+        <div className="col gap-8">
+          {moves.map((m, i) => (
+            <div key={i} className={'chip rose ' + (m.on ? 'on' : '')} style={{ textAlign: 'left' }}>
+              <span style={{ marginRight: 8 }}>{m.on ? '✓' : '○'}</span>{m.t}
+            </div>
+          ))}
+        </div>
+        <div className="card-dim" style={{ background: 'var(--accent-soft)', borderColor: 'transparent' }}>
+          <div className="label" style={{ color: 'var(--accent)' }}>Lean's promise</div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--ink-2)', marginTop: 6, fontFamily: '"Newsreader", Georgia, serif' }}>
+            Co-conspirator, not therapist. Lean never tells you what to feel. It just slows the eight seconds.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label">Step 3 of 3 · The cue</div>
+          <div className="h2 serif">When the urge hits, what's the easiest way to get to Lean?</div>
+        </div>
+        <div className="col gap-12">
+          <div className="card" style={{ borderColor: 'var(--accent)', boxShadow: '0 0 0 3px var(--accent-soft)' }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="col">
+                <div style={{ fontSize: 15, fontWeight: 600 }}>Home-screen widget</div>
+                <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>One tap. No icon to find.</div>
+              </div>
+              <div style={{ width: 22, height: 22, borderRadius: 999, background: 'var(--accent)', color: 'var(--paper)', display: 'grid', placeItems: 'center' }}>{Ico.check}</div>
+            </div>
+          </div>
+          <div className="card">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="col">
+                <div style={{ fontSize: 15, fontWeight: 600 }}>Lock-screen shortcut</div>
+                <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>Long-press → "Lean: I want to bolt"</div>
+              </div>
+              <div style={{ width: 22, height: 22, borderRadius: 999, border: '1.5px solid var(--line-strong)' }} />
+            </div>
+          </div>
+          <div className="card">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="col">
+                <div style={{ fontSize: 15, fontWeight: 600 }}>Quiet check-in, 48h after a trigger</div>
+                <div style={{ fontSize: 12, color: 'var(--ink-3)', marginTop: 2 }}>One nudge. Not a streak, not a guilt-trip.</div>
+              </div>
+              <div style={{ width: 22, height: 22, borderRadius: 999, background: 'var(--accent)', color: 'var(--paper)', display: 'grid', placeItems: 'center' }}>{Ico.check}</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ fontSize: 12, lineHeight: 1.5, color: 'var(--ink-3)', fontStyle: 'italic', fontFamily: '"Newsreader", Georgia, serif' }}>
+          We know you might avoid the app at the exact moment it matters. The widget is the cheapest way past that.
+        </div>
+        <button className="btn-primary">Set up the widget</button>
+      </div>
+    </div>
+  );
+}
+
+// Core 1 — Tag the urge
+function CoreTagScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--rose)' }}>Right now · Tuesday 21:43</div>
+          <div className="h2 serif" style={{ fontSize: 24 }}>What just happened?</div>
+        </div>
+        <div className="card-dim">
+          <div className="label">Most-likely, based on your patterns</div>
+          <div className="col gap-8" style={{ marginTop: 10 }}>
+            <div className="chip on" style={{ textAlign: 'left' }}>She sent a long emotional text</div>
+            <div className="chip" style={{ textAlign: 'left' }}>A fight feels unresolved</div>
+            <div className="chip" style={{ textAlign: 'left' }}>She asked where this is going</div>
+            <div className="chip" style={{ textAlign: 'left', color: 'var(--ink-3)' }}>Something else…</div>
+          </div>
+        </div>
+        <div className="col gap-6">
+          <div className="label">How loud is the urge?</div>
+          <div className="row gap-6">
+            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+              <div key={n} style={{
+                flex: 1, height: 36, borderRadius: 8,
+                background: n <= 7 ? (n >= 6 ? 'var(--rose)' : 'var(--rose-soft)') : 'var(--paper-dim)',
+                border: '1px solid var(--line)',
+                display: 'grid', placeItems: 'center',
+                fontSize: 11, color: n >= 6 && n <= 7 ? 'var(--paper)' : 'var(--ink-3)',
+                fontWeight: n === 7 ? 700 : 400
+              }}>{n}</div>
+            ))}
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--ink-2)', fontStyle: 'italic', fontFamily: '"Newsreader", Georgia, serif' }}>7 — wants to disappear</div>
+        </div>
+        <button className="btn-primary">Take a breath, ask me one question</button>
+      </div>
+    </div>
+  );
+}
+
+// Core 2 — The one question
+function CoreQuestionScreen() {
+  return (
+    <div className="scr" style={{ background: 'linear-gradient(180deg, var(--paper) 0%, var(--accent-soft) 100%)' }}>
+      <div className="pad col" style={{ paddingTop: 90, height: '100%', boxSizing: 'border-box' }}>
+        <div className="label" style={{ color: 'var(--accent)' }}>One question</div>
+        <div style={{ height: 22 }} />
+        <div className="serif" style={{ fontSize: 28, lineHeight: 1.25, color: 'var(--ink)', letterSpacing: '-0.01em' }}>
+          Is the urge in proportion to what just happened,
+          <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}> or does it feel bigger than the trigger?</span>
+        </div>
+        <div style={{ height: 24 }} />
+        <div style={{ fontSize: 13, color: 'var(--ink-3)', fontStyle: 'italic', lineHeight: 1.5, fontFamily: '"Newsreader", Georgia, serif' }}>
+          You picked "she sends a long emotional text". You said this lands as a 7. Sit with it for a moment.
+        </div>
+        <div style={{ flex: 1 }} />
+        <div className="col gap-8">
+          <button className="btn-secondary" style={{ textAlign: 'left' }}>It's in proportion. Something real happened.</button>
+          <button className="btn-secondary" style={{ textAlign: 'left', borderColor: 'var(--accent)', color: 'var(--accent)' }}>It feels bigger than the trigger.</button>
+          <button className="btn-ghost">I don't know yet — ask me later</button>
+        </div>
+        <div style={{ height: 28 }} />
+      </div>
+    </div>
+  );
+}
+
+// Core 3 — The small counter-move
+function CoreMoveScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--accent)' }}>The smallest possible move</div>
+          <div className="h2 serif">Not heroic. Just present.</div>
+        </div>
+        <div className="card" style={{ background: 'var(--accent-soft)', borderColor: 'transparent' }}>
+          <div style={{ fontFamily: '"Newsreader", Georgia, serif', fontSize: 17, lineHeight: 1.5, color: 'var(--ink)' }}>
+            "I read this. I need a few hours to think before I reply properly. I'll come back tonight."
+          </div>
+          <div style={{ height: 12 }} />
+          <div className="row gap-8">
+            <button className="btn-ghost" style={{ padding: '6px 10px', background: 'var(--paper)', borderRadius: 999, fontSize: 12 }}>Copy</button>
+            <button className="btn-ghost" style={{ padding: '6px 10px', background: 'var(--paper)', borderRadius: 999, fontSize: 12 }}>Make softer</button>
+            <button className="btn-ghost" style={{ padding: '6px 10px', background: 'var(--paper)', borderRadius: 999, fontSize: 12 }}>Another one</button>
+          </div>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.55, fontFamily: '"Newsreader", Georgia, serif', fontStyle: 'italic' }}>
+          A holding message is not a conversation. It's the thing that keeps the door open while your nervous system comes back online. You don't have to reply well tonight. You just have to not vanish.
+        </div>
+        <div className="divider" />
+        <div className="col gap-12">
+          <div className="label">Once you've sent it</div>
+          <button className="btn-primary">I sent it</button>
+          <button className="btn-secondary">I changed it but I sent something</button>
+          <button className="btn-ghost" style={{ color: 'var(--rose)' }}>I didn't — and I want to talk about why</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Core 4 — Receipts (the wins ledger)
+function CoreReceiptsScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-12" style={{ paddingTop: 70, paddingBottom: 80 }}>
+        <div className="col gap-6">
+          <div className="label">Your receipts · last 8 weeks</div>
+          <div className="h1 serif" style={{ fontSize: 28 }}>
+            <span style={{ color: 'var(--accent)' }}>11</span> texts you almost didn't send <span style={{ fontStyle: 'italic', color: 'var(--ink-2)' }}>— and did.</span>
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', fontFamily: '"Newsreader", Georgia, serif', fontStyle: 'italic' }}>
+            Three relationships that didn't end this time. That's the change. Most of it is invisible to you, so we keep the receipts.
+          </div>
+        </div>
+        <div className="row gap-8" style={{ marginTop: 4 }}>
+          <div className="card" style={{ flex: 1, padding: 12 }}>
+            <div className="label">Bolt urges caught</div>
+            <div className="serif" style={{ fontSize: 26, color: 'var(--accent)', marginTop: 4 }}>23</div>
+            <div className="quiet">vs 6 in May</div>
+          </div>
+          <div className="card" style={{ flex: 1, padding: 12 }}>
+            <div className="label">Stayed</div>
+            <div className="serif" style={{ fontSize: 26, color: 'var(--accent)', marginTop: 4 }}>17 <span style={{ fontSize: 13, color: 'var(--ink-3)' }}>/ 23</span></div>
+            <div className="quiet">74% — was 31%</div>
+          </div>
+        </div>
+        <div className="col" style={{ marginTop: 4 }}>
+          <div className="receipt">
+            <div className="date">Sun, 22 Jun · 21:43</div>
+            <div className="what">"I read this. I need a few hours. I'll come back tonight." → sent.</div>
+            <div className="tag">Trigger: long emotional text (Maya) · Urge 7 → 3 after 12 min</div>
+          </div>
+          <div className="receipt">
+            <div className="date">Thu, 19 Jun · 23:11</div>
+            <div className="what">Didn't pick the fight about the dishes. Went to bed instead.</div>
+            <div className="tag">Trigger: unresolved overnight · Urge 6</div>
+          </div>
+          <div className="receipt">
+            <div className="date">Sat, 14 Jun · 10:02</div>
+            <div className="what">Said yes to meeting her brother in July.</div>
+            <div className="tag">Trigger: plans &gt; 1 week ahead · Urge 5</div>
+          </div>
+          <div className="receipt" style={{ borderBottom: 'none' }}>
+            <div className="date">Mon, 9 Jun · 19:47</div>
+            <div className="what">Didn't ghost the thread. Replied 40 minutes later. Badly. But replied.</div>
+            <div className="tag">Trigger: long emotional text (Maya) · Urge 8</div>
+          </div>
+        </div>
+      </div>
+      <NavBar active="pulse" />
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="No promise to fix you. Just the one thing avoidants need: a hand on the shoulder in the eight seconds before the bolt.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Your triggers" caption="Lean asks you to name your specific triggers up-front. Generic 'self-sabotage' is useless. 'She sends a long emotional text' is operable.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Your moves" caption="The patterns you already know about yourself. Honest, blunt, kept local. This is what Lean uses to ask better questions later.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="The cue" caption="Addresses the central risk: avoidants avoid the app. The widget and lock-screen shortcut remove every step between urge and Lean.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Tag the urge" caption="Two taps from the widget. Pre-filled with your most-likely trigger. A loudness slider sets the stakes before the question lands.">
+        <CoreTagScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="The one question" caption="One sentence, drawn from your own patterns. Designed to stretch eight seconds into eighty — long enough for the prefrontal cortex to come back.">
+        <CoreQuestionScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Smallest counter-move" caption="Not 'have a vulnerable conversation'. A holding message. One sentence. Engineered for the avoidant brain: not heroic, just present.">
+        <CoreMoveScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Receipts" caption="The wins are invisible — the thing that didn't go wrong. Lean keeps the ledger so the pattern shift becomes legible. Also the calm-state ritual that brings you back.">
+        <CoreReceiptsScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

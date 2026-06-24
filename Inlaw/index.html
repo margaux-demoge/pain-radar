@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Inlaw · Pain Radar proto 25/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EDE9E2;
+    --paper: #F6F2EB;
+    --paper-dim: #E6DFD3;
+    --accent: #4A6B5E;        /* muted sage */
+    --accent-soft: rgba(74, 107, 94, 0.12);
+    --accent-dim: #7A9388;
+    --warn: #B0664F;          /* dusty terracotta */
+    --warn-soft: rgba(176, 102, 79, 0.12);
+    --ink: #2A2A2A;
+    --ink-2: #555550;
+    --ink-3: #8A857C;
+    --line: rgba(42, 42, 42, 0.12);
+    --line-strong: rgba(42, 42, 42, 0.22);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(237, 233, 226, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand { font-family: "Newsreader", Georgia, serif; font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+  .chrome-counter { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink); font-size: 13px;
+  }
+
+  .page-hero { max-width: 1680px; margin: 0 auto; padding: 56px 32px 32px; }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--warn); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta { margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--ink-3); }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start; justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--warn); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale { width: 230px; height: 482px; position: relative; overflow: visible; }
+  .phone-scale-inner { position: absolute; top: 0; left: 0; transform: scale(0.552); transform-origin: top left; }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App styles, scoped via #app */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--accent); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px; border: none; width: 100%;
+    cursor: pointer; letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%; cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .card {
+    background: var(--paper-dim); border: 1px solid var(--line);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .chip {
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; font-weight: 600;
+  }
+  #app .chip-warn {
+    background: var(--warn-soft); color: var(--warn);
+  }
+  #app .divider { height: 1px; background: var(--line); width: 100%; }
+
+  /* Cover for hero: a subtle SVG pattern */
+  #app .cover {
+    background:
+      radial-gradient(circle at 20% 30%, rgba(74,107,94,0.18), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(176,102,79,0.12), transparent 55%),
+      linear-gradient(160deg, #DCD4C5 0%, #C9C4B7 100%);
+  }
+
+  /* relationship-map node */
+  #app .node {
+    background: var(--paper); border: 1px solid var(--line-strong);
+    border-radius: 14px; padding: 10px 12px;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  #app .node .nm { font-weight: 600; font-size: 13px; }
+  #app .node .rl { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  #app .node.warn { background: var(--warn-soft); border-color: rgba(176,102,79,0.35); }
+  #app .node.ok { background: var(--accent-soft); border-color: rgba(74,107,94,0.35); }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 0 32px 80px; font-size: 12px; color: var(--ink-3);
+    line-height: 1.6;
+  }
+  .foot a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">25 / 45 — Inlaw</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Hold/index.html" title="Previous: Hold">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Lean/index.html" title="Next: Lean">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Relational labour · in-law friction</div>
+  <h1 class="page-title serif">Inlaw</h1>
+  <p class="page-tagline serif">The family you didn't choose, navigated. Inlaw maps the politics, drafts the lines, and tracks the small wins that turn five years of tension into a stable peace.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Inlaw/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function Hero() {
+  return (
+    <div className="scr cover" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', paddingTop: 90, paddingBottom: 40 }}>
+      <div className="pad col gap-16">
+        <div className="label" style={{ color: 'var(--accent)' }}>Inlaw</div>
+        <div className="h1" style={{ fontSize: 34, lineHeight: 1.08, maxWidth: 280 }}>
+          Stop walking into the same dinner cold.
+        </div>
+        <div className="meta" style={{ fontStyle: 'italic', fontFamily: 'Newsreader, serif', fontSize: 17, lineHeight: 1.5, color: 'var(--ink-2)', maxWidth: 280 }}>
+          Five years of tension, mapped. A line ready for tonight. The wins you forgot you'd had.
+        </div>
+      </div>
+      <div className="pad col gap-12">
+        <button className="btn-primary">Start with one person</button>
+        <div className="small" style={{ textAlign: 'center', color: 'var(--ink-3)' }}>
+          Private by design · Face ID to open
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OnbCast() {
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-20">
+        <div className="col gap-8">
+          <div className="label">Step 1 of 3 · The cast</div>
+          <div className="h2">Who's in this family?</div>
+          <div className="meta" style={{ lineHeight: 1.5 }}>Sketch it rough. You can add detail as things happen.</div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+            <div className="node warn" style={{ minWidth: 120 }}>
+              <div className="rl">Mother-in-law</div>
+              <div className="nm">Brigitte</div>
+            </div>
+            <div className="node ok" style={{ minWidth: 120 }}>
+              <div className="rl">Partner</div>
+              <div className="nm">Théo</div>
+            </div>
+          </div>
+          <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+            <div className="node" style={{ minWidth: 110 }}>
+              <div className="rl">Father-in-law</div>
+              <div className="nm">Henri</div>
+            </div>
+            <div className="node warn" style={{ minWidth: 110 }}>
+              <div className="rl">Ex-wife</div>
+              <div className="nm">Camille</div>
+            </div>
+          </div>
+          <div className="row gap-8">
+            <div className="node" style={{ minWidth: 110 }}>
+              <div className="rl">Brother-in-law</div>
+              <div className="nm">Marc · estranged</div>
+            </div>
+          </div>
+        </div>
+
+        <button className="btn-secondary" style={{ borderStyle: 'dashed' }}>+ Add someone</button>
+
+        <div style={{ marginTop: 'auto' }}>
+          <button className="btn-primary">Continue</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OnbDynamic() {
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-20">
+        <div className="col gap-8">
+          <div className="label">Step 2 of 3 · The dynamic</div>
+          <div className="h2">What's the friction with Brigitte?</div>
+          <div className="meta">Pick what fits. Rough is fine.</div>
+        </div>
+
+        <div className="col gap-8">
+          {[
+            ['Critical of how I do things', true],
+            ['Comments on the relationship', true],
+            ['Triangulates through Théo', false],
+            ['Won\'t acknowledge our choices', true],
+            ['Money / lifestyle remarks', false],
+            ['Religion / cultural pressure', false],
+            ['Holidays are the worst', true],
+          ].map(([t, on]) => (
+            <div key={t} className="card row gap-12" style={{
+              padding: '12px 14px',
+              borderColor: on ? 'rgba(176,102,79,0.4)' : 'var(--line)',
+              background: on ? 'var(--warn-soft)' : 'var(--paper-dim)',
+            }}>
+              <div style={{
+                width: 18, height: 18, borderRadius: 5,
+                border: '1.5px solid ' + (on ? 'var(--warn)' : 'var(--line-strong)'),
+                background: on ? 'var(--warn)' : 'transparent',
+                display: 'grid', placeItems: 'center', color: 'var(--paper)', fontSize: 12, fontWeight: 700,
+              }}>{on ? '✓' : ''}</div>
+              <div style={{ fontSize: 14, color: on ? 'var(--ink)' : 'var(--ink-2)' }}>{t}</div>
+            </div>
+          ))}
+        </div>
+
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function OnbPrivacy() {
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-20">
+        <div className="col gap-8">
+          <div className="label">Step 3 of 3 · Privacy</div>
+          <div className="h2 serif">A safe place to write the things you can't say out loud.</div>
+        </div>
+
+        <div className="col gap-12">
+          <div className="card col gap-6">
+            <div className="row gap-8">
+              <div style={{ fontSize: 18 }}>🔒</div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Face ID on every open</div>
+            </div>
+            <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+              Even if Théo grabs your phone, the app is sealed.
+            </div>
+          </div>
+          <div className="card col gap-6">
+            <div className="row gap-8">
+              <div style={{ fontSize: 18 }}>🪶</div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Decoy app icon</div>
+            </div>
+            <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+              Shows up as <em>"Reading list"</em> on your home screen.
+            </div>
+          </div>
+          <div className="card col gap-6">
+            <div className="row gap-8">
+              <div style={{ fontSize: 18 }}>🌿</div>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Names are yours alone</div>
+            </div>
+            <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+              Stored locally and end-to-end encrypted. We can't read them. Neither can anyone else.
+            </div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 'auto' }}>
+          <button className="btn-primary">Set up Face ID</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LogIncident() {
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-20">
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--warn)' }}>Just happened · Sun 22 June, 21:14</div>
+          <div className="h2">Three sentences. That's it.</div>
+        </div>
+
+        <div className="card col gap-12" style={{ background: 'var(--paper)' }}>
+          <div className="col gap-6">
+            <div className="label">Who</div>
+            <div className="row gap-6" style={{ flexWrap: 'wrap' }}>
+              <div className="chip chip-warn">Brigitte</div>
+              <div className="chip" style={{ background: 'var(--paper-dim)', color: 'var(--ink-2)' }}>+ add</div>
+            </div>
+          </div>
+          <div className="divider" />
+          <div className="col gap-6">
+            <div className="label">The moment</div>
+            <div style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink)', fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>
+              Sunday lunch. She watched me serve the gratin and sighed.
+            </div>
+          </div>
+          <div className="col gap-6">
+            <div className="label">What was said</div>
+            <div style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink)', fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>
+              "Théo, your mother always cut it differently. It's fine, fine."
+            </div>
+          </div>
+          <div className="col gap-6">
+            <div className="label">How it landed</div>
+            <div style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink)', fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>
+              Embarrassed. Théo didn't say anything. Old feeling, again.
+            </div>
+          </div>
+        </div>
+
+        <button className="btn-primary">Save · keep going with my evening</button>
+      </div>
+    </div>
+  );
+}
+
+function PatternView() {
+  const rows = [
+    { date: 'Apr 6', trig: 'Cooking', text: '"Théo\'s mother always..."' },
+    { date: 'May 1', trig: 'Cooking', text: '"You don\'t salt it enough."' },
+    { date: 'May 19', trig: 'The kids', text: '"At his age Théo could already..."' },
+    { date: 'Jun 9', trig: 'Cooking', text: '"The gratin is a bit dry."' },
+    { date: 'Jun 22', trig: 'Cooking', text: '"Théo, your mother always cut it differently."' },
+  ];
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-20">
+        <div className="col gap-8">
+          <div className="label" style={{ color: 'var(--accent)' }}>Pattern surfaced</div>
+          <div className="h2 serif" style={{ fontSize: 24 }}>It's not random. It's Brigitte, in the kitchen, comparing.</div>
+        </div>
+
+        <div className="card col gap-8" style={{ background: 'var(--accent-soft)', borderColor: 'rgba(74,107,94,0.25)' }}>
+          <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+            <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>4 of last 5 incidents</div>
+            <div className="small" style={{ color: 'var(--accent)' }}>·  Cooking</div>
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.55 }}>
+            Always at her house, always while food is being served, always framed as Théo's mother knowing better.
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Timeline</div>
+          {rows.map((r, i) => (
+            <div key={i} className="row gap-12" style={{ padding: '8px 4px', borderBottom: '1px solid var(--line)' }}>
+              <div className="small" style={{ width: 48, color: 'var(--ink-3)', fontVariantNumeric: 'tabular-nums' }}>{r.date}</div>
+              <div className="chip chip-warn" style={{ padding: '3px 8px', fontSize: 10 }}>{r.trig}</div>
+              <div style={{ fontSize: 12, color: 'var(--ink-2)', fontStyle: 'italic', flex: 1 }}>{r.text}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="small" style={{ color: 'var(--ink-3)', textAlign: 'center', marginTop: 4 }}>
+          Seeing it is half the relief.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PrepLine() {
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-16">
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--warn)' }}>Sunday lunch · in 2 days</div>
+          <div className="h2 serif">A line for if she comments on the cooking again.</div>
+          <div className="small" style={{ color: 'var(--ink-3)' }}>Based on the 4 cooking incidents you logged.</div>
+        </div>
+
+        <div className="card col gap-10" style={{ background: 'var(--paper)', borderColor: 'var(--line-strong)' }}>
+          <div className="label" style={{ color: 'var(--accent)' }}>If the dig comes</div>
+          <div style={{ fontSize: 16, lineHeight: 1.5, fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: 'var(--ink)' }}>
+            "Each cook has their own hand for it, Brigitte. I'll keep cutting it mine."
+          </div>
+          <div className="small" style={{ color: 'var(--ink-3)' }}>Warm. Doesn't fold. Doesn't escalate.</div>
+        </div>
+
+        <div className="card col gap-10" style={{ background: 'var(--paper)' }}>
+          <div className="label" style={{ color: 'var(--accent)' }}>If she pushes</div>
+          <div style={{ fontSize: 15, lineHeight: 1.5, fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: 'var(--ink)' }}>
+            "I hear you. I'm not going to debate the gratin today, though."
+          </div>
+        </div>
+
+        <div className="card col gap-10" style={{ background: 'var(--paper)' }}>
+          <div className="label" style={{ color: 'var(--accent)' }}>To Théo on the drive home</div>
+          <div style={{ fontSize: 15, lineHeight: 1.5, fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: 'var(--ink)' }}>
+            "I need you to say something next time, even small. I'm not asking you to fight her."
+          </div>
+        </div>
+
+        <div className="row gap-8">
+          <button className="btn-secondary" style={{ flex: 1 }}>Rehearse aloud</button>
+          <button className="btn-primary" style={{ flex: 1 }}>Save to pocket</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VisitDebrief() {
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-16">
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--accent)' }}>Sunday, 22:46 · home</div>
+          <div className="h2 serif">How did it land tonight?</div>
+        </div>
+
+        <div className="col gap-8">
+          {[
+            ['🟢', 'I used my line', true],
+            ['🟢', 'I didn\'t take the bait', true],
+            ['🟢', 'Théo backed me up', false],
+            ['🟡', 'It got tense but didn\'t blow up', true],
+            ['🔴', 'Old pattern, I folded', false],
+          ].map(([dot, t, on]) => (
+            <div key={t} className="card row gap-10" style={{
+              padding: '12px 14px',
+              borderColor: on ? 'rgba(74,107,94,0.4)' : 'var(--line)',
+              background: on ? 'var(--accent-soft)' : 'var(--paper-dim)',
+            }}>
+              <div style={{ fontSize: 14 }}>{dot}</div>
+              <div style={{ fontSize: 14, flex: 1, color: on ? 'var(--ink)' : 'var(--ink-2)' }}>{t}</div>
+              <div style={{
+                width: 18, height: 18, borderRadius: 999,
+                border: '1.5px solid ' + (on ? 'var(--accent)' : 'var(--line-strong)'),
+                background: on ? 'var(--accent)' : 'transparent',
+              }}/>
+            </div>
+          ))}
+        </div>
+
+        <div className="card col gap-6" style={{ background: 'var(--paper)' }}>
+          <div className="label">One line for the win log (optional)</div>
+          <div style={{ fontSize: 14, lineHeight: 1.5, fontStyle: 'italic', fontFamily: 'Newsreader, serif', color: 'var(--ink-2)' }}>
+            "She made the dig. I said my line. Théo squeezed my hand under the table."
+          </div>
+        </div>
+
+        <button className="btn-primary">Add to the log</button>
+      </div>
+    </div>
+  );
+}
+
+function WinsRecap() {
+  return (
+    <div className="scr" style={{ paddingTop: 70 }}>
+      <div className="pad col gap-16">
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--accent)' }}>June, in review</div>
+          <div className="h2 serif" style={{ fontSize: 22 }}>You're slowly learning to handle this.</div>
+        </div>
+
+        <div className="row gap-8">
+          <div className="card col gap-2" style={{ flex: 1, alignItems: 'center', textAlign: 'center', padding: '14px 10px', background: 'var(--accent-soft)', borderColor: 'rgba(74,107,94,0.25)' }}>
+            <div className="h2" style={{ fontSize: 28, color: 'var(--accent)' }}>7</div>
+            <div className="small" style={{ color: 'var(--accent)' }}>visits handled</div>
+          </div>
+          <div className="card col gap-2" style={{ flex: 1, alignItems: 'center', textAlign: 'center', padding: '14px 10px', background: 'var(--accent-soft)', borderColor: 'rgba(74,107,94,0.25)' }}>
+            <div className="h2" style={{ fontSize: 28, color: 'var(--accent)' }}>5</div>
+            <div className="small" style={{ color: 'var(--accent)' }}>lines used</div>
+          </div>
+          <div className="card col gap-2" style={{ flex: 1, alignItems: 'center', textAlign: 'center', padding: '14px 10px', background: 'var(--accent-soft)', borderColor: 'rgba(74,107,94,0.25)' }}>
+            <div className="h2" style={{ fontSize: 28, color: 'var(--accent)' }}>3</div>
+            <div className="small" style={{ color: 'var(--accent)' }}>baits skipped</div>
+          </div>
+        </div>
+
+        <div className="col gap-10">
+          <div className="label">The small wins, lined up</div>
+          {[
+            ['Jun 22', 'Used the gratin line. It worked.'],
+            ['Jun 14', 'Didn\'t take the bait on the dishwasher.'],
+            ['Jun 09', 'Théo finally interrupted his mother.'],
+            ['May 30', 'Said no to the surprise weekend visit.'],
+            ['May 18', 'Got out of the kitchen comparison without an argument.'],
+          ].map(([d, t], i) => (
+            <div key={i} className="row gap-12" style={{ alignItems: 'flex-start' }}>
+              <div className="small" style={{ width: 48, color: 'var(--ink-3)', fontVariantNumeric: 'tabular-nums', paddingTop: 2 }}>{d}</div>
+              <div style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--accent)', marginTop: 6 }}/>
+              <div style={{ flex: 1, fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)', fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>{t}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="small" style={{ textAlign: 'center', color: 'var(--ink-3)', marginTop: 4 }}>
+          Most people forget they've had any. You haven't.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>· {label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      <div className="phone-caption">{caption}</div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Tile num="01" cat="Hero" label="Tagline" caption="A serif open, no claim to fix anything. Inlaw promises navigation, not resolution — and signals privacy on the first screen.">
+        <Hero/>
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="The cast" caption="Map who's who before anything else. Rough sketches are fine — warm green for allies, terracotta for the people who cost you.">
+        <OnbCast/>
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="The dynamic" caption="Pick the friction shape. Loose enough that you don't have to confess; specific enough that the pattern engine has something to work with.">
+        <OnbDynamic/>
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Privacy first" caption="The privacy posture is the wedge. Face ID + decoy icon + local encryption — the answer to 'what if my partner finds it'.">
+        <OnbPrivacy/>
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Log an incident" caption="Three sentences after a Sunday lunch. Newsreader italic for the words — it feels like a journal, not a CRM ticket.">
+        <LogIncident/>
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Pattern surfaced" caption="Four of five incidents share a trigger. Seeing the shape is half the relief — it's not random, it's the system's behaviour.">
+        <PatternView/>
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Prep a line" caption="Calibrated to the person, the trigger, and the partner. Three lines: for the dig, for the push, for the drive home.">
+        <PrepLine/>
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Wins, lined up" caption="The monthly recap converts an occasional job into a ritual. Wins you'd forgotten, lined up — the felt narrative starts to shift.">
+        <WinsRecap/>
+      </Tile>
+    </>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+
+</body>
+</html>

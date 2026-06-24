@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tally · Pain Radar proto 36/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bone: #F2EEE7;
+    --paper: #FAF7F1;
+    --paper-dim: #ECE7DD;
+    --sage: #5C7567;
+    --sage-soft: rgba(92, 117, 103, 0.10);
+    --sage-dim: #8AA092;
+    --ink: #1F2622;
+    --ink-2: #4B5650;
+    --ink-3: #8A9089;
+    --line: rgba(31, 38, 34, 0.10);
+    --line-strong: rgba(31, 38, 34, 0.20);
+    --hot: #B2543B;
+    --hot-soft: rgba(178, 84, 59, 0.10);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bone); color: var(--ink); }
+  body {
+    font-family: "Inter", -apple-system, "SF Pro Text", sans-serif;
+    font-feature-settings: "kern", "liga", "calt", "ss01";
+  }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 238, 231, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 500; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--sage); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 64px; letter-spacing: -0.03em;
+    line-height: 1.0; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 300;
+    font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 400;
+    color: var(--sage); font-size: 14px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--sage-soft); color: var(--sage);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  /* Phone scaling */
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 24px; }
+  #app .h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 32px; line-height: 1.05;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 400; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  #app .mega {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 300; letter-spacing: -0.05em;
+    line-height: 0.92; font-variant-numeric: tabular-nums;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 13px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--ink); color: var(--paper);
+    padding: 16px 22px; border-radius: 14px;
+    font-weight: 500; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+    font-family: inherit;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink-2);
+    padding: 16px 22px; border-radius: 14px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-4 { gap: 4px; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .gap-32 { gap: 32px; }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .tx-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 14px 0; border-bottom: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+  #app .tx-row:last-child { border-bottom: none; }
+  #app .tx-name { font-size: 15px; color: var(--ink); }
+  #app .tx-date { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  #app .tx-amount { font-size: 15px; color: var(--ink); font-weight: 500; }
+  #app .tx-amount.flagged { color: var(--hot); }
+  #app .bank-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px; border-radius: 14px;
+    background: var(--paper); border: 1px solid var(--line);
+  }
+  #app .bank-mark {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: grid; place-items: center;
+    font-family: "Fraunces", serif; font-weight: 500;
+    font-size: 18px; color: var(--paper);
+  }
+  #app .bank-name { font-size: 15px; font-weight: 500; }
+  #app .bank-sub { font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+  #app .running-hot {
+    color: var(--hot); font-size: 13px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  #app .running-hot .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--hot); }
+  #app .tracking-fine {
+    color: var(--sage); font-size: 13px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  #app .tracking-fine .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--sage); }
+  #app .pull-handle {
+    width: 36px; height: 4px; border-radius: 999px;
+    background: var(--line-strong); margin: 8px auto 0;
+  }
+  #app .sheet-card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 18px; padding: 20px;
+  }
+  #app .flag-chip {
+    padding: 10px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+    cursor: pointer;
+  }
+  #app .flag-chip.on {
+    background: var(--ink); color: var(--paper);
+    border-color: var(--ink);
+  }
+  #app .swatch-pattern {
+    background-image:
+      radial-gradient(circle at 1px 1px, var(--line-strong) 1px, transparent 0);
+    background-size: 12px 12px;
+  }
+  #app .num-strip {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px; margin-top: 22px;
+  }
+  #app .num-strip .cell {
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim);
+  }
+  #app .num-strip .cell-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; margin-bottom: 6px; }
+  #app .num-strip .cell-value { font-size: 17px; font-weight: 500;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 0 32px 56px;
+    color: var(--ink-3); font-size: 12px; text-align: center;
+  }
+  .foot a { color: var(--sage); }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">36 / 45 — Tally</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Sync/index.html" title="Previous: Sync">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Tell/index.html" title="Next: Tell">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Anxiety relief · post-Mint minimalism</div>
+  <h1 class="page-title serif">Tally</h1>
+  <p class="page-tagline serif">One number. That's the whole app. Tally tells you how much you've spent this month and stops there, because the categories were never the point.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photography.
+  Phase 1 exploration, not a product spec. See <a href="../../Apps/_radar/Tally/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined from huashu-design skill assets) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const IMG = window.IMG;
+
+// ---------------- Screen components ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{ paddingTop: 80, height: '100%', boxSizing: 'border-box' }}>
+        <div className="label" style={{ color: 'var(--sage)' }}>Tally</div>
+        <div style={{ flex: 1 }} />
+        <div className="serif" style={{ fontWeight: 300, fontSize: 56, lineHeight: 1.0, letterSpacing: '-0.04em', color: 'var(--ink)' }}>
+          One<br />number.
+        </div>
+        <div className="serif" style={{ fontStyle: 'italic', fontWeight: 300, fontSize: 22, lineHeight: 1.45, color: 'var(--ink-2)', marginTop: 24, maxWidth: 320 }}>
+          How much you've spent this month. That's the whole app.
+        </div>
+        <div style={{ flex: 1 }} />
+        <button className="btn-primary">Connect a bank account</button>
+        <button className="btn-secondary" style={{ marginTop: 10 }}>See it first without connecting</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 14, marginBottom: 32 }}>
+          Read-only. No categories, ever.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // Bank picker — two taps promise
+  const banks = [
+    { name: 'Chase', sub: 'Checking · ••4471', color: '#1F4E8C' },
+    { name: 'Capital One', sub: 'Checking · ••8820', color: '#B2543B' },
+    { name: 'Bank of America', sub: 'Checking · ••3110', color: '#8C1F2E' },
+    { name: 'Ally', sub: 'Savings · ••6612', color: '#5C7567' },
+    { name: 'Wells Fargo', sub: 'Checking · ••0249', color: '#A9883F' },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 80 }}>
+        <div className="col gap-8">
+          <div className="label" style={{ color: 'var(--sage)' }}>Step 1 of 2</div>
+          <div className="h1 serif">Which bank?</div>
+          <div className="meta">Pick the account that holds the spending you want to see. You can add more later — most people never do.</div>
+        </div>
+        <div className="col gap-8">
+          {banks.map((b, i) => (
+            <div key={i} className="bank-row">
+              <div className="bank-mark" style={{ background: b.color }}>{b.name[0]}</div>
+              <div className="col" style={{ flex: 1 }}>
+                <div className="bank-name">{b.name}</div>
+                <div className="bank-sub">{b.sub}</div>
+              </div>
+              <svg width="18" height="18" viewBox="0 0 18 18"><path d="M6 4l5 5-5 5" stroke="var(--ink-3)" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+          ))}
+        </div>
+        <div className="small" style={{ textAlign: 'center' }}>Encrypted via Plaid · read-only access</div>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  // Paycheck cadence — needed for "left until next paycheck"
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 80 }}>
+        <div className="col gap-8">
+          <div className="label" style={{ color: 'var(--sage)' }}>Step 2 of 2</div>
+          <div className="h1 serif">When do you get paid?</div>
+          <div className="meta">So we can show you how much is left until the next one. We won't ask anything else.</div>
+        </div>
+        <div className="col gap-8" style={{ marginTop: 8 }}>
+          {[
+            { l: 'Every two weeks', s: 'Most common · biweekly Fridays', on: true },
+            { l: 'Twice a month', s: 'The 15th and the last day' },
+            { l: 'Every month', s: 'On the 1st, the 15th, or another date' },
+            { l: 'Irregular / freelance', s: 'Tally will average from your deposits' },
+          ].map((o, i) => (
+            <div key={i} style={{
+              padding: '16px 18px', borderRadius: 14,
+              background: o.on ? 'var(--ink)' : 'var(--paper)',
+              color: o.on ? 'var(--paper)' : 'var(--ink)',
+              border: o.on ? '1px solid var(--ink)' : '1px solid var(--line)',
+            }}>
+              <div style={{ fontSize: 15, fontWeight: 500 }}>{o.l}</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>{o.s}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ flex: 1 }} />
+        <button className="btn-primary" style={{ marginBottom: 16 }}>Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  // Notifications — the deliberate omission. Sets the tone.
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 80 }}>
+        <div className="col gap-8">
+          <div className="label" style={{ color: 'var(--sage)' }}>Last thing</div>
+          <div className="h1 serif">No notifications.</div>
+          <div className="meta" style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+            Other apps ping you about every coffee. Tally won't. Open it when you want to look.
+          </div>
+        </div>
+        <div className="sheet-card col gap-12" style={{ marginTop: 8 }}>
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <div className="col gap-4">
+              <div style={{ fontSize: 14, fontWeight: 500 }}>Sunday summary</div>
+              <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>One short email, 9am Sunday</div>
+            </div>
+            <div style={{ width: 44, height: 26, borderRadius: 999, background: 'var(--sage)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 3, right: 3, width: 20, height: 20, borderRadius: 999, background: 'var(--paper)' }} />
+            </div>
+          </div>
+          <div className="divider" />
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <div className="col gap-4">
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink-3)' }}>Push notifications</div>
+              <div style={{ fontSize: 12, color: 'var(--ink-3)' }}>Not offered. On purpose.</div>
+            </div>
+            <div style={{ width: 44, height: 26, borderRadius: 999, background: 'var(--paper-dim)', border: '1px solid var(--line)', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: 3, left: 3, width: 18, height: 18, borderRadius: 999, background: 'var(--ink-3)', opacity: 0.5 }} />
+            </div>
+          </div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <button className="btn-primary" style={{ marginBottom: 16 }}>Open Tally</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreDashboardScreen() {
+  // The one screen, forever. Tracking fine.
+  return (
+    <div className="scr">
+      <div className="pad col" style={{ paddingTop: 70, height: '100%', boxSizing: 'border-box' }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="label">June · day 24 of 30</div>
+          <div className="tracking-fine"><span className="dot" /> tracking</div>
+        </div>
+
+        <div style={{ marginTop: 36 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Spent this month</div>
+          <div className="mega" style={{ fontSize: 78 }}>$1,842</div>
+        </div>
+
+        <div className="num-strip">
+          <div className="cell">
+            <div className="cell-label">Same days last month</div>
+            <div className="cell-value">$1,930</div>
+          </div>
+          <div className="cell">
+            <div className="cell-label">Left until July 5</div>
+            <div className="cell-value">$680</div>
+          </div>
+        </div>
+
+        <div className="serif" style={{ fontStyle: 'italic', color: 'var(--sage)', fontSize: 15, marginTop: 22, lineHeight: 1.5 }}>
+          You're a little under where you were a month ago. Eleven days to go.
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <div className="label" style={{ marginBottom: 8 }}>Recent</div>
+        <div className="col" style={{ marginBottom: 24 }}>
+          <div className="tx-row">
+            <div className="col"><div className="tx-name">Whole Foods</div><div className="tx-date">Yesterday</div></div>
+            <div className="tx-amount">$54.20</div>
+          </div>
+          <div className="tx-row">
+            <div className="col"><div className="tx-name">Con Edison</div><div className="tx-date">Tue, Jun 22</div></div>
+            <div className="tx-amount">$112.00</div>
+          </div>
+          <div className="tx-row">
+            <div className="col"><div className="tx-name">Joe Coffee</div><div className="tx-date">Tue, Jun 22</div></div>
+            <div className="tx-amount">$5.75</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreRunningHotScreen() {
+  // Same screen, but running hot — soft line, no alert
+  return (
+    <div className="scr">
+      <div className="pad col" style={{ paddingTop: 70, height: '100%', boxSizing: 'border-box' }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="label">June · day 24 of 30</div>
+          <div className="running-hot"><span className="dot" /> running hot</div>
+        </div>
+
+        <div style={{ marginTop: 36 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Spent this month</div>
+          <div className="mega" style={{ fontSize: 78, color: 'var(--ink)' }}>$2,418</div>
+          <div className="serif" style={{ fontStyle: 'italic', color: 'var(--hot)', fontSize: 16, marginTop: 12 }}>
+            $488 over where you were a month ago.
+          </div>
+        </div>
+
+        <div className="num-strip">
+          <div className="cell">
+            <div className="cell-label">Same days last month</div>
+            <div className="cell-value">$1,930</div>
+          </div>
+          <div className="cell" style={{ background: 'var(--hot-soft)' }}>
+            <div className="cell-label" style={{ color: 'var(--hot)' }}>Left until July 5</div>
+            <div className="cell-value" style={{ color: 'var(--hot)' }}>$104</div>
+          </div>
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <div className="label" style={{ marginBottom: 8 }}>Recent</div>
+        <div className="col" style={{ marginBottom: 24 }}>
+          <div className="tx-row">
+            <div className="col"><div className="tx-name">United Airlines</div><div className="tx-date">Yesterday</div></div>
+            <div className="tx-amount flagged">$412.30</div>
+          </div>
+          <div className="tx-row">
+            <div className="col"><div className="tx-name">Trader Joe's</div><div className="tx-date">Mon, Jun 21</div></div>
+            <div className="tx-amount">$67.84</div>
+          </div>
+          <div className="tx-row">
+            <div className="col"><div className="tx-name">Rent · Greenpoint</div><div className="tx-date">Sun, Jun 20</div></div>
+            <div className="tx-amount">$1,420.00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreFlagScreen() {
+  // Tap a transaction → flag as "not normal" — the only interaction
+  return (
+    <div className="scr">
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'rgba(31, 38, 34, 0.35)',
+      }} />
+      <div className="pad col" style={{ paddingTop: 70, opacity: 0.5, height: '100%', boxSizing: 'border-box' }}>
+        <div className="label">June · day 24 of 30</div>
+        <div style={{ marginTop: 36 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Spent this month</div>
+          <div className="mega" style={{ fontSize: 78 }}>$1,842</div>
+        </div>
+      </div>
+
+      <div style={{
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        background: 'var(--paper)',
+        borderRadius: '24px 24px 0 0',
+        padding: '0 24px 28px',
+        boxShadow: '0 -10px 30px rgba(0,0,0,0.08)',
+      }}>
+        <div className="pull-handle" />
+        <div className="col gap-16" style={{ marginTop: 18 }}>
+          <div className="col gap-4">
+            <div className="tx-name" style={{ fontSize: 22, fontFamily: 'Fraunces, serif', fontWeight: 400 }}>United Airlines</div>
+            <div className="tx-date">Yesterday · 3:42 PM</div>
+          </div>
+          <div className="mega" style={{ fontSize: 36 }}>$412.30</div>
+          <div className="divider" />
+          <div className="col gap-8">
+            <div className="label">Is this normal for you?</div>
+            <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+              <div className="flag-chip">Yes, normal</div>
+              <div className="flag-chip on">One-off, ignore</div>
+              <div className="flag-chip">New recurring bill</div>
+            </div>
+            <div className="meta" style={{ marginTop: 8, fontSize: 13 }}>
+              Flagged transactions don't disappear, they just stop counting toward "running hot."
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreSundayScreen() {
+  // The weekly Sunday summary — the ONE permitted touch
+  return (
+    <div className="scr" style={{ background: 'var(--bone)' }}>
+      <div className="pad col gap-20" style={{ paddingTop: 80 }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--sage)' }}>Sunday, June 28 · 9:00 AM</div>
+          <div className="h1 serif" style={{ fontSize: 30 }}>Your week, in one line.</div>
+        </div>
+
+        <div className="sheet-card col gap-16" style={{ background: 'var(--paper)' }}>
+          <div className="col gap-4">
+            <div className="label">Last 7 days</div>
+            <div className="mega" style={{ fontSize: 44 }}>$386</div>
+            <div className="serif" style={{ fontStyle: 'italic', color: 'var(--sage)', fontSize: 14 }}>
+              $42 less than the week before.
+            </div>
+          </div>
+          <div className="divider" />
+          <div className="col gap-4">
+            <div className="label">Three biggest</div>
+            <div className="tx-row" style={{ padding: '8px 0' }}>
+              <div className="tx-name" style={{ fontSize: 14 }}>Trader Joe's</div>
+              <div className="tx-amount" style={{ fontSize: 14 }}>$67.84</div>
+            </div>
+            <div className="tx-row" style={{ padding: '8px 0' }}>
+              <div className="tx-name" style={{ fontSize: 14 }}>Verizon</div>
+              <div className="tx-amount" style={{ fontSize: 14 }}>$58.00</div>
+            </div>
+            <div className="tx-row" style={{ padding: '8px 0' }}>
+              <div className="tx-name" style={{ fontSize: 14 }}>Joe Coffee (×6)</div>
+              <div className="tx-amount" style={{ fontSize: 14 }}>$34.50</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="serif" style={{ fontStyle: 'italic', fontSize: 16, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+          No advice. No next steps. Just the number, every Sunday, until you say stop.
+        </div>
+
+        <button className="btn-secondary" style={{ marginTop: 8 }}>Turn the Sunday note off</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile (label + IosFrame + caption) ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-only open. No icons, no chart, no animated coins. The promise is set in serif before anything moves.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Pick a bank" caption="Two taps to connection. Plaid in the background, but the screen never mentions categories, goals, or budgets.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Paycheck cadence" caption="The only setup question. Tally needs this for 'left until next paycheck' — and that's the entire personalization model.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="No notifications" caption="The deliberate omission, stated up front. Sunday summary opt-out, push toggle disabled and labeled 'on purpose'.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The one screen — tracking" caption="The whole app, forever. One number, two comparisons, a soft serif line, and recent transactions. No tabs.">
+        <CoreDashboardScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="The one screen — hot" caption="Same screen, different mood. The soft line turns rust when you're outpacing last month. No popup, no alert.">
+        <CoreRunningHotScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Flag as one-off" caption="The only interaction. Three chips: normal, one-off, new recurring. Trains the 'running hot' signal without ever asking for a category.">
+        <CoreFlagScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Sunday summary" caption="The one permitted touch. A weekly email, not a push. No advice, no next steps — just the number, until you say stop.">
+        <CoreSundayScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

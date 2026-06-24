@@ -1,0 +1,910 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Crest · Pain Radar proto 05/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EEF1EA;
+    --paper: #F7F8F3;
+    --paper-dim: #E3E8DC;
+    --accent: #4A6B57;
+    --accent-soft: rgba(74, 107, 87, 0.12);
+    --accent-dim: #7A9485;
+    --warn: #B97A4A;
+    --warn-soft: rgba(185, 122, 74, 0.14);
+    --ink: #1F2A24;
+    --ink-2: #4D5A52;
+    --ink-3: #8A958C;
+    --line: rgba(31, 42, 36, 0.10);
+    --line-strong: rgba(31, 42, 36, 0.20);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(238, 241, 234, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--warn); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 760px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--warn); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles, scoped via #app */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--accent); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--accent); color: var(--paper);
+    border-color: var(--accent);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--accent); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--accent); margin-top: 2px; }
+  #app .card {
+    padding: 16px; border-radius: 16px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .card.accent {
+    background: var(--accent-soft);
+    border-color: rgba(74, 107, 87, 0.22);
+  }
+  #app .card.warn {
+    background: var(--warn-soft);
+    border-color: rgba(185, 122, 74, 0.28);
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">05 / 45 — Crest</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Cradle/index.html" title="Previous: Cradle">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Crumb/index.html" title="Next: Crumb">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Plateau coaching · post-tracker companion</div>
+  <h1 class="page-title serif">Crest</h1>
+  <p class="page-tagline serif">The plateau isn't the end of the story. Crest is the coach that meets you on the flat part of the curve and shows you what your body is actually doing when the scale stops moving.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven proto, no photos. See <a href="../../Apps/_radar/Crest/spec.md">spec.md</a> for the full concept and <a href="../../Apps/_radar/Crest/judgments.md">judgments.md</a> for the verdicts.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from huashu-design skill assets) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '7:12', battery = 88 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screen components ----------------
+
+const Ico = {
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  curve: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 15c3 0 4-8 8-8s4 4 6 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none"/></svg>,
+  reflect: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="6.5" stroke="currentColor" strokeWidth="1.5"/><path d="M10 6v4l2.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Today', icon: Ico.home },
+    { id: 'curve', label: 'Curves', icon: Ico.curve },
+    { id: 'reflect', label: 'Reflect', icon: Ico.reflect },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Reusable trend curve SVG (flat-ish line, the plateau)
+function TrendCurve({ height = 90, accent = false }) {
+  // 14 days of weights, plateau (small wobble around 184.2)
+  const pts = [184.8, 184.4, 184.6, 184.2, 184.1, 184.5, 184.3, 184.0, 184.4, 184.2, 184.1, 184.3, 184.0, 184.2];
+  const trend = [184.7, 184.6, 184.55, 184.5, 184.45, 184.42, 184.38, 184.35, 184.3, 184.28, 184.25, 184.22, 184.2, 184.18];
+  const min = 183.5, max = 185.2;
+  const w = 280, h = height;
+  const x = i => 8 + (i / (pts.length - 1)) * (w - 16);
+  const y = v => 8 + ((max - v) / (max - min)) * (h - 16);
+  const dotsPath = pts.map((v, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const trendPath = trend.map((v, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const stroke = accent ? 'var(--accent)' : 'var(--ink-3)';
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} preserveAspectRatio="none">
+      {/* dotted baseline */}
+      <line x1="8" y1={y(184.2)} x2={w - 8} y2={y(184.2)} stroke="var(--line)" strokeWidth="1" strokeDasharray="2 4"/>
+      {/* daily dots, faint */}
+      {pts.map((v, i) => (
+        <circle key={i} cx={x(i)} cy={y(v)} r="2.2" fill="var(--ink-3)" opacity="0.35"/>
+      ))}
+      {/* trend line, strong */}
+      <path d={trendPath} fill="none" stroke={stroke} strokeWidth="2.2" strokeLinecap="round"/>
+      {/* last point marker */}
+      <circle cx={x(13)} cy={y(trend[13])} r="4.5" fill="var(--paper)" stroke="var(--accent)" strokeWidth="2.2"/>
+    </svg>
+  );
+}
+
+// NSV parallel curve, gently rising
+function NsvCurve({ height = 80 }) {
+  const vals = [2, 3, 3, 4, 4, 5, 6, 7, 7, 8, 8, 9, 10, 11];
+  const w = 280, h = height;
+  const x = i => 8 + (i / (vals.length - 1)) * (w - 16);
+  const y = v => 8 + ((12 - v) / 12) * (h - 16);
+  const line = vals.map((v, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const area = line + ` L ${x(vals.length - 1).toFixed(1)},${h - 8} L 8,${h - 8} Z`;
+  return (
+    <svg viewBox={`0 0 ${w} ${h}`} width="100%" height={h} preserveAspectRatio="none">
+      <path d={area} fill="var(--accent-soft)"/>
+      <path d={line} fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round"/>
+      <circle cx={x(13)} cy={y(vals[13])} r="4.5" fill="var(--paper)" stroke="var(--accent)" strokeWidth="2.2"/>
+    </svg>
+  );
+}
+
+// 1. HERO
+function HeroScreen() {
+  return (
+    <div className="scr col" style={{ padding: '64px 28px 0', justifyContent: 'space-between', height: '100%' }}>
+      <div className="col gap-16" style={{ marginTop: 24 }}>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 13,
+          color: 'var(--warn)', letterSpacing: '0.04em' }}>
+          for the plateau weeks
+        </div>
+        <div className="h1 serif" style={{ fontSize: 56, lineHeight: 0.95 }}>
+          Crest
+        </div>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+          fontSize: 19, lineHeight: 1.4, color: 'var(--ink-2)', marginTop: 8, maxWidth: 280 }}>
+          The scale stopped.<br/>
+          Your progress didn't.
+        </div>
+      </div>
+      <div style={{
+        alignSelf: 'stretch', marginTop: 16,
+        padding: '18px 16px', borderRadius: 18,
+        background: 'var(--accent-soft)',
+        border: '1px solid rgba(74, 107, 87, 0.22)',
+      }}>
+        <div className="label" style={{ color: 'var(--accent)', marginBottom: 8 }}>Last 14 days</div>
+        <TrendCurve height={86} accent/>
+        <div className="row" style={{ justifyContent: 'space-between', marginTop: 6 }}>
+          <div className="small">May 28</div>
+          <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>Flat. That's okay.</div>
+          <div className="small">Today</div>
+        </div>
+      </div>
+      <div className="col gap-12" style={{ marginBottom: 28, marginTop: 16 }}>
+        <button className="btn-primary">Tell Crest about your plateau</button>
+        <button className="btn-secondary">I already use Crest</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 4, fontStyle: 'italic',
+          fontFamily: 'Newsreader, serif' }}>
+          Works alongside MacroFactor, Happy Scale, Lose It!
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 2. ONBOARDING 1 — Where are you in the journey
+function Onb1Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 1 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 26 }}>How long have you<br/>been at this?</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5 }}>
+        Crest is built for the messy middle, not the first month. We need to know where you sit on the curve.
+      </div>
+      <div className="col gap-12" style={{ marginTop: 22 }}>
+        {[
+          { name: '6 to 12 months in', sub: 'Most plateaus hit here', on: false },
+          { name: '12 to 18 months in', sub: 'Down 40 lb+, scale won\'t move', on: true },
+          { name: '18+ months', sub: 'You\'re near maintenance', on: false },
+          { name: 'Less than 6 months', sub: 'Come back later — too early for Crest', on: false, dim: true },
+        ].map((p, i) => (
+          <div key={i} className="row gap-12" style={{
+            padding: 14, borderRadius: 14, border: '1px solid var(--line)',
+            background: p.on ? 'var(--accent-soft)' : 'var(--paper-dim)',
+            borderColor: p.on ? 'var(--accent)' : 'var(--line)',
+            opacity: p.dim ? 0.5 : 1,
+          }}>
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{p.name}</div>
+              <div className="small">{p.sub}</div>
+            </div>
+            {p.on && <div style={{ width: 20, height: 20, borderRadius: 999,
+              background: 'var(--accent)', display: 'grid', placeItems: 'center', color: 'white', fontSize: 12 }}>✓</div>}
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 24, paddingBottom: 24 }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 3. ONBOARDING 2 — Import your curve
+function Onb2Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 2 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 26 }}>Bring your curve.</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5, maxWidth: 290 }}>
+        Crest reads from the tracker you already use. We don't replace it. We add the reframe.
+      </div>
+      <div className="col gap-12" style={{ marginTop: 22 }}>
+        {[
+          { name: 'Apple Health', sub: '218 weigh-ins · since Jan 4', on: true },
+          { name: 'MacroFactor', sub: 'Adaptive TDEE · linked', on: true },
+          { name: 'Happy Scale', sub: 'CSV export', on: false },
+          { name: 'Lose It!', sub: 'CSV export', on: false },
+        ].map((p, i) => (
+          <div key={i} className="row gap-12" style={{
+            padding: 14, borderRadius: 14, border: '1px solid var(--line)',
+            background: p.on ? 'var(--accent-soft)' : 'var(--paper-dim)',
+            borderColor: p.on ? 'rgba(74, 107, 87, 0.3)' : 'var(--line)',
+          }}>
+            <div style={{ width: 36, height: 36, borderRadius: 10,
+              background: 'var(--paper)', border: '1px solid var(--line)',
+              display: 'grid', placeItems: 'center', fontFamily: 'Newsreader, serif',
+              fontSize: 18, color: 'var(--accent)' }}>{p.name[0]}</div>
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{p.name}</div>
+              <div className="small">{p.sub}</div>
+            </div>
+            <div className="small" style={{ color: p.on ? 'var(--accent)' : 'var(--ink-3)',
+              fontWeight: 600 }}>{p.on ? '✓ linked' : 'Connect'}</div>
+          </div>
+        ))}
+      </div>
+      <div className="card" style={{ marginTop: 16, background: 'transparent',
+        borderStyle: 'dashed', borderColor: 'var(--line-strong)' }}>
+        <div className="small" style={{ fontStyle: 'italic', fontFamily: 'Newsreader, serif',
+          color: 'var(--ink-2)', lineHeight: 1.5 }}>
+          We pull weight history only. No macros, no meals.
+          MacroFactor stays the source of truth for calories.
+        </div>
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 20, paddingBottom: 24 }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 4. ONBOARDING 3 — Where the plateau hit
+function Onb3Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Step 3 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 26 }}>Where did the<br/>scale stop?</div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.5, maxWidth: 290 }}>
+        Tap the day you remember the flat line starting. Crest will use that as the anchor.
+      </div>
+      <div className="card" style={{ marginTop: 22, padding: 18 }}>
+        <div className="row" style={{ justifyContent: 'space-between', marginBottom: 10 }}>
+          <div className="label">Jan 4 → today · 174 days</div>
+          <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>−52.4 lb</div>
+        </div>
+        {/* Long-form curve with plateau highlight */}
+        <svg viewBox="0 0 280 120" width="100%" height="120" preserveAspectRatio="none">
+          {/* plateau band */}
+          <rect x="210" y="80" width="62" height="32" fill="var(--warn-soft)" rx="4"/>
+          {/* curve down then flat */}
+          <path d="M 8,16 L 30,22 L 55,30 L 80,40 L 105,52 L 130,62 L 155,70 L 180,78 L 205,84 L 225,86 L 245,87 L 265,86 L 272,87"
+            fill="none" stroke="var(--accent)" strokeWidth="2.2" strokeLinecap="round"/>
+          {/* anchor pin */}
+          <circle cx="210" cy="84" r="6" fill="var(--paper)" stroke="var(--warn)" strokeWidth="2.2"/>
+          <line x1="210" y1="78" x2="210" y2="60" stroke="var(--warn)" strokeWidth="1.4" strokeDasharray="2 3"/>
+          <text x="210" y="54" textAnchor="middle" fontSize="9" fill="var(--warn)" fontWeight="600">May 28</text>
+        </svg>
+        <div className="row" style={{ justifyContent: 'space-between', marginTop: 4 }}>
+          <div className="small">227.0 lb</div>
+          <div className="small">Plateau · 27 days</div>
+          <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>174.6 lb</div>
+        </div>
+      </div>
+      <div className="card warn" style={{ marginTop: 14 }}>
+        <div className="label" style={{ color: 'var(--warn)', marginBottom: 6 }}>What Crest sees</div>
+        <div style={{ fontSize: 13, lineHeight: 1.5, fontFamily: 'Newsreader, serif',
+          fontStyle: 'italic', color: 'var(--ink)' }}>
+          You've held under 175 lb for 27 days after 23 weeks of steady loss.
+          This is the third most common place for a plateau to land.
+        </div>
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 20, paddingBottom: 24 }}>
+        <button className="btn-primary">This is my plateau</button>
+      </div>
+    </div>
+  );
+}
+
+// 5. CORE — Morning weigh-in, reframed
+function CoreMorningScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 }}>
+        <div className="col gap-6">
+          <div className="small">Tuesday · June 24</div>
+          <div className="h2 serif">Good morning, Jenna.</div>
+        </div>
+        <div style={{ width: 36, height: 36, borderRadius: 999, background: 'var(--paper-dim)',
+          border: '1px solid var(--line)', display: 'grid', placeItems: 'center',
+          fontSize: 14, color: 'var(--ink-2)' }}>J</div>
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div className="card accent" style={{ padding: 18 }}>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div className="label" style={{ color: 'var(--accent)' }}>14-day trend</div>
+            <div className="small" style={{ color: 'var(--ink-2)' }}>
+              <span style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>tap to see today's number</span>
+            </div>
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <TrendCurve height={92} accent/>
+          </div>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 8 }}>
+            <div style={{ fontFamily: 'Newsreader, serif', fontSize: 28, color: 'var(--accent)',
+              fontWeight: 500, letterSpacing: '-0.01em' }}>
+              184.2<span style={{ fontSize: 14, color: 'var(--ink-3)', fontWeight: 400 }}> lb avg</span>
+            </div>
+            <div className="col" style={{ alignItems: 'flex-end' }}>
+              <div className="small">vs 14d ago</div>
+              <div style={{ fontSize: 14, color: 'var(--ink-2)', fontWeight: 600 }}>−0.5 lb</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 14 }}>
+        <div className="card" style={{ padding: 16 }}>
+          <div className="row gap-8" style={{ alignItems: 'flex-start' }}>
+            <div style={{ width: 22, height: 22, borderRadius: 999, background: 'var(--accent)',
+              color: 'white', display: 'grid', placeItems: 'center', fontSize: 12, flexShrink: 0,
+              marginTop: 1 }}>i</div>
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div style={{ fontFamily: 'Newsreader, serif', fontSize: 15, lineHeight: 1.45,
+                color: 'var(--ink)' }}>
+                Day 27 of the plateau. The flat line is still inside the normal range — most plateaus break between week 3 and week 6.
+              </div>
+              <div className="small" style={{ color: 'var(--accent)', fontWeight: 600,
+                marginTop: 2 }}>Read the plateau science →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 14 }}>
+        <div className="label" style={{ marginBottom: 10 }}>This morning's number</div>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center',
+          padding: '14px 16px', borderRadius: 14, background: 'var(--paper-dim)',
+          border: '1px dashed var(--line-strong)' }}>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', fontFamily: 'Newsreader, serif',
+            fontStyle: 'italic' }}>
+            Hidden by default
+          </div>
+          <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>Tap to reveal</div>
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// 6. CORE — Parallel NSV curve
+function CoreNsvScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 8 }}>
+        <div className="col gap-6">
+          <div className="small">Sunday reflection · week 18</div>
+          <div className="h2 serif">What the scale<br/>can't see.</div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div className="card accent" style={{ padding: 16 }}>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div className="label" style={{ color: 'var(--accent)' }}>Non-scale curve · 14 weeks</div>
+            <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>+9 wins</div>
+          </div>
+          <div style={{ marginTop: 10 }}>
+            <NsvCurve height={84}/>
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--ink-2)', marginTop: 8,
+            fontFamily: 'Newsreader, serif', fontStyle: 'italic', lineHeight: 1.5 }}>
+            "Sleep loud, jeans loose, deadlift up." — your last three weeks.
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 18 }}>
+        <div className="label" style={{ marginBottom: 10 }}>Logged this week</div>
+        <div className="col gap-10">
+          {[
+            { tag: 'Clothes', note: 'Levi 511s I tightened last month — back to factory hole.', when: 'Mon' },
+            { tag: 'Sleep', note: 'Woke before alarm three days running. Hasn\'t happened in months.', when: 'Wed' },
+            { tag: 'Lift', note: 'Bench 135 × 5 felt easy. I was at 115 × 3 in April.', when: 'Fri' },
+          ].map((n, i) => (
+            <div key={i} className="card" style={{ padding: 14 }}>
+              <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+                <div className="chip" style={{ padding: '3px 10px', fontSize: 10,
+                  background: 'var(--accent-soft)', color: 'var(--accent)', border: 'none' }}>{n.tag}</div>
+                <div className="small">{n.when}</div>
+              </div>
+              <div style={{ fontSize: 13.5, lineHeight: 1.5, fontFamily: 'Newsreader, serif',
+                fontStyle: 'italic', color: 'var(--ink)' }}>{n.note}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <button className="btn-secondary" style={{ width: '100%' }}>
+          Log this week's reflection
+        </button>
+      </div>
+      <NavBar active="reflect" />
+    </div>
+  );
+}
+
+// 7. CORE — Troubleshooter: pick one
+function CoreTroubleScreen() {
+  const interventions = [
+    { id: 'recal', tag: 'Recalibrate', title: 'Recheck your maintenance',
+      body: 'MacroFactor pushed your TDEE down 110 kcal over four weeks. That alone could explain the stall.',
+      effort: '5 min · re-read your own data', on: true, picked: false },
+    { id: 'break', tag: 'Diet break', title: 'Eat at maintenance for 10 days',
+      body: 'Not a binge. A planned pause. The literature on this is unusually solid for plateaus past week 4.',
+      effort: '10 days · structured',  on: false, picked: true },
+    { id: 'refeed', tag: 'Refeed', title: 'One high-carb day, then back',
+      body: 'Lighter weight than a full break. Useful if your training\'s tanked but the scale\'s only just stalled.',
+      effort: '1 day', on: false, picked: false },
+    { id: 'sleep', tag: 'Sleep audit', title: 'Track 7 nights honestly',
+      body: 'You logged 5h41 average last week. Cortisol from short sleep blunts the scale before it blunts the fat.',
+      effort: '1 week · passive', on: false, picked: false },
+  ];
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 12 }}>
+        <div style={{ fontSize: 16, color: 'var(--ink-2)' }}>←</div>
+        <div className="col" style={{ alignItems: 'center', gap: 2 }}>
+          <div className="small" style={{ color: 'var(--warn)', fontWeight: 600,
+            letterSpacing: '0.1em', textTransform: 'uppercase' }}>Plateau · Day 27</div>
+          <div className="h2 serif" style={{ fontSize: 18 }}>Pick one thing.</div>
+        </div>
+        <div style={{ fontSize: 16, color: 'var(--ink-3)' }}>⋯</div>
+      </div>
+      <div className="pad" style={{ marginTop: 12 }}>
+        <div style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.55,
+          fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>
+          You don't need five levers. You need one, run honestly for the time it takes to know if it worked. Crest will check in on day 10.
+        </div>
+      </div>
+      <div className="pad col gap-10" style={{ marginTop: 16 }}>
+        {interventions.map(it => (
+          <div key={it.id} className="card" style={{
+            padding: 14,
+            background: it.picked ? 'var(--accent-soft)' : 'var(--paper-dim)',
+            borderColor: it.picked ? 'var(--accent)' : 'var(--line)',
+            position: 'relative',
+          }}>
+            <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+              <div className="chip" style={{ padding: '3px 10px', fontSize: 10,
+                background: it.picked ? 'var(--accent)' : 'var(--paper)',
+                color: it.picked ? 'white' : 'var(--ink-2)',
+                border: 'none' }}>{it.tag}</div>
+              {it.picked && <div className="small" style={{ color: 'var(--accent)',
+                fontWeight: 600 }}>✓ picked</div>}
+            </div>
+            <div style={{ fontFamily: 'Newsreader, serif', fontWeight: 600,
+              fontSize: 16, color: 'var(--ink)', marginBottom: 4 }}>{it.title}</div>
+            <div style={{ fontSize: 12.5, lineHeight: 1.5, color: 'var(--ink-2)' }}>{it.body}</div>
+            <div className="small" style={{ marginTop: 8, color: 'var(--ink-3)' }}>{it.effort}</div>
+          </div>
+        ))}
+      </div>
+      <div className="pad" style={{ marginTop: 14, marginBottom: 18 }}>
+        <button className="btn-primary">Try a diet break for 10 days</button>
+      </div>
+    </div>
+  );
+}
+
+// 8. CORE — Cohort + plateau timeline (relatedness lift)
+function CoreCohortScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 12 }}>
+        <div className="col gap-6">
+          <div className="small">Where you sit · week 4 of plateau</div>
+          <div className="h2 serif">You're not alone<br/>on the flat part.</div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div className="card" style={{ padding: 16 }}>
+          <div className="label" style={{ marginBottom: 12 }}>Plateau timelines · 412 anonymized users</div>
+          {/* Histogram: distribution of plateau lengths */}
+          <svg viewBox="0 0 280 110" width="100%" height="110" preserveAspectRatio="none">
+            {[14, 28, 46, 58, 64, 52, 38, 24, 16, 10, 6, 4].map((v, i) => {
+              const barW = 280 / 12 - 4;
+              const barX = 6 + i * (280 / 12);
+              const barH = (v / 70) * 90;
+              const isYou = i === 3; // week 4
+              return (
+                <g key={i}>
+                  <rect x={barX} y={100 - barH} width={barW} height={barH}
+                    rx="2" fill={isYou ? 'var(--warn)' : 'var(--accent-dim)'}
+                    opacity={isYou ? 1 : 0.55}/>
+                  {isYou && <text x={barX + barW/2} y={100 - barH - 4}
+                    textAnchor="middle" fontSize="9" fontWeight="600"
+                    fill="var(--warn)">you</text>}
+                </g>
+              );
+            })}
+            <line x1="6" y1="100" x2="274" y2="100" stroke="var(--line-strong)" strokeWidth="1"/>
+          </svg>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 4 }}>
+            <div className="small">1w</div>
+            <div className="small">4w</div>
+            <div className="small">8w</div>
+            <div className="small">12w</div>
+          </div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, marginTop: 12,
+            fontFamily: 'Newsreader, serif', fontStyle: 'italic', color: 'var(--ink-2)' }}>
+            58 of every 100 people in your shape have a plateau that lasts 3–5 weeks. You are square in the middle of that bell.
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div className="label" style={{ marginBottom: 10 }}>What broke their plateau</div>
+        <div className="col gap-8">
+          {[
+            { label: 'Diet break (7–14 days)', pct: 42 },
+            { label: 'Recalibrated maintenance', pct: 27 },
+            { label: 'Sleep correction', pct: 16 },
+            { label: 'Nothing — it broke on its own', pct: 15 },
+          ].map((b, i) => (
+            <div key={i} className="col gap-6">
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <div style={{ fontSize: 12.5 }}>{b.label}</div>
+                <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>{b.pct}%</div>
+              </div>
+              <div style={{ height: 6, borderRadius: 999, background: 'var(--paper-dim)',
+                overflow: 'hidden' }}>
+                <div style={{ width: `${b.pct * 2}%`, height: '100%',
+                  background: 'var(--accent)', borderRadius: 999 }}/>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 16, marginBottom: 18 }}>
+        <div className="small" style={{ textAlign: 'center', fontStyle: 'italic',
+          fontFamily: 'Newsreader, serif', color: 'var(--ink-3)' }}>
+          Aggregated · no names, no chat, no comparison shame.
+        </div>
+      </div>
+      <NavBar active="curve" />
+    </div>
+  );
+}
+
+// ---------------- Phone tile (label + IosFrame + caption) ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open with a calm, flat trend curve. The whole pitch sits inside the chart: the scale stopped, but the story hasn't.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Where are you" caption="Crest gates itself to the messy middle. The first month is the wrong audience and the app says so out loud.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Import your curve" caption="The judges' biggest worry: don't replace MacroFactor. The onboarding answers it on screen two by reading from it instead.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Anchor the plateau" caption="The user picks the day the line went flat. That date becomes the reframe Crest narrates against from day one.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Morning weigh-in" caption="The daily number is one tap away — not hidden, not headlined. Above it: the 14-day trend with a one-line reframe.">
+        <CoreMorningScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Non-scale curve" caption="Weekly reflections stitch into a parallel curve. Three Newsreader-italic notes per week make it feel like a journal, not a checkbox.">
+        <CoreNsvScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Pick one lever" caption="When the plateau crosses week three, the troubleshooter opens. One pick at a time, not a five-item plan. Crest checks in on day 10.">
+        <CoreTroubleScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Where you sit" caption="The retention judge's note made flesh: a lightweight relatedness layer. Aggregated cohort data, no chat, no comparison shame.">
+        <CoreCohortScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

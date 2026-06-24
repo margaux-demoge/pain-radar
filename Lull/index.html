@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Lull · Pain Radar proto 10/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #1B2238;
+    --dusk: #2E3856;
+    --dusk-2: #424E70;
+    --moon: #F2EDE2;
+    --paper: #F6F2EA;
+    --paper-dim: #ECE6D8;
+    --cream: #EAE3D2;
+    --accent: #C0855A;
+    --accent-soft: rgba(192, 133, 90, 0.14);
+    --sage: #8A9A87;
+    --ink: #1F2238;
+    --ink-2: #4C5169;
+    --ink-3: #828699;
+    --line: rgba(31, 34, 56, 0.12);
+    --line-strong: rgba(31, 34, 56, 0.22);
+  }
+  html, body { margin: 0; padding: 0; background: var(--moon); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 237, 226, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--accent); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App styles, scoped */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .scr.dark { background: linear-gradient(180deg, #1B2238 0%, #2E3856 100%); color: var(--moon); }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--night); color: var(--moon);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--night); color: var(--moon);
+    border-color: var(--night);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 18px; padding: 18px;
+  }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--accent); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--accent); margin-top: 2px; }
+
+  /* Star field for dark screens */
+  #app .stars {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 18%, rgba(242,237,226,0.7), transparent 50%),
+      radial-gradient(1px 1px at 34% 8%, rgba(242,237,226,0.5), transparent 50%),
+      radial-gradient(1.5px 1.5px at 68% 14%, rgba(242,237,226,0.6), transparent 50%),
+      radial-gradient(1px 1px at 82% 6%, rgba(242,237,226,0.4), transparent 50%),
+      radial-gradient(1px 1px at 22% 28%, rgba(242,237,226,0.3), transparent 50%),
+      radial-gradient(1px 1px at 90% 22%, rgba(242,237,226,0.5), transparent 50%);
+    pointer-events: none;
+  }
+  #app .moon-orb {
+    position: absolute; top: 80px; right: 40px;
+    width: 70px; height: 70px; border-radius: 999px;
+    background: radial-gradient(circle at 35% 35%, #F2EDE2 0%, #D9CFB7 70%, #B4A580 100%);
+    box-shadow: 0 0 40px rgba(242, 237, 226, 0.2);
+  }
+  #app .rating-pill {
+    flex: 1; display: grid; place-items: center;
+    padding: 14px 0; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px;
+    cursor: pointer;
+  }
+  #app .rating-pill.on {
+    background: var(--accent); color: var(--moon);
+    border-color: var(--accent);
+  }
+  #app .step-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+  }
+  #app .step-bullet {
+    width: 24px; height: 24px; border-radius: 999px;
+    border: 1.5px solid rgba(242,237,226,0.4);
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 600;
+    color: rgba(242,237,226,0.85);
+    flex-shrink: 0;
+  }
+  #app .step-bullet.done {
+    background: var(--sage); border-color: var(--sage);
+    color: var(--night);
+  }
+  #app .step-bullet.now {
+    background: var(--accent); border-color: var(--accent);
+    color: var(--moon);
+    box-shadow: 0 0 0 4px rgba(192, 133, 90, 0.25);
+  }
+  #app .step-text { font-size: 14px; line-height: 1.45; }
+  #app .step-text .step-time { color: rgba(242,237,226,0.55); font-size: 11px; margin-top: 2px; display: block; }
+  #app .step-text.done { color: rgba(242,237,226,0.5); text-decoration: line-through; text-decoration-thickness: 1px; }
+  #app .trend-bar {
+    display: flex; align-items: flex-end; gap: 4px;
+    height: 60px;
+  }
+  #app .trend-bar .b {
+    flex: 1; background: var(--accent-soft);
+    border-radius: 4px 4px 0 0;
+    border-top: 2px solid var(--accent);
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">10 / 45 — Lull</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Loop/index.html" title="Previous: Loop">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Plate/index.html" title="Next: Plate">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Bedtime coach · adaptive routine</div>
+  <h1 class="page-title serif">Lull</h1>
+  <p class="page-tagline serif">A bedtime routine that adapts to your kid, not the other way around. Lull learns what works in your house and stops you from white-knuckling the same broken routine every night.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline. Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Lull/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '7:31', battery = 64, darkStatus = false }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: darkStatus ? '#F2EDE2' : '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Icons ----------------
+const Ico = {
+  moon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 14.5A8 8 0 119.5 4a6.5 6.5 0 0010.5 10.5z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/></svg>,
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  history: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5"/><path d="M10 6v4l3 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  moves: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 6h14 M3 10h14 M3 14h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  check: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Tonight', icon: Ico.home },
+    { id: 'history', label: 'Nights', icon: Ico.history },
+    { id: 'moves', label: 'Moves', icon: Ico.moves },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr dark">
+      <div className="stars" />
+      <div className="moon-orb" />
+      <div className="pad col gap-16" style={{paddingTop: 72, position: 'relative', height: '100%', boxSizing: 'border-box'}}>
+        <div style={{textTransform:'uppercase', letterSpacing:'0.2em', fontSize:10, color:'rgba(242,237,226,0.55)', fontWeight:600}}>For the 7:30pm shift</div>
+        <div className="h1 serif" style={{color:'var(--moon)', fontSize: 34, lineHeight: 1.15, marginTop: 4}}>
+          A bedtime routine<br/>that adapts to <em style={{color:'var(--accent)'}}>your</em> kid.
+        </div>
+        <div style={{fontSize: 14, lineHeight: 1.6, color:'rgba(242,237,226,0.72)', maxWidth: 320}}>
+          Lull learns what works in your house and tells you one thing to try next, not twenty. No streaks. No shame.
+        </div>
+        <div style={{flex: 1}} />
+        <div className="col gap-8" style={{paddingBottom: 16}}>
+          <button className="btn-primary" style={{background:'var(--accent)', color:'var(--moon)'}}>Start the 5-minute interview</button>
+          <button className="btn-secondary" style={{color:'rgba(242,237,226,0.85)', borderColor:'rgba(242,237,226,0.25)'}}>I already use Lull · Sign in</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 72, paddingBottom: 90}}>
+        <div className="label">Step 1 of 5 · Your kid</div>
+        <div className="h1 serif">Tell us about the kid we're putting to bed.</div>
+        <div className="meta">No medical questions. Just enough to stop giving you advice meant for a different child.</div>
+        <div className="col gap-12" style={{marginTop: 4}}>
+          <div className="field">
+            <div className="field-label">Name</div>
+            <div className="field-value">Mira</div>
+          </div>
+          <div className="field">
+            <div className="field-label">Age</div>
+            <div className="field-value">3 yrs · 4 months</div>
+          </div>
+          <div className="field">
+            <div className="field-label">Naps</div>
+            <div className="field-value">Dropped six weeks ago</div>
+          </div>
+          <div>
+            <div className="label" style={{marginBottom: 10}}>What's currently breaking?</div>
+            <div className="row gap-8" style={{flexWrap:'wrap'}}>
+              <span className="chip on">Won't stay in bed</span>
+              <span className="chip">Won't fall asleep</span>
+              <span className="chip on">Endless "one more"</span>
+              <span className="chip">Night waking</span>
+              <span className="chip">Early waking</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{position:'absolute', bottom: 22, left: 0, right: 0}}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 72, paddingBottom: 90}}>
+        <div className="label">Step 3 of 5 · What you already do</div>
+        <div className="h1 serif">Walk us through last night.</div>
+        <div className="meta">Lull builds on your routine. We won't replace it with a template.</div>
+        <div className="col gap-8" style={{marginTop: 4}}>
+          {[
+            {t:'6:45', s:'Dinner ends'},
+            {t:'7:00', s:'Bath'},
+            {t:'7:20', s:'Pyjamas + teeth'},
+            {t:'7:35', s:'Two books on the floor'},
+            {t:'7:50', s:'Lights out, lie down with her'},
+            {t:'8:30', s:'She falls asleep · I sneak out'},
+          ].map((row,i) => (
+            <div key={i} className="row gap-12" style={{padding:'10px 14px', background:'var(--paper-dim)', borderRadius: 12, border:'1px solid var(--line)'}}>
+              <div style={{fontFamily:'"Newsreader", serif', fontStyle:'italic', color:'var(--accent)', fontWeight:600, fontSize:14, width: 36}}>{row.t}</div>
+              <div style={{fontSize: 14}}>{row.s}</div>
+            </div>
+          ))}
+          <button className="btn-secondary" style={{marginTop: 6, fontSize: 13}}>+ Add a step</button>
+        </div>
+      </div>
+      <div className="pad" style={{position:'absolute', bottom: 22, left: 0, right: 0}}>
+        <button className="btn-primary">That's our routine</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 72, paddingBottom: 90}}>
+        <div className="label">Step 5 of 5 · Tonight's small change</div>
+        <div className="h1 serif">One thing to try tonight.</div>
+        <div className="card col gap-12">
+          <div className="row gap-8" style={{alignItems:'center'}}>
+            <div style={{width: 32, height: 32, borderRadius: 999, background:'var(--accent-soft)', display:'grid', placeItems:'center', color:'var(--accent)'}}>{Ico.moon}</div>
+            <div className="label" style={{color:'var(--accent)'}}>Move · Lighting</div>
+          </div>
+          <div className="h2 serif">Swap the overhead for the bedside lamp at 7:20.</div>
+          <div style={{fontSize: 13, lineHeight: 1.55, color:'var(--ink-2)'}}>
+            Mira drops her nap and you're keeping the room bright until lights-out. A warm low light during teeth and books tells her body bedtime started fifteen minutes ago.
+          </div>
+          <div className="divider" style={{marginTop: 4}} />
+          <div className="row" style={{justifyContent:'space-between'}}>
+            <div className="small">Try for 3 nights · Lull will check in</div>
+            <div style={{fontFamily:'"Newsreader", serif', fontStyle:'italic', color:'var(--accent)', fontSize:13}}>1 of 1</div>
+          </div>
+        </div>
+        <div className="meta" style={{fontStyle:'italic', textAlign:'center', marginTop: 4}}>
+          We picked the smallest thing first. The rest of your routine stays.
+        </div>
+      </div>
+      <div className="pad" style={{position:'absolute', bottom: 22, left: 0, right: 0}}>
+        <button className="btn-primary">I'll try it tonight</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreLockScreen() {
+  return (
+    <div className="scr dark">
+      <div className="stars" />
+      <div className="pad col gap-12" style={{paddingTop: 80, position:'relative', height: '100%', boxSizing: 'border-box'}}>
+        <div style={{fontSize: 11, textTransform:'uppercase', letterSpacing:'0.18em', color:'rgba(242,237,226,0.55)', fontWeight:600}}>Lull · Mira's bedtime</div>
+        <div className="serif" style={{fontSize: 28, fontWeight: 600, color:'var(--moon)', lineHeight:1.15}}>
+          We're 18 minutes in.<br/><span style={{color:'rgba(242,237,226,0.6)', fontStyle:'italic'}}>Next: books on the floor.</span>
+        </div>
+        <div className="col" style={{marginTop: 8}}>
+          {[
+            {n:'1', t:'Dinner ends', time:'6:45', state:'done'},
+            {n:'2', t:'Bath', time:'7:00', state:'done'},
+            {n:'3', t:'Pyjamas + teeth', time:'7:20', state:'done'},
+            {n:'4', t:'Bedside lamp on · overhead off', time:'7:20', state:'done', tag:'new'},
+            {n:'5', t:'Two books on the floor', time:'7:35', state:'now'},
+            {n:'6', t:'Lights out · lie down', time:'7:50', state:''},
+          ].map((s,i)=>(
+            <div key={i} className="step-row">
+              <div className={`step-bullet ${s.state}`}>{s.state === 'done' ? Ico.check : s.n}</div>
+              <div className={`step-text ${s.state === 'done' ? 'done' : ''}`} style={{flex:1, color: s.state==='now' ? 'var(--moon)' : (s.state==='done' ? 'rgba(242,237,226,0.5)':'rgba(242,237,226,0.85)')}}>
+                {s.t}{s.tag && <span style={{marginLeft:8, padding:'2px 7px', borderRadius: 999, background:'var(--accent)', color:'var(--moon)', fontSize:9, letterSpacing:'0.1em', fontWeight:700, textTransform:'uppercase', verticalAlign:'middle'}}>tonight's change</span>}
+                <span className="step-time">{s.time}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{flex:1}}/>
+        <div style={{padding: '12px 14px', borderRadius: 14, background:'rgba(242,237,226,0.08)', border:'1px solid rgba(242,237,226,0.15)', fontSize: 12, color:'rgba(242,237,226,0.8)', lineHeight: 1.5, marginBottom: 14}}>
+          Tap when she's down · No need to log now, we'll ask after.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreRateScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 72, paddingBottom: 90}}>
+        <div className="label">Tonight · 8:42pm</div>
+        <div className="h1 serif">She's down. How did tonight go?</div>
+        <div className="meta">One tap. The bad nights count more, not less.</div>
+        <div className="row gap-8" style={{marginTop: 6}}>
+          {[1,2,3,4,5].map(n => (
+            <div key={n} className={`rating-pill ${n===3 ? 'on' : ''}`}>{n}</div>
+          ))}
+        </div>
+        <div className="row" style={{justifyContent:'space-between', fontSize: 11, color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.1em'}}>
+          <span>Brutal</span>
+          <span>Fine</span>
+          <span>Smooth</span>
+        </div>
+        <div className="card col gap-8" style={{marginTop: 4}}>
+          <div className="label">Bedtime took</div>
+          <div className="serif" style={{fontSize: 28, fontWeight: 600}}>
+            52 <span style={{fontSize:14, color:'var(--ink-3)', fontWeight: 400}}>minutes</span>
+          </div>
+          <div className="small">8 mins shorter than last Tuesday. We'll keep the lamp change.</div>
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+function CoreHomeScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 72, paddingBottom: 90}}>
+        <div className="row" style={{justifyContent:'space-between', alignItems:'flex-start'}}>
+          <div className="col gap-6">
+            <div className="label">Tuesday · Day 12 with Lull</div>
+            <div className="h1 serif">Bedtime is<br/>getting shorter.</div>
+          </div>
+        </div>
+        <div className="card col gap-12">
+          <div className="row" style={{justifyContent:'space-between'}}>
+            <div className="label">Last 14 nights · minutes</div>
+            <div className="small" style={{color:'var(--sage)', fontWeight:600}}>↓ 21%</div>
+          </div>
+          <div className="trend-bar">
+            {[64,72,58,80,68,55,62,50,58,46,52,44,48,52].map((h,i)=>(
+              <div key={i} className="b" style={{height: `${h}%`}}/>
+            ))}
+          </div>
+          <div className="row" style={{justifyContent:'space-between'}}>
+            <div className="small">Wk 1 avg · 68 min</div>
+            <div className="small" style={{color:'var(--ink)', fontWeight:600}}>This wk · 49 min</div>
+          </div>
+        </div>
+        <div className="card col gap-8">
+          <div className="row gap-8">
+            <div style={{width: 6, height: 6, borderRadius: 999, background:'var(--sage)'}}/>
+            <div className="label" style={{color:'var(--sage)'}}>Lull noticed</div>
+          </div>
+          <div style={{fontSize: 15, lineHeight: 1.45, fontFamily:'"Newsreader", serif'}}>
+            Mondays run 14 min longer than other nights. Swim class at 5pm might be the wrinkle.
+          </div>
+          <button className="btn-secondary" style={{marginTop:6, fontSize: 13}}>Look at Mondays · 2 moves to try</button>
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+function CoreMoveScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 72, paddingBottom: 90}}>
+        <div className="label">Three rough nights in a row</div>
+        <div className="h1 serif">Let's try something different.</div>
+        <div className="meta">Not "be more consistent." A different move, picked from what's worked for kids like Mira.</div>
+        <div className="card col gap-12">
+          <div className="row gap-8">
+            <div style={{width: 32, height: 32, borderRadius: 999, background:'var(--accent-soft)', display:'grid', placeItems:'center', color:'var(--accent)', fontWeight:700, fontFamily:'serif', fontSize: 14}}>02</div>
+            <div className="col">
+              <div className="label" style={{color:'var(--accent)'}}>New move · Wind-down</div>
+              <div className="small">Suggested by your last 10 nights</div>
+            </div>
+          </div>
+          <div className="h2 serif">Move bath to 6:30. Add 10 min of floor play after.</div>
+          <div style={{fontSize: 13, lineHeight: 1.55, color:'var(--ink-2)'}}>
+            On no-nap days, Mira hits a second wind right at bath time. Earlier bath, then quiet floor play, lets the cortisol drop before lights-out.
+          </div>
+          <div className="row gap-8" style={{flexWrap:'wrap', marginTop: 4}}>
+            <span className="chip" style={{fontSize:11}}>Tried by 312 parents</span>
+            <span className="chip" style={{fontSize:11, background:'var(--accent-soft)', borderColor:'transparent', color:'var(--accent)'}}>Worked for 68%</span>
+          </div>
+        </div>
+        <div className="col gap-8">
+          <button className="btn-primary">Try for 3 nights</button>
+          <button className="btn-secondary">Show me another move</button>
+        </div>
+        <div className="meta" style={{textAlign:'center', fontStyle:'italic'}}>
+          If it doesn't help by night three, Lull will roll it back. No streak to break.
+        </div>
+      </div>
+      <NavBar active="moves" />
+    </div>
+  );
+}
+
+function CoreHistoryScreen() {
+  const nights = [
+    {d:'Mon 17', m:'63', r:2, n:'Late swim, second wind at bath'},
+    {d:'Tue 18', m:'52', r:3, n:'Lamp change · she noticed'},
+    {d:'Wed 19', m:'44', r:4, n:'Dad did the handoff'},
+    {d:'Thu 20', m:'48', r:4, n:''},
+    {d:'Fri 21', m:'71', r:2, n:'Sleepover sugar'},
+    {d:'Sat 22', m:'58', r:3, n:''},
+    {d:'Sun 23', m:'46', r:4, n:'Quiet day, smooth night'},
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 72, paddingBottom: 90}}>
+        <div className="row" style={{justifyContent:'space-between', alignItems:'baseline'}}>
+          <div className="h1 serif">Your nights</div>
+          <div className="small">Last 7</div>
+        </div>
+        <div className="col gap-6">
+          {nights.map((nt,i)=>(
+            <div key={i} className="row gap-12" style={{padding:'12px 14px', background:'var(--paper-dim)', borderRadius:12, border:'1px solid var(--line)'}}>
+              <div style={{fontFamily:'"Newsreader", serif', fontStyle:'italic', color:'var(--accent)', fontWeight:600, fontSize:13, width: 50}}>{nt.d}</div>
+              <div className="col" style={{flex:1, gap:2}}>
+                <div className="row gap-6" style={{alignItems:'baseline'}}>
+                  <div style={{fontSize: 15, fontWeight: 600}}>{nt.m}<span style={{fontSize:11, color:'var(--ink-3)', fontWeight:400}}> min</span></div>
+                  <div style={{display:'flex', gap:2}}>
+                    {[1,2,3,4,5].map(s=>(
+                      <div key={s} style={{width:6, height:6, borderRadius:999, background: s<=nt.r ? 'var(--accent)' : 'var(--line-strong)'}}/>
+                    ))}
+                  </div>
+                </div>
+                {nt.n && <div className="small" style={{fontStyle:'italic'}}>{nt.n}</div>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="card col gap-6" style={{borderStyle:'dashed', background:'transparent'}}>
+          <div className="label" style={{color:'var(--sage)'}}>The only thing we care about</div>
+          <div style={{fontFamily:'"Newsreader", serif', fontSize:16, fontStyle:'italic', lineHeight:1.45}}>
+            Minutes, trending down. No streak. Bad nights still count.
+          </div>
+        </div>
+      </div>
+      <NavBar active="history" />
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Opens at dusk. No claims of sleep training, no streak, no perfect-kid promise — just one warm light on a hard hour.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Your kid" caption="Five minutes, not fifty. Lull asks what's breaking, not which sleep philosophy you subscribe to.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Your routine" caption="The user dictates the routine. Lull writes nothing from scratch — every move it suggests later layers on top of what's already there.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="One small change" caption="The first prescription is deliberately tiny. If Lull asked for three changes night one, no one would try any of them.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Lock-screen routine" caption="During bedtime, Lull lives on the lock screen — the next step in big type, the change of the week tagged so you don't forget. No app to open.">
+        <CoreLockScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="One-tap rating" caption="After she's down, one tap. Brutal-to-smooth. The bedtime minutes are captured automatically — the only thing Lull asks you to feel about is the night.">
+        <CoreRateScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Trend home" caption="The only metric: minutes, trending down. No streaks, no comparison to other families. Lull notices patterns (swim Mondays) before you do.">
+        <CoreHomeScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Suggested move" caption="When something stops working, Lull doesn't say 'be more consistent.' It picks one move from a library — and rolls back automatically if night three doesn't help.">
+        <CoreMoveScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

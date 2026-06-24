@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Worth · Pain Radar proto 40/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EFE9E4;
+    --paper: #F7F2EC;
+    --paper-dim: #E7DFD6;
+    --rust: #8C5B6E;            /* dusty rose accent */
+    --rust-soft: rgba(140, 91, 110, 0.12);
+    --rust-dim: #B6889A;
+    --sage: #6E7F73;
+    --sage-soft: rgba(110, 127, 115, 0.15);
+    --ink: #2B2A2E;
+    --ink-2: #564F55;
+    --ink-3: #8B838A;
+    --line: rgba(43, 42, 46, 0.12);
+    --line-strong: rgba(43, 42, 46, 0.22);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(239, 233, 228, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 760px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rust); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--rust); color: var(--paper);
+    border-color: var(--rust);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--rust); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--rust); margin-top: 2px; }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">40 / 45 — Worth</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Voice/index.html" title="Previous: Voice">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Yore/index.html" title="Next: Yore">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Conditional dating freeze · weight-decoupling course</div>
+  <h1 class="page-title serif">Worth</h1>
+  <p class="page-tagline serif">You don't owe a number on a scale your dating life. Worth is the coach that uncouples your value from your weight loss timeline.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟢 EMERGING</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🔴 BUILT_ON_SAND</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photographs.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Worth/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const Ico = {
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  book: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 4h6a3 3 0 013 3v10H7a3 3 0 01-3-3V4z M16 4h-3 M16 4v13" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
+  pulse: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M2 10h4l2-5 3 10 2-5h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  check: <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'This week', icon: Ico.home },
+    { id: 'log', label: 'Log', icon: Ico.book },
+    { id: 'curve', label: 'Curve', icon: Ico.pulse },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          <span>{it.label}</span>
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Decorative SVG — concentric weighted dots loosening (the metaphor: tight constraint -> looser)
+function FreezeMark({ size = 220, value = 0.62 }) {
+  // value: 0 (frozen) to 1 (free). We render rings whose opacity loosens from center.
+  const rings = [];
+  const cx = size / 2, cy = size / 2;
+  for (let i = 0; i < 7; i++) {
+    const r = 18 + i * 14;
+    const looseness = Math.max(0, (i / 6) - (1 - value));
+    rings.push(
+      <circle key={i} cx={cx} cy={cy} r={r}
+        fill="none" stroke="var(--rust)"
+        strokeWidth={1.2}
+        strokeDasharray={`${2 + looseness * 8} ${3 + looseness * 14}`}
+        opacity={0.25 + (1 - i / 7) * 0.55} />
+    );
+  }
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      {rings}
+      <circle cx={cx} cy={cy} r={4} fill="var(--rust)" />
+    </svg>
+  );
+}
+
+// 1. HERO
+function HeroScreen() {
+  return (
+    <div className="scr col" style={{ padding: '64px 28px 0', justifyContent: 'space-between', height: '100%' }}>
+      <div className="col gap-16" style={{ marginTop: 18 }}>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 13,
+          color: 'var(--rust)', letterSpacing: '0.04em' }}>
+          a six-week course
+        </div>
+        <div className="h1 serif" style={{ fontSize: 54, lineHeight: 0.95 }}>
+          Worth
+        </div>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+          fontSize: 19, lineHeight: 1.45, color: 'var(--ink-2)', marginTop: 6, maxWidth: 300 }}>
+          You don't owe a number<br/>on a scale your dating life.
+        </div>
+      </div>
+      <div style={{ alignSelf: 'center', marginTop: 6 }}>
+        <FreezeMark size={220} value={0.35} />
+      </div>
+      <div className="col gap-12" style={{ marginBottom: 24 }}>
+        <button className="btn-primary">Begin week one</button>
+        <button className="btn-secondary">I'm already a few weeks in</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 4, lineHeight: 1.5 }}>
+          Not a diet app. Not a dating app.<br/>Six weeks. Then you graduate.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 2. ONBOARDING 1 — Write the rule down
+function Onb1Screen() {
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Onboarding · 1 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 28, lineHeight: 1.1 }}>
+        Write the rule<br/>you've been living by.
+      </div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.55, maxWidth: 300 }}>
+        Just seeing it on the page, with the date you set it, is usually the first crack in it.
+      </div>
+      <div className="col gap-12" style={{ marginTop: 22 }}>
+        <div className="field" style={{ background: 'var(--paper)', borderColor: 'var(--rust)', padding: '16px 18px' }}>
+          <div className="field-label" style={{ color: 'var(--rust)' }}>The rule</div>
+          <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic',
+            fontSize: 22, lineHeight: 1.4, color: 'var(--ink)', marginTop: 4 }}>
+            "I'll date when I weigh <span style={{ borderBottom: '2px solid var(--rust)', padding: '0 4px' }}>145 lb</span>."
+          </div>
+        </div>
+        <div className="row gap-12">
+          <div className="field" style={{ flex: 1 }}>
+            <div className="field-label">Set on</div>
+            <div className="field-value">March 2023</div>
+          </div>
+          <div className="field" style={{ flex: 1 }}>
+            <div className="field-label">That's</div>
+            <div className="field-value">3 yrs, 3 mo ago</div>
+          </div>
+        </div>
+        <div className="field" style={{ background: 'var(--sage-soft)', borderColor: 'transparent' }}>
+          <div className="field-label" style={{ color: 'var(--sage)' }}>Worth noticed</div>
+          <div style={{ fontSize: 13.5, lineHeight: 1.5, color: 'var(--ink-2)', fontStyle: 'italic',
+            fontFamily: 'Newsreader, serif' }}>
+            You set this rule before you'd seen Barbie in theatres. Three Olympics ago, almost.
+          </div>
+        </div>
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 22, paddingBottom: 24 }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 3. ONBOARDING 2 — Measure the freeze
+function Onb2Screen() {
+  const qs = [
+    { q: 'I avoid situations where I might meet someone.', a: 4 },
+    { q: 'I check my weight before deciding whether to go out.', a: 3 },
+    { q: 'I have told a friend "not yet, not at this weight."', a: 5 },
+    { q: 'I feel my real life starts after the number.', a: 4 },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Onboarding · 2 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 28, lineHeight: 1.1 }}>
+        Where is the<br/>freeze right now?
+      </div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.55, maxWidth: 300 }}>
+        We'll ask these same four lines every Sunday. The curve is your progress, not the scale.
+      </div>
+      <div className="col gap-12" style={{ marginTop: 20 }}>
+        {qs.map((q, i) => (
+          <div key={i} className="col gap-8" style={{
+            padding: '12px 14px', borderRadius: 12,
+            background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+            <div style={{ fontSize: 13, lineHeight: 1.45, fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>
+              {q.q}
+            </div>
+            <div className="row gap-6">
+              {[1,2,3,4,5].map(n => (
+                <div key={n} style={{
+                  flex: 1, height: 28, borderRadius: 6,
+                  background: n <= q.a ? 'var(--rust)' : 'var(--paper)',
+                  border: '1px solid ' + (n <= q.a ? 'var(--rust)' : 'var(--line)'),
+                  display: 'grid', placeItems: 'center',
+                  color: n <= q.a ? 'var(--paper)' : 'var(--ink-3)',
+                  fontSize: 11, fontWeight: 600,
+                }}>{n}</div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 18, paddingBottom: 24 }}>
+        <div className="row" style={{ justifyContent: 'space-between', marginBottom: 12 }}>
+          <div className="small">Freeze index · today</div>
+          <div className="serif" style={{ fontSize: 18, color: 'var(--rust)' }}>78 / 100</div>
+        </div>
+        <button className="btn-primary">Set baseline</button>
+      </div>
+    </div>
+  );
+}
+
+// 4. ONBOARDING 3 — Sequence preview
+function Onb3Screen() {
+  const weeks = [
+    { n: 1, t: 'Name the contract', sub: 'Write the rule. Date it.' },
+    { n: 2, t: 'What do you actually want', sub: 'A prompt on the shape of the dating life you postponed.' },
+    { n: 3, t: 'Body vs worth', sub: 'A separation exercise. 8 minutes.' },
+    { n: 4, t: 'A small stretch', sub: 'Reactivate a profile, or text a friend\'s friend.' },
+    { n: 5, t: 'What came up', sub: 'Reflection. The week after a stretch is heavier than the stretch.' },
+    { n: 6, t: 'Graduate', sub: 'One conversation, one coffee, one moment.' },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '32px 24px 0', height: '100%' }}>
+      <div className="meta">Onboarding · 3 of 3</div>
+      <div className="h1 serif" style={{ marginTop: 14, fontSize: 28, lineHeight: 1.1 }}>
+        Six weeks.<br/>Then you're done.
+      </div>
+      <div className="meta" style={{ marginTop: 12, lineHeight: 1.55, maxWidth: 300 }}>
+        Worth ends. That's the point. Some weeks five minutes. Some weeks something that takes courage.
+      </div>
+      <div className="col gap-8" style={{ marginTop: 18 }}>
+        {weeks.map(w => (
+          <div key={w.n} className="row gap-12" style={{
+            padding: '10px 12px', borderRadius: 10,
+            background: w.n === 1 ? 'var(--rust-soft)' : 'transparent',
+            border: '1px solid ' + (w.n === 1 ? 'var(--rust)' : 'var(--line)'),
+          }}>
+            <div className="serif" style={{ fontSize: 22, fontStyle: 'italic',
+              color: w.n === 1 ? 'var(--rust)' : 'var(--ink-3)', width: 24, textAlign: 'center' }}>{w.n}</div>
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div style={{ fontSize: 13.5, fontWeight: 600 }}>{w.t}</div>
+              <div className="small" style={{ lineHeight: 1.4 }}>{w.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'auto', paddingTop: 16, paddingBottom: 22 }}>
+        <button className="btn-primary">Start week one · Sunday</button>
+      </div>
+    </div>
+  );
+}
+
+// 5. CORE — This week's work
+function CoreWeekScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'baseline', paddingTop: 12 }}>
+        <div className="col gap-6">
+          <div className="small">Week 3 of 6 · Tuesday</div>
+          <div className="h2 serif">Body vs worth</div>
+        </div>
+        <div className="serif" style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--rust)' }}>day 2/7</div>
+      </div>
+      <div className="pad" style={{ marginTop: 18 }}>
+        <div style={{
+          padding: '20px 18px', borderRadius: 16,
+          background: 'var(--paper-dim)', border: '1px solid var(--line)',
+        }}>
+          <div className="label" style={{ marginBottom: 10, color: 'var(--rust)' }}>Today's piece · 8 minutes</div>
+          <div className="serif" style={{ fontSize: 21, lineHeight: 1.3, fontStyle: 'italic', color: 'var(--ink)' }}>
+            Write down five things someone who loved you last year said about you. None of them are allowed to be about your body.
+          </div>
+          <div className="row gap-8" style={{ marginTop: 16 }}>
+            <div className="chip" style={{ padding: '4px 10px', fontSize: 11, background: 'var(--sage-soft)', borderColor: 'transparent', color: 'var(--sage)' }}>writing</div>
+            <div className="chip" style={{ padding: '4px 10px', fontSize: 11 }}>5–8 min</div>
+            <div className="chip" style={{ padding: '4px 10px', fontSize: 11 }}>private</div>
+          </div>
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 22 }}>
+        <div className="label">This week's arc</div>
+        <div className="col gap-8">
+          {[
+            { d: 'Sun', t: 'Sunday check-in', done: true },
+            { d: 'Mon', t: 'Read: the contract you didn\'t sign', done: true },
+            { d: 'Tue', t: 'Body vs worth · writing', done: false, active: true },
+            { d: 'Thu', t: 'Voice memo to yourself', done: false },
+            { d: 'Sat', t: 'Letter from week-6 you', done: false },
+          ].map((d, i) => (
+            <div key={i} className="row gap-10" style={{
+              padding: '8px 12px', borderRadius: 10,
+              background: d.active ? 'var(--rust-soft)' : 'transparent',
+              border: '1px solid ' + (d.active ? 'var(--rust)' : 'var(--line)'),
+            }}>
+              <div className="small serif" style={{ width: 28, fontStyle: 'italic', color: d.active ? 'var(--rust)' : 'var(--ink-3)' }}>{d.d}</div>
+              <div style={{ fontSize: 13, flex: 1, color: d.done ? 'var(--ink-3)' : 'var(--ink)',
+                textDecoration: d.done ? 'line-through' : 'none' }}>{d.t}</div>
+              {d.done && <div style={{ color: 'var(--sage)' }}>{Ico.check}</div>}
+              {d.active && <div style={{ color: 'var(--rust)' }}>{Ico.arrowR}</div>}
+            </div>
+          ))}
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// 6. CORE — The exercise itself (separation)
+function CoreExerciseScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%' }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 12 }}>
+        <div style={{ fontSize: 18, color: 'var(--ink-2)' }}>←</div>
+        <div className="col" style={{ alignItems: 'center', gap: 2 }}>
+          <div className="small" style={{ color: 'var(--rust)' }}>Body vs worth</div>
+          <div className="h2 serif" style={{ fontSize: 16 }}>Five things, none about a body</div>
+        </div>
+        <div style={{ width: 18 }} />
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div className="serif" style={{ fontSize: 14, fontStyle: 'italic', color: 'var(--ink-2)', lineHeight: 1.55 }}>
+          Last year someone who knew you well said something out loud about you. Write five of those things down. Anything physical doesn't count. Reach further if you need to.
+        </div>
+      </div>
+      <div className="pad col gap-10" style={{ marginTop: 18 }}>
+        {[
+          { n: 1, v: 'Mom said I noticed Aunt Vee was struggling before anyone else did.', filled: true },
+          { n: 2, v: '"You\'re the only one who reads the room at brunch." — Priya, Feb', filled: true },
+          { n: 3, v: 'My boss called my report "a small piece of architecture."', filled: true },
+          { n: 4, v: '', filled: false, placeholder: 'Someone\'s laugh you caused, maybe...' },
+          { n: 5, v: '', filled: false, placeholder: '' },
+        ].map(item => (
+          <div key={item.n} className="row gap-10" style={{
+            padding: '12px 14px', borderRadius: 12,
+            background: item.filled ? 'var(--paper-dim)' : 'var(--paper)',
+            border: '1px solid ' + (item.filled ? 'var(--line)' : 'var(--line-strong)'),
+            borderStyle: item.filled ? 'solid' : 'dashed',
+            alignItems: 'flex-start',
+          }}>
+            <div className="serif" style={{ fontSize: 18, fontStyle: 'italic', color: 'var(--rust)', width: 16, lineHeight: 1.2 }}>{item.n}</div>
+            <div style={{ fontSize: 13.5, lineHeight: 1.5, color: item.filled ? 'var(--ink)' : 'var(--ink-3)',
+              fontStyle: item.filled ? 'normal' : 'italic',
+              fontFamily: item.filled ? 'inherit' : 'Newsreader, serif',
+              flex: 1 }}>
+              {item.filled ? item.v : (item.placeholder || 'Tap to write')}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="pad" style={{ marginTop: 18 }}>
+        <div className="row gap-8" style={{
+          padding: '12px 14px', borderRadius: 12,
+          background: 'var(--sage-soft)', border: 'none' }}>
+          <div className="serif" style={{ fontSize: 13.5, fontStyle: 'italic', color: 'var(--sage)', lineHeight: 1.5 }}>
+            None of these required the scale to be true. Hold that for a beat before you scroll on.
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 16, marginBottom: 18 }}>
+        <button className="btn-primary" style={{ background: 'var(--ink-3)' }}>Save · finish later</button>
+      </div>
+    </div>
+  );
+}
+
+// 7. CORE — Sunday check-in (the freeze curve)
+function CoreCurveScreen() {
+  const pts = [78, 74, 71, 64, null, null, null]; // weeks 0-6
+  const w = 280, h = 130, pad = 12;
+  const xStep = (w - pad * 2) / 6;
+  const yFor = v => pad + (1 - v / 100) * (h - pad * 2);
+  let path = '';
+  pts.forEach((p, i) => {
+    if (p == null) return;
+    const x = pad + i * xStep, y = yFor(p);
+    path += (path ? ' L ' : 'M ') + x + ' ' + y;
+  });
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad row" style={{ justifyContent: 'space-between', alignItems: 'baseline', paddingTop: 12 }}>
+        <div className="col gap-6">
+          <div className="small">Sunday check-in</div>
+          <div className="h2 serif">Where the freeze is</div>
+        </div>
+        <div className="serif" style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--rust)' }}>week 3</div>
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div style={{
+          padding: '18px 16px 14px', borderRadius: 16,
+          background: 'var(--paper-dim)', border: '1px solid var(--line)',
+        }}>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <div className="serif" style={{ fontSize: 40, color: 'var(--rust)', lineHeight: 1 }}>64<span style={{ fontSize: 18, color: 'var(--ink-3)' }}> / 100</span></div>
+            <div className="small serif" style={{ fontStyle: 'italic', color: 'var(--sage)' }}>↓ 14 since baseline</div>
+          </div>
+          <svg width="100%" viewBox={`0 0 ${w} ${h}`} style={{ marginTop: 10 }}>
+            {/* grid */}
+            {[0, 25, 50, 75, 100].map(g => (
+              <line key={g} x1={pad} x2={w - pad}
+                y1={yFor(g)} y2={yFor(g)}
+                stroke="var(--line)" strokeWidth={0.6} />
+            ))}
+            {/* path */}
+            <path d={path} stroke="var(--rust)" strokeWidth={2.2} fill="none" strokeLinecap="round" />
+            {pts.map((p, i) => p != null && (
+              <circle key={i} cx={pad + i * xStep} cy={yFor(p)} r={3.5} fill="var(--rust)" />
+            ))}
+            {/* future ghost */}
+            {[3,4,5,6].map(i => (
+              <circle key={'g' + i} cx={pad + i * xStep} cy={h - pad - 4} r={2} fill="var(--ink-3)" opacity={0.4} />
+            ))}
+          </svg>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 4 }}>
+            {['w0','w1','w2','w3','w4','w5','w6'].map((l, i) => (
+              <div key={i} className="small serif" style={{ fontStyle: 'italic',
+                color: i === 3 ? 'var(--rust)' : 'var(--ink-3)' }}>{l}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="pad col gap-10" style={{ marginTop: 20 }}>
+        <div className="label">What moved this week</div>
+        <div className="row gap-10" style={{ padding: 12, borderRadius: 12, border: '1px solid var(--line)', alignItems: 'flex-start' }}>
+          <div style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--sage)', marginTop: 7 }} />
+          <div style={{ fontSize: 13, lineHeight: 1.5 }}>
+            <strong>"I have told a friend not yet"</strong> · 5 → 3.
+            You stopped policing the rule out loud.
+          </div>
+        </div>
+        <div className="row gap-10" style={{ padding: 12, borderRadius: 12, border: '1px solid var(--line)', alignItems: 'flex-start' }}>
+          <div style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--rust-dim)', marginTop: 7 }} />
+          <div style={{ fontSize: 13, lineHeight: 1.5 }}>
+            <strong>"My real life starts after the number"</strong> · still 4.
+            Week 4's stretch will go straight at this one.
+          </div>
+        </div>
+      </div>
+      <NavBar active="curve" />
+    </div>
+  );
+}
+
+// 8. CORE — Week 4 stretch (the courage week)
+function CoreStretchScreen() {
+  return (
+    <div className="scr col" style={{ height: '100%', paddingBottom: 80 }}>
+      <div className="pad col gap-6" style={{ paddingTop: 14 }}>
+        <div className="small">Week 4 · the courage week</div>
+        <div className="h2 serif">A small stretch.</div>
+      </div>
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div style={{
+          padding: '18px 18px', borderRadius: 16,
+          background: 'var(--paper)', border: '1.5px solid var(--rust)',
+        }}>
+          <div className="label" style={{ marginBottom: 8, color: 'var(--rust)' }}>Your stretch · pick one</div>
+          <div className="col gap-10" style={{ marginTop: 10 }}>
+            {[
+              { t: 'Reactivate a profile', sub: 'One. The one you already drafted in 2024.', on: true },
+              { t: 'Text a friend\'s friend', sub: 'The one Maya keeps mentioning.', on: false },
+              { t: 'Go to a thing alone', sub: 'A reading, a class, somewhere the room is mixed.', on: false },
+            ].map((o, i) => (
+              <div key={i} className="row gap-10" style={{
+                padding: '12px 12px', borderRadius: 10,
+                background: o.on ? 'var(--rust-soft)' : 'transparent',
+                border: '1px solid ' + (o.on ? 'var(--rust)' : 'var(--line)'),
+              }}>
+                <div style={{ width: 16, height: 16, borderRadius: 999,
+                  border: '1.5px solid ' + (o.on ? 'var(--rust)' : 'var(--line-strong)'),
+                  background: o.on ? 'var(--rust)' : 'transparent',
+                  display: 'grid', placeItems: 'center', color: 'var(--paper)' }}>
+                  {o.on && <div style={{ width: 5, height: 5, borderRadius: 999, background: 'var(--paper)' }} />}
+                </div>
+                <div className="col gap-6" style={{ flex: 1 }}>
+                  <div style={{ fontSize: 13.5, fontWeight: 600 }}>{o.t}</div>
+                  <div className="small" style={{ lineHeight: 1.4 }}>{o.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="pad col gap-10" style={{ marginTop: 18 }}>
+        <div className="row gap-10" style={{
+          padding: '12px 14px', borderRadius: 12,
+          background: 'var(--sage-soft)', alignItems: 'flex-start' }}>
+          <div className="serif" style={{ fontSize: 16, fontStyle: 'italic', color: 'var(--sage)' }}>"</div>
+          <div className="serif" style={{ fontSize: 13.5, lineHeight: 1.5, fontStyle: 'italic', color: 'var(--ink-2)' }}>
+            The stretch is the point. The result is not. If you do this and nothing happens, the freeze still moved.
+          </div>
+        </div>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="small">Due by Sunday · 5 days</div>
+          <div className="small serif" style={{ fontStyle: 'italic', color: 'var(--rust)' }}>Talk to Worth about it →</div>
+        </div>
+      </div>
+      <div className="pad" style={{ marginTop: 18 }}>
+        <button className="btn-primary">I'll do this one</button>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="No app icon, no badges. A loosening pattern stands in for the freeze metaphor — concentric rings opening outward.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Write the rule" caption="The first crack: see the contract on the page, with the date it was set. Worth dates it back to a concrete cultural moment.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Baseline the freeze" caption="Four lines, repeated every Sunday. This is Worth's own axis — not pounds, not matches, not dates.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Sequence preview" caption="Six weeks, then graduation. The finite shape is the promise: Worth ends, your dating life doesn't.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="This week's work" caption="Sized for emotional weight, not time. The week 3 piece is 8 minutes of writing. Other weeks ask for courage.">
+        <CoreWeekScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="The exercise" caption="A separation prompt. Pre-filled with three things from this user's earlier prompts, so the next two are reachable.">
+        <CoreExerciseScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Freeze curve" caption="Sunday check-in. The curve bends weekly. Specific lines move; the app names which one moved and which one didn't.">
+        <CoreCurveScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="The stretch week" caption="Pick one. Worth's wager: the stretch is the point, not the outcome. The freeze moves even if nothing happens.">
+        <CoreStretchScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

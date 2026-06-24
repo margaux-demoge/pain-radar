@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Pulse · Pain Radar proto 32/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F2EDE6;
+    --paper: #FAF5EE;
+    --paper-dim: #ECE3D6;
+    --rust: #8B4A52;            /* dusty rose accent */
+    --rust-soft: rgba(139, 74, 82, 0.10);
+    --rust-dim: #B07880;
+    --sage: #6B7A6E;
+    --sage-soft: rgba(107, 122, 110, 0.10);
+    --ink: #2A2520;
+    --ink-2: #5A524A;
+    --ink-3: #897F74;
+    --line: rgba(42, 37, 32, 0.12);
+    --line-strong: rgba(42, 37, 32, 0.22);
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 237, 230, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.2;
+  }
+  #app .serif-it { font-family: "Newsreader", Georgia, serif; font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rust); color: var(--paper);
+    padding: 15px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .card {
+    padding: 16px 18px; border-radius: 16px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .chip {
+    padding: 7px 13px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--rust); color: var(--paper);
+    border-color: var(--rust);
+  }
+
+  /* Two-chairs motif: side-by-side answer cards */
+  #app .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #app .answer {
+    padding: 14px; border-radius: 14px;
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 14px; line-height: 1.45;
+  }
+  #app .answer.you { background: var(--rust-soft); color: var(--ink); border: 1px solid rgba(139,74,82,0.18); }
+  #app .answer.them { background: var(--sage-soft); color: var(--ink); border: 1px solid rgba(107,122,110,0.18); }
+  #app .who { font-family: "Inter", sans-serif; font-style: normal;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--ink-3); margin-bottom: 6px; font-weight: 600; }
+  #app .who.you { color: var(--rust); }
+  #app .who.them { color: var(--sage); }
+
+  #app .door {
+    border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px 16px; background: var(--paper);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  #app .door.locked { opacity: 0.55; }
+  #app .door .door-title { font-family: "Newsreader", Georgia, serif; font-size: 16px; font-weight: 500; }
+  #app .door .door-sub { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">32 / 45 — Pulse</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Plain/index.html" title="Previous: Plain">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Range/index.html" title="Next: Range">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Two-sided ritual · couples intimacy</div>
+  <h1 class="page-title serif">Pulse</h1>
+  <p class="page-tagline serif">The conversation about sex you and your partner keep almost having. Pulse opens it, gently, with both of you in the room.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline. Type-driven prototype, no photos. This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Pulse/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Decorative SVG: two-chairs motif ----------------
+const TwoChairs = () => (
+  <svg viewBox="0 0 200 80" width="160" height="64" fill="none" style={{ opacity: 0.9 }}>
+    <g stroke="var(--rust)" strokeWidth="1.4" strokeLinecap="round" fill="none">
+      <path d="M40 60 L40 36 L60 36 L60 60 M40 36 L42 22 L58 22 L60 36" />
+      <line x1="40" y1="60" x2="40" y2="72" />
+      <line x1="60" y1="60" x2="60" y2="72" />
+    </g>
+    <g stroke="var(--sage)" strokeWidth="1.4" strokeLinecap="round" fill="none">
+      <path d="M140 60 L140 36 L160 36 L160 60 M140 36 L142 22 L158 22 L160 36" />
+      <line x1="140" y1="60" x2="140" y2="72" />
+      <line x1="160" y1="60" x2="160" y2="72" />
+    </g>
+    <circle cx="100" cy="40" r="2" fill="var(--ink-3)" opacity="0.5"/>
+    <circle cx="92" cy="40" r="1.5" fill="var(--ink-3)" opacity="0.5"/>
+    <circle cx="108" cy="40" r="1.5" fill="var(--ink-3)" opacity="0.5"/>
+  </svg>
+);
+
+// ---------------- Screens ----------------
+
+// 01 HERO
+function HeroScreen() {
+  return (
+    <div className="scr col" style={{ padding: '70px 30px 0', justifyContent: 'space-between', height: '100%' }}>
+      <div className="col gap-20" style={{ marginTop: 8 }}>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 13,
+          color: 'var(--rust)', letterSpacing: '0.04em' }}>
+          Pulse · for two
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 8, marginBottom: 4 }}>
+          <TwoChairs />
+        </div>
+        <div className="h1 serif" style={{ fontSize: 32, lineHeight: 1.15 }}>
+          The conversation you've both been almost having.
+        </div>
+        <div className="serif-it" style={{ fontSize: 16, color: 'var(--ink-2)', lineHeight: 1.55 }}>
+          A ten-minute room, twice a month. You answer separately. You read each other together. The real talk happens after, on the walk.
+        </div>
+      </div>
+      <div className="col gap-12" style={{ marginBottom: 70 }}>
+        <button className="btn-primary">Send Adrien an invite</button>
+        <div className="small" style={{ textAlign: 'center' }}>
+          Nothing opens until they accept. No content, no streaks, no nags.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 02 ONBOARDING — invite your partner
+function OnbInviteScreen() {
+  return (
+    <div className="scr col pad" style={{ paddingTop: 18, height: '100%' }}>
+      <div className="col gap-16">
+        <div className="label" style={{ color: 'var(--rust)' }}>Step 1 of 3 · The invite</div>
+        <div className="h2 serif">Who are you walking into this with?</div>
+        <div className="small" style={{ lineHeight: 1.55 }}>
+          Pulse is a shared room. Your partner is the room. Until they accept, nothing opens.
+        </div>
+        <div className="card col gap-12">
+          <div>
+            <div className="label" style={{ marginBottom: 6 }}>Their first name</div>
+            <div className="serif" style={{ fontSize: 18 }}>Adrien</div>
+          </div>
+          <div className="divider"></div>
+          <div>
+            <div className="label" style={{ marginBottom: 6 }}>Send the invite by</div>
+            <div className="row gap-8" style={{ flexWrap: 'wrap', marginTop: 4 }}>
+              <span className="chip on">Message</span>
+              <span className="chip">Email</span>
+              <span className="chip">Link to copy</span>
+            </div>
+          </div>
+        </div>
+        <div className="card" style={{ background: 'var(--sage-soft)', borderColor: 'rgba(107,122,110,0.18)' }}>
+          <div className="label" style={{ color: 'var(--sage)', marginBottom: 8 }}>Preview · the invite Adrien gets</div>
+          <div className="serif-it" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink)' }}>
+            "Hey. I found this — it's not therapy, it's not a quiz, it's a ten-minute thing we'd both do. Want to try one with me? — Camille"
+          </div>
+        </div>
+      </div>
+      <div style={{ flex: 1 }}></div>
+      <button className="btn-primary" style={{ marginBottom: 60 }}>Send invite to Adrien</button>
+    </div>
+  );
+}
+
+// 03 ONBOARDING — pace
+function OnbPaceScreen() {
+  return (
+    <div className="scr col pad" style={{ paddingTop: 18, height: '100%' }}>
+      <div className="col gap-16">
+        <div className="label" style={{ color: 'var(--rust)' }}>Step 2 of 3 · A cadence, together</div>
+        <div className="h2 serif">When will you two open the room?</div>
+        <div className="small" style={{ lineHeight: 1.55 }}>
+          Pick a moment in your week. Pulse will quietly ping you both, once, at that time. You can move it. You can skip it. No streak.
+        </div>
+        <div className="col gap-8">
+          <div className="card row" style={{ justifyContent: 'space-between' }}>
+            <div className="col">
+              <div className="serif" style={{ fontSize: 16 }}>Sunday evening</div>
+              <div className="small" style={{ marginTop: 2 }}>21:00 · after dinner, before bed</div>
+            </div>
+            <div style={{ width: 18, height: 18, borderRadius: 999, border: '2px solid var(--rust)',
+              background: 'var(--rust)', boxShadow: 'inset 0 0 0 2px var(--paper)' }}></div>
+          </div>
+          <div className="card row" style={{ justifyContent: 'space-between' }}>
+            <div className="col">
+              <div className="serif" style={{ fontSize: 16 }}>Saturday morning</div>
+              <div className="small" style={{ marginTop: 2 }}>09:30 · coffee, slow start</div>
+            </div>
+            <div style={{ width: 18, height: 18, borderRadius: 999, border: '1.5px solid var(--line-strong)' }}></div>
+          </div>
+          <div className="card row" style={{ justifyContent: 'space-between' }}>
+            <div className="col">
+              <div className="serif" style={{ fontSize: 16 }}>Pick our own time</div>
+              <div className="small" style={{ marginTop: 2 }}>You'll set it together once Adrien joins</div>
+            </div>
+            <div style={{ width: 18, height: 18, borderRadius: 999, border: '1.5px solid var(--line-strong)' }}></div>
+          </div>
+        </div>
+        <div className="serif-it" style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.5, marginTop: 4 }}>
+          Couples who name a time come back four times more often than couples who don't.
+        </div>
+      </div>
+      <div style={{ flex: 1 }}></div>
+      <button className="btn-primary" style={{ marginBottom: 60 }}>Confirm Sunday, 21:00</button>
+    </div>
+  );
+}
+
+// 04 ONBOARDING — waiting for partner
+function OnbWaitScreen() {
+  return (
+    <div className="scr col pad" style={{ paddingTop: 18, height: '100%', justifyContent: 'space-between' }}>
+      <div className="col gap-16">
+        <div className="label" style={{ color: 'var(--rust)' }}>Step 3 of 3 · The wait</div>
+        <div className="h2 serif">Invite sent to Adrien.</div>
+        <div className="serif-it" style={{ fontSize: 15, color: 'var(--ink-2)', lineHeight: 1.55 }}>
+          Pulse stays closed until Adrien accepts. There's nothing for you to do alone in here — that's the whole idea.
+        </div>
+
+        <div className="card col gap-12" style={{ marginTop: 8 }}>
+          <div className="row gap-12">
+            <div style={{ width: 32, height: 32, borderRadius: 999, background: 'var(--rust)',
+              color: 'var(--paper)', display: 'grid', placeItems: 'center',
+              fontFamily: 'Newsreader, serif', fontSize: 14, fontWeight: 600 }}>C</div>
+            <div className="col">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Camille</div>
+              <div className="small">Joined · 2 min ago</div>
+            </div>
+          </div>
+          <div className="divider"></div>
+          <div className="row gap-12">
+            <div style={{ width: 32, height: 32, borderRadius: 999,
+              border: '1.5px dashed var(--line-strong)',
+              color: 'var(--ink-3)', display: 'grid', placeItems: 'center',
+              fontFamily: 'Newsreader, serif', fontSize: 14 }}>A</div>
+            <div className="col">
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink-2)' }}>Adrien</div>
+              <div className="small serif-it">Waiting · sent at 18:42</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card" style={{ background: 'var(--sage-soft)', borderColor: 'rgba(107,122,110,0.18)', marginTop: 4 }}>
+          <div className="label" style={{ color: 'var(--sage)', marginBottom: 6 }}>What if they say no?</div>
+          <div className="small" style={{ lineHeight: 1.55, color: 'var(--ink-2)' }}>
+            That's a real answer too. Pulse will hold the invite for 14 days, then quietly close. We won't ping Adrien for you.
+          </div>
+        </div>
+      </div>
+      <button className="btn-secondary" style={{ marginBottom: 60 }}>Resend or change the invite</button>
+    </div>
+  );
+}
+
+// 05 CORE — Tonight's session opens
+function CoreOpenScreen() {
+  return (
+    <div className="scr col pad" style={{ paddingTop: 18, height: '100%' }}>
+      <div className="col gap-12">
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Sunday, June 14 · 21:04</div>
+          <div className="serif-it" style={{ fontSize: 11, color: 'var(--sage)' }}>Session 4</div>
+        </div>
+        <div className="h2 serif" style={{ marginTop: 4 }}>Tonight's room is open.</div>
+        <div className="serif-it" style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.55 }}>
+          You'll each answer one question, separately. About ten minutes. Then you'll read together.
+        </div>
+
+        <div className="card col gap-12" style={{ marginTop: 8 }}>
+          <div className="label">Tonight's question</div>
+          <div className="serif" style={{ fontSize: 19, lineHeight: 1.35 }}>
+            When was the last time you felt wanted by me — and what did I do?
+          </div>
+          <div className="divider"></div>
+          <div className="row gap-12" style={{ justifyContent: 'space-between' }}>
+            <div className="row gap-8">
+              <div style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--rust)' }}></div>
+              <span className="small">You · not started</span>
+            </div>
+            <div className="row gap-8">
+              <div style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--sage)' }}></div>
+              <span className="small">Adrien · writing now</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="serif-it" style={{ fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.5, textAlign: 'center', marginTop: 4 }}>
+          Neither of you sees the other's answer until both are in.
+        </div>
+      </div>
+      <div style={{ flex: 1 }}></div>
+      <button className="btn-primary" style={{ marginBottom: 60 }}>Write my answer</button>
+    </div>
+  );
+}
+
+// 06 CORE — Writing privately
+function CoreWriteScreen() {
+  return (
+    <div className="scr col pad" style={{ paddingTop: 18, height: '100%' }}>
+      <div className="col gap-12">
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label" style={{ color: 'var(--rust)' }}>Private · just you</div>
+          <div className="small">Session 4</div>
+        </div>
+        <div className="serif" style={{ fontSize: 17, lineHeight: 1.35, color: 'var(--ink) ' }}>
+          When was the last time you felt wanted by Adrien — and what did he do?
+        </div>
+        <div style={{
+          background: 'var(--paper-dim)', borderRadius: 14,
+          border: '1px solid var(--line)', padding: 14, minHeight: 200,
+          fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 14,
+          color: 'var(--ink)', lineHeight: 1.55
+        }}>
+          Two Sundays ago. We were making pasta and he stopped, just held the back of my neck for a second, didn't say anything. I felt seen in a way I haven't in months. I almost cried into the sauce. I don't think he even
+          <span style={{ borderRight: '2px solid var(--rust)', marginLeft: 1, opacity: 0.6 }}>&nbsp;</span>
+        </div>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="small serif-it">112 words · no spell-check, no AI rewrite</div>
+          <div className="small" style={{ color: 'var(--rust)' }}>Saved</div>
+        </div>
+
+        <div className="card col gap-8" style={{ background: 'var(--sage-soft)', borderColor: 'rgba(107,122,110,0.18)', marginTop: 8 }}>
+          <div className="label" style={{ color: 'var(--sage)' }}>If this lands hard for them</div>
+          <div className="small" style={{ lineHeight: 1.5 }}>
+            Before you both read, you can flag this answer as <span className="serif-it">tender</span>. We'll open it with extra room — a 24-hour cool-off, optional voice note instead of side-by-side.
+          </div>
+        </div>
+      </div>
+      <div style={{ flex: 1 }}></div>
+      <button className="btn-primary" style={{ marginBottom: 60 }}>Lock my answer in</button>
+    </div>
+  );
+}
+
+// 07 CORE — Side-by-side reveal
+function CoreRevealScreen() {
+  return (
+    <div className="scr col pad" style={{ paddingTop: 18, height: '100%' }}>
+      <div className="col gap-12">
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label" style={{ color: 'var(--rust)' }}>Both in · 21:23</div>
+          <div className="small">Session 4</div>
+        </div>
+        <div className="serif" style={{ fontSize: 15, lineHeight: 1.4, color: 'var(--ink-2)' }}>
+          "When was the last time you felt wanted — and what did they do?"
+        </div>
+
+        <div className="duo">
+          <div className="answer you">
+            <div className="who you">Camille</div>
+            Two Sundays ago, making pasta. He held the back of my neck for a second, didn't say anything. I almost cried into the sauce.
+          </div>
+          <div className="answer them">
+            <div className="who them">Adrien</div>
+            Last Tuesday. She came home, dropped her bag, walked over and just kissed me before saying hi. I thought about it for two days.
+          </div>
+        </div>
+
+        <div className="card col gap-8" style={{ marginTop: 8 }}>
+          <div className="label">Pulse's prompt for tonight</div>
+          <div className="serif" style={{ fontSize: 16, lineHeight: 1.4 }}>
+            You both named a small, wordless gesture. Neither of you knew the other saw it. Ask each other tonight: <span className="serif-it">"what do you wish I did more of, that costs nothing?"</span>
+          </div>
+        </div>
+
+        <div className="row gap-12" style={{ marginTop: 4 }}>
+          <div className="col gap-6" style={{ flex: 1 }}>
+            <div className="small label">Adrien marked</div>
+            <div className="chip on" style={{ alignSelf: 'flex-start' }}>This moved me</div>
+          </div>
+          <div className="col gap-6" style={{ flex: 1 }}>
+            <div className="small label">You marked</div>
+            <div className="chip on" style={{ alignSelf: 'flex-start', background: 'var(--sage)', borderColor: 'var(--sage)' }}>I want to talk</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ flex: 1 }}></div>
+      <button className="btn-secondary" style={{ marginBottom: 60 }}>Close · talk about it tonight</button>
+    </div>
+  );
+}
+
+// 08 CORE — Doors / progression
+function CoreDoorsScreen() {
+  return (
+    <div className="scr col pad" style={{ paddingTop: 18, height: '100%' }}>
+      <div className="col gap-12">
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Camille & Adrien · 11 weeks in</div>
+          <div className="serif-it" style={{ fontSize: 11, color: 'var(--rust)' }}>4 sessions</div>
+        </div>
+        <div className="h2 serif">The doors you've opened.</div>
+        <div className="small" style={{ lineHeight: 1.55 }}>
+          Pulse moves at your pace. Harder rooms only open when both of you say you're ready.
+        </div>
+
+        <div className="col gap-8" style={{ marginTop: 4 }}>
+          <div className="door">
+            <div className="col">
+              <div className="door-title">Appreciation</div>
+              <div className="door-sub">Opened June 1 · 2 sessions</div>
+            </div>
+            <span className="chip on" style={{ background: 'var(--sage)', borderColor: 'var(--sage)' }}>Open</span>
+          </div>
+          <div className="door">
+            <div className="col">
+              <div className="door-title">Being wanted</div>
+              <div className="door-sub">Opened June 14 · tonight</div>
+            </div>
+            <span className="chip on">Tonight</span>
+          </div>
+          <div className="door">
+            <div className="col">
+              <div className="door-title">What we miss</div>
+              <div className="door-sub">Ready when you both tap</div>
+            </div>
+            <span className="chip">Both ready?</span>
+          </div>
+          <div className="door locked">
+            <div className="col">
+              <div className="door-title">Desire mismatch</div>
+              <div className="door-sub">Locked · needs 3 more sessions</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="var(--ink-3)" strokeWidth="1.4"/>
+              <path d="M5 7V5a3 3 0 016 0v2" stroke="var(--ink-3)" strokeWidth="1.4" fill="none"/>
+            </svg>
+          </div>
+          <div className="door locked">
+            <div className="col">
+              <div className="door-title">Fantasies we've never said</div>
+              <div className="door-sub">Locked · much later</div>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="3" y="7" width="10" height="7" rx="1.5" stroke="var(--ink-3)" strokeWidth="1.4"/>
+              <path d="M5 7V5a3 3 0 016 0v2" stroke="var(--ink-3)" strokeWidth="1.4" fill="none"/>
+            </svg>
+          </div>
+        </div>
+
+        <div className="serif-it" style={{ fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.5, textAlign: 'center', marginTop: 6 }}>
+          You've talked about it after every session so far. That's the only score Pulse keeps.
+        </div>
+      </div>
+      <div style={{ height: 60 }}></div>
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Two-chair motif and a single soft sentence. No app icon, no roadmap. Pulse is one room, not a product family.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Invite your partner" caption="The first act is naming the other person. Pulse shows the exact invite copy before sending — the wedge partner approves what their partner sees.">
+        <OnbInviteScreen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Pick a cadence together" caption="Direct answer to the WEAK_RETURN judge: convert an occasional job into a Sunday-night ritual the couple commits to up front.">
+        <OnbPaceScreen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Waiting room" caption="Until Adrien accepts, the app is closed. The screen is honest about the 14-day hold and refuses to nag — the design answer to coercion risk.">
+        <OnbWaitScreen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Tonight's room" caption="Session 4. One question, two private answers, ten minutes. The status row makes co-presence visible without revealing content.">
+        <CoreOpenScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Private writing" caption="Newsreader italic for the answer field — feels like a journal, not a chat input. The 'tender' flag is the rupture-repair lever the judges asked for.">
+        <CoreWriteScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Side-by-side reveal" caption="The whole product, in one screen. Two answers, one prompt for the off-app conversation. The 'I want to talk' chip is the real success signal.">
+        <CoreRevealScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Doors, not levels" caption="Slow gating against the WEAK_ON_ASSUMPTIONS judge. Harder territory is locked until both partners tap ready. Progression is felt, not gamified.">
+        <CoreDoorsScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

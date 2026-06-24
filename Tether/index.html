@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tether · Pain Radar proto 14/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F1ECE4;
+    --paper: #FAF7F2;
+    --paper-dim: #ECE6DC;
+    --thread: #4F6D7A;
+    --thread-soft: rgba(79, 109, 122, 0.12);
+    --thread-dim: #7A95A1;
+    --sage: #8AA39B;
+    --rose: #C9A19A;
+    --ink: #2A2A2E;
+    --ink-2: #555259;
+    --ink-3: #8A8790;
+    --line: rgba(42, 42, 46, 0.10);
+    --line-strong: rgba(42, 42, 46, 0.20);
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(241, 236, 228, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--thread); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--thread); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--thread-soft); color: var(--thread);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  #app .ital { font-family: "Newsreader", Georgia, serif; font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--thread); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--thread); color: var(--paper);
+    border-color: var(--thread);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 18px; padding: 18px;
+  }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--thread); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--thread); margin-top: 2px; }
+
+  /* Mosaic stitches */
+  #app .stitch {
+    width: 100%; aspect-ratio: 1;
+    border-radius: 4px;
+    background: var(--paper-dim);
+    border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-size: 14px;
+  }
+  #app .stitch.done { background: var(--thread); color: var(--paper); border-color: var(--thread); }
+  #app .stitch.soft { background: var(--sage); color: var(--paper); border-color: var(--sage); }
+  #app .stitch.warm { background: var(--rose); color: var(--paper); border-color: var(--rose); }
+
+  /* SVG knot background pattern */
+  #app .knot-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 18% 22%, rgba(79,109,122,0.07), transparent 40%),
+      radial-gradient(circle at 82% 78%, rgba(201,161,154,0.10), transparent 45%);
+    pointer-events: none;
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">14 / 45 — Tether</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Span/index.html" title="Previous: Span">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Tide/index.html" title="Next: Tide">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Micro-dose presence · distracted parents</div>
+  <h1 class="page-title serif">Tether</h1>
+  <p class="page-tagline serif">Five minutes of you, fully there, counts. Tether helps you stitch together the small presence moments that actually build a kid who feels held.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · See <a href="../../Apps/_radar/Tether/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="knot-bg" />
+      <div className="pad col" style={{ paddingTop: 80, gap: 28, position: 'relative', height: '100%', boxSizing: 'border-box' }}>
+        <div className="col gap-12">
+          <div className="label" style={{ color: 'var(--thread)' }}>Tether</div>
+          <svg width="120" height="60" viewBox="0 0 120 60" style={{ marginTop: 4 }}>
+            <path d="M6 30 Q 20 10, 34 30 T 62 30 T 90 30 T 114 30" stroke="var(--thread)" strokeWidth="1.6" fill="none" strokeLinecap="round"/>
+            <circle cx="6" cy="30" r="3" fill="var(--thread)"/>
+            <circle cx="34" cy="30" r="3" fill="var(--rose)"/>
+            <circle cx="62" cy="30" r="3" fill="var(--sage)"/>
+            <circle cx="90" cy="30" r="3" fill="var(--thread)"/>
+            <circle cx="114" cy="30" r="3" fill="var(--rose)"/>
+          </svg>
+        </div>
+        <div className="h1 serif" style={{ fontSize: 32, lineHeight: 1.2 }}>
+          Five minutes of you,<br/>
+          <span className="ital" style={{ color: 'var(--thread)' }}>fully there</span>, counts.
+        </div>
+        <div className="serif ital" style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+          One small presence prompt a day, sized to your kid. The week stitches itself.
+        </div>
+        <div style={{ marginTop: 'auto', marginBottom: 28 }} className="col gap-12">
+          <button className="btn-primary">Set up Tether</button>
+          <button className="btn-secondary">I already have an account</button>
+          <div className="small" style={{ textAlign: 'center', marginTop: 6 }}>
+            No streaks. No score. Just the moments you showed up.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // Choose your kid
+  const kids = [
+    { name: 'Léa', age: '4 years', tone: 'thread' },
+    { name: 'Noah', age: '7 years', tone: 'sage' },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 76 }}>
+        <div className="col gap-8">
+          <div className="label">Step 1 of 3</div>
+          <div className="h1 serif">Who are we<br/>showing up for?</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            Tether sizes every prompt to one kid at a time. You can add another later.
+          </div>
+        </div>
+        <div className="col gap-12">
+          {kids.map((k, i) => (
+            <div key={i} className="card row gap-12" style={{ borderColor: i === 0 ? 'var(--thread)' : 'var(--line)', background: i === 0 ? 'var(--thread-soft)' : 'var(--paper)' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 999, background: i === 0 ? 'var(--thread)' : 'var(--sage)', color: 'var(--paper)', display: 'grid', placeItems: 'center', fontFamily: 'Newsreader', fontStyle: 'italic', fontSize: 20, fontWeight: 500 }}>{k.name[0]}</div>
+              <div className="col" style={{ flex: 1 }}>
+                <div className="serif" style={{ fontSize: 18, fontWeight: 500 }}>{k.name}</div>
+                <div className="small">{k.age}</div>
+              </div>
+              {i === 0 && <div style={{ width: 18, height: 18, borderRadius: 999, background: 'var(--thread)', color: 'var(--paper)', display: 'grid', placeItems: 'center', fontSize: 11 }}>✓</div>}
+            </div>
+          ))}
+          <button className="btn-secondary" style={{ borderStyle: 'dashed' }}>+ Add a kid</button>
+        </div>
+        <div className="col gap-8" style={{ marginTop: 8 }}>
+          <button className="btn-primary">Continue with Léa</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  // Pick the moment of the day
+  const times = [
+    { t: 'Breakfast', sub: '7:15 AM', on: false },
+    { t: 'School pickup', sub: '4:30 PM', on: false },
+    { t: 'Bath time', sub: '6:40 PM', on: true },
+    { t: 'Right before bed', sub: '7:50 PM', on: false },
+    { t: 'Pick a custom time', sub: '', on: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 76 }}>
+        <div className="col gap-8">
+          <div className="label">Step 2 of 3</div>
+          <div className="h1 serif">When are you<br/>most likely<br/>to be there?</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            One ping a day, at a moment you already share. Not a reminder to do more — a marker for what you're already near.
+          </div>
+        </div>
+        <div className="col gap-8">
+          {times.map((m, i) => (
+            <div key={i} className="row gap-12" style={{ padding: '14px 16px', borderRadius: 14, background: m.on ? 'var(--thread)' : 'var(--paper-dim)', color: m.on ? 'var(--paper)' : 'var(--ink)', border: '1px solid ' + (m.on ? 'var(--thread)' : 'var(--line)') }}>
+              <div style={{ width: 8, height: 8, borderRadius: 999, background: m.on ? 'var(--paper)' : 'var(--ink-3)' }} />
+              <div className="serif" style={{ fontSize: 15, fontWeight: 500, flex: 1 }}>{m.t}</div>
+              <div style={{ fontSize: 12, opacity: 0.85 }}>{m.sub}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  // What's hardest right now — the soft framing
+  const blocks = [
+    { t: "I run out of patience by evening", on: true },
+    { t: "I'm physically there but on my phone", on: true },
+    { t: "I don't know what to talk about", on: false },
+    { t: "Mornings disappear before I notice", on: false },
+    { t: "Bedtime feels rushed", on: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 76 }}>
+        <div className="col gap-8">
+          <div className="label">Step 3 of 3</div>
+          <div className="h1 serif">What gets<br/>in the way?</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            Pick a few. Tether will lean lighter on the days that match — short prompts, no asks for more.
+          </div>
+        </div>
+        <div className="col gap-8">
+          {blocks.map((b, i) => (
+            <div key={i} className="row gap-12" style={{ padding: '13px 16px', borderRadius: 12, background: b.on ? 'var(--thread-soft)' : 'var(--paper)', border: '1px solid ' + (b.on ? 'var(--thread)' : 'var(--line)') }}>
+              <div style={{ width: 18, height: 18, borderRadius: 5, border: '1.5px solid ' + (b.on ? 'var(--thread)' : 'var(--ink-3)'), background: b.on ? 'var(--thread)' : 'transparent', color: 'var(--paper)', display: 'grid', placeItems: 'center', fontSize: 11 }}>{b.on ? '✓' : ''}</div>
+              <div style={{ fontSize: 14, color: 'var(--ink)' }}>{b.t}</div>
+            </div>
+          ))}
+        </div>
+        <button className="btn-primary" style={{ marginTop: 4 }}>Start tomorrow morning</button>
+      </div>
+    </div>
+  );
+}
+
+function CorePromptScreen() {
+  // Today's prompt — the daily ping
+  return (
+    <div className="scr">
+      <div className="knot-bg" />
+      <div className="pad col gap-20" style={{ paddingTop: 76, position: 'relative' }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--thread)' }}>Tuesday · 6:42 PM</div>
+          <div className="small">Bath time with Léa</div>
+        </div>
+        <div className="card col gap-12" style={{ background: 'var(--paper)', borderColor: 'var(--thread)', borderWidth: 1 }}>
+          <div className="label" style={{ color: 'var(--thread)' }}>Today's five minutes</div>
+          <div className="h2 serif" style={{ lineHeight: 1.3 }}>
+            Ask her: "what's the funniest thing that happened at school today?" Then don't say anything for thirty seconds. Just listen.
+          </div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            4-year-olds need the pause. The story usually arrives in the second wave.
+          </div>
+        </div>
+        <div className="col gap-8" style={{ marginTop: 4 }}>
+          <button className="btn-primary">I did this ✓</button>
+          <button className="btn-secondary">Give me something shorter</button>
+          <button className="btn-secondary" style={{ border: 'none', color: 'var(--ink-3)' }}>Not today</button>
+        </div>
+        <div className="small" style={{ textAlign: 'center', marginTop: 'auto', paddingBottom: 60 }}>
+          Skipping is fine. Tether softens tomorrow.
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>Today</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>Week</span></div>
+        <div className="nav-item"><span>Léa</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreWeekScreen() {
+  // The mosaic
+  const days = [
+    { d: 'Mon', items: [{ k: 'done', txt: 'Q' }, { k: '', txt: '' }] },
+    { d: 'Tue', items: [{ k: 'done', txt: 'Q' }, { k: 'soft', txt: '·' }] },
+    { d: 'Wed', items: [{ k: '', txt: '' }, { k: '', txt: '' }] },
+    { d: 'Thu', items: [{ k: 'done', txt: 'B' }, { k: '', txt: '' }] },
+    { d: 'Fri', items: [{ k: 'warm', txt: '♡' }, { k: '', txt: '' }] },
+    { d: 'Sat', items: [{ k: 'done', txt: 'W' }, { k: 'done', txt: 'G' }] },
+    { d: 'Sun', items: [{ k: 'soft', txt: '·' }, { k: '', txt: '' }] },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label">This week with Léa</div>
+          <div className="h2 serif">Seven moments<br/>so far.</div>
+          <div className="meta serif ital">June 16 – June 22</div>
+        </div>
+        <div className="col gap-8">
+          {days.map((day, i) => (
+            <div key={i} className="row gap-12" style={{ padding: '10px 0' }}>
+              <div className="label" style={{ width: 36 }}>{day.d}</div>
+              <div className="row gap-6" style={{ flex: 1 }}>
+                {day.items.map((it, j) => (
+                  <div key={j} className={'stitch ' + (it.k || '')} style={{ width: 28, height: 28, fontSize: 11 }}>{it.txt}</div>
+                ))}
+              </div>
+              <div className="small ital serif" style={{ minWidth: 90, textAlign: 'right', color: 'var(--ink-2)' }}>
+                {i === 1 && 'school story'}
+                {i === 3 && 'breakfast'}
+                {i === 4 && 'crossed-room smile'}
+                {i === 5 && 'walk + game'}
+                {i === 6 && 'across the room'}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="card col gap-8" style={{ background: 'var(--thread-soft)', borderColor: 'transparent' }}>
+          <div className="serif ital" style={{ fontSize: 15, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            "Seven small ones. Not nothing. The crossed-room smile on Friday was harder than the walk."
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Today</span></div>
+        <div className="nav-item on"><span>Week</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>Léa</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreSundayScreen() {
+  return (
+    <div className="scr">
+      <div className="knot-bg" />
+      <div className="pad col gap-20" style={{ paddingTop: 76, position: 'relative' }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--thread)' }}>Sunday evening</div>
+          <div className="h1 serif">One thing Léa<br/>did this week.</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            Not for her. Not for school. For you, ten years from now.
+          </div>
+        </div>
+        <div className="card col gap-12" style={{ background: 'var(--paper)' }}>
+          <div className="label">Week 24 · June 16 – 22</div>
+          <div className="serif" style={{ fontSize: 16, lineHeight: 1.6, color: 'var(--ink)', minHeight: 100 }}>
+            <span className="ital" style={{ color: 'var(--ink-3)' }}>She told me the snail in the garden was </span>
+            <span>"a tiny man in a hat"<span style={{ display: 'inline-block', width: 1, height: 18, background: 'var(--thread)', verticalAlign: 'middle', marginLeft: 2, animation: 'blink 1s steps(1) infinite' }} /></span>
+          </div>
+          <div className="divider" />
+          <div className="row gap-8 small">
+            <span style={{ color: 'var(--thread)' }}>●</span>
+            <span>Saved to Léa's book</span>
+          </div>
+        </div>
+        <div className="col gap-12">
+          <button className="btn-primary">Save this week</button>
+          <div className="small" style={{ textAlign: 'center' }}>
+            Tether will ask again next Sunday. That's it.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreBookScreen() {
+  // Kid memory book — the long arc
+  const entries = [
+    { w: 'Week 24', date: 'Jun 16', txt: 'The snail was "a tiny man in a hat."' },
+    { w: 'Week 23', date: 'Jun 9', txt: 'Asked if grandma was ever four. Took her time with the answer.' },
+    { w: 'Week 22', date: 'Jun 2', txt: 'Insisted on wearing the rain boots indoors. Won.' },
+    { w: 'Week 21', date: 'May 26', txt: 'Told me she loved me with her "whole stomach."' },
+    { w: 'Week 20', date: 'May 19', txt: 'Said the moon was following us home from the park.' },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label">Léa · age 4</div>
+          <div className="h2 serif">Things you<br/>want to remember.</div>
+          <div className="meta serif ital">24 weeks · 24 things</div>
+        </div>
+        <div className="col gap-12">
+          {entries.map((e, i) => (
+            <div key={i} className="col gap-6" style={{ paddingBottom: 12, borderBottom: '1px solid var(--line)' }}>
+              <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+                <span className="label" style={{ color: 'var(--thread)' }}>{e.w}</span>
+                <span className="small ital serif">{e.date}</span>
+              </div>
+              <div className="serif" style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--ink)' }}>{e.txt}</div>
+            </div>
+          ))}
+        </div>
+        <div className="small" style={{ textAlign: 'center', color: 'var(--ink-3)', paddingBottom: 60 }}>
+          Only you can see this book.
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Today</span></div>
+        <div className="nav-item"><span>Week</span></div>
+        <div className="nav-item on"><span>Léa</span><div className="nav-dot" /></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="A soft thread, three knots, one promise. Sets the tone: presence as stitching, not striving.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Pick the kid" caption="Tether is one-kid-at-a-time. Prompts are sized to a specific age, not a family unit.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Pick the moment" caption="Anchor the ping to a window you already share. Not a new habit — a marker for what's already near.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="What gets in the way" caption="The soft-failure setting. Tether learns which days to lean lighter, so the app earns trust before it earns time.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Today's five minutes" caption="One prompt, sized to a 4-year-old. Three buttons: did it, shorter please, not today. No streak, no shame.">
+        <CorePromptScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Weekly mosaic" caption="The stitched record. Every kept moment is a small mark on the week. Gaps stay quiet.">
+        <CoreWeekScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Sunday reflection" caption="One sentence about the kid, kept for you. The artifact that makes the app worth opening next week.">
+        <CoreSundayScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Her book" caption="Twenty-four weeks, twenty-four things. The slow accumulation is the retention story past novelty.">
+        <CoreBookScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

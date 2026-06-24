@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Span · Pain Radar proto 13/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F2EFEA;      /* soft warm paper */
+    --paper-2: #ECE7DE;
+    --paper-dim: #E4DED2;
+    --rose: #B8736B;        /* dusty rose accent */
+    --rose-soft: rgba(184, 115, 107, 0.12);
+    --indigo: #3B4A6B;      /* muted blue, primary */
+    --indigo-soft: rgba(59, 74, 107, 0.10);
+    --sage: #7B8C7A;        /* sage secondary */
+    --ink: #2A2A33;
+    --ink-2: #5A5A66;
+    --ink-3: #8A8A92;
+    --line: rgba(42, 42, 51, 0.12);
+    --line-strong: rgba(42, 42, 51, 0.22);
+    --rust: #B8736B;
+    --rust-soft: rgba(184, 115, 107, 0.12);
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 239, 234, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper-2);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper-2);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero { max-width: 1680px; margin: 0 auto; padding: 56px 32px 32px; }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rose); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rose); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rose-soft); color: var(--rose);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale { width: 230px; height: 482px; position: relative; overflow: visible; }
+  .phone-scale-inner { position: absolute; top: 0; left: 0; transform: scale(0.552); transform-origin: top left; }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 { font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 30px; line-height: 1.1; letter-spacing: -0.01em; color: var(--ink); }
+  #app .h2 { font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 22px; line-height: 1.18; letter-spacing: -0.005em; }
+  #app .h3 { font-family: "Newsreader", Georgia, serif; font-weight: 600; font-size: 17px; line-height: 1.2; }
+  #app .ital { font-family: "Newsreader", Georgia, serif; font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary { background: var(--indigo); color: var(--paper); padding: 14px 22px; border-radius: 999px; font-weight: 600; font-size: 15px; border: none; width: 100%; cursor: pointer; letter-spacing: 0.01em; }
+  #app .btn-secondary { background: transparent; color: var(--ink); padding: 14px 22px; border-radius: 999px; font-weight: 500; font-size: 14px; border: 1px solid var(--line-strong); width: 100%; cursor: pointer; }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: 14px; background: var(--paper-2); border: 1px solid var(--line); }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip { padding: 8px 14px; border-radius: 999px; background: var(--paper-2); border: 1px solid var(--line); font-size: 13px; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+  #app .chip.on { background: var(--indigo); color: var(--paper); border-color: var(--indigo); }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .card { background: var(--paper-2); border: 1px solid var(--line); border-radius: 18px; padding: 16px; }
+  #app .card.tinted { background: var(--indigo-soft); border-color: rgba(59,74,107,0.18); }
+  #app .nav-bottom { position: absolute; bottom: 0; left: 0; right: 0; border-top: 1px solid var(--line); background: var(--paper); padding: 10px 22px 22px; display: flex; justify-content: space-around; align-items: center; }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; }
+  #app .nav-item.on { color: var(--indigo); }
+
+  /* Span-specific: the stretch visualization */
+  #app .stretch {
+    position: relative;
+    height: 80px;
+    background: linear-gradient(90deg, var(--indigo-soft) 0%, var(--rose-soft) 100%);
+    border-radius: 12px;
+    padding: 10px 14px;
+    overflow: hidden;
+  }
+  #app .stretch-bar {
+    position: absolute; left: 14px; right: 14px; top: 50%; height: 2px; background: var(--line-strong); transform: translateY(-50%);
+  }
+  #app .stretch-dot {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 10px; height: 10px; border-radius: 999px;
+    background: var(--paper); border: 2px solid var(--indigo);
+  }
+  #app .stretch-dot.done { background: var(--indigo); }
+  #app .stretch-dot.now { background: var(--rose); border-color: var(--rose); box-shadow: 0 0 0 4px var(--rose-soft); }
+  #app .stretch-anchor {
+    position: absolute; top: 8px; font-family: "Newsreader", serif; font-style: italic;
+    font-size: 11px; color: var(--ink-2);
+  }
+  #app .stretch-end {
+    position: absolute; top: 8px; right: 14px; font-family: "Newsreader", serif; font-style: italic;
+    font-size: 11px; color: var(--rose); font-weight: 500;
+  }
+
+  /* hero ornament — a slow horizontal "span" */
+  #app .span-orn {
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--indigo) 8%, var(--indigo) 92%, transparent);
+    position: relative;
+  }
+  #app .span-orn:before, #app .span-orn:after {
+    content: ""; position: absolute; top: 50%; width: 6px; height: 6px;
+    border-radius: 999px; background: var(--indigo); transform: translateY(-50%);
+  }
+  #app .span-orn:before { left: 0; }
+  #app .span-orn:after { right: 0; background: var(--rose); }
+
+  #app .moment-card {
+    background: var(--paper-2); border: 1px solid var(--line);
+    border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 8px;
+  }
+  #app .moment-card.her-turn { border-left: 3px solid var(--rose); }
+  #app .moment-card.your-turn { border-left: 3px solid var(--indigo); }
+  #app .moment-card.shared { border-left: 3px solid var(--sage); }
+
+  #app .avatar {
+    width: 28px; height: 28px; border-radius: 999px;
+    display: grid; place-items: center;
+    font-family: "Newsreader", serif; font-weight: 600; font-size: 13px;
+    color: var(--paper);
+  }
+  #app .avatar.m { background: var(--indigo); }
+  #app .avatar.j { background: var(--rose); }
+
+  #app .qa-line { padding: 12px 0; border-bottom: 1px solid var(--line); }
+  #app .qa-line:last-child { border-bottom: none; }
+  #app .reveal-cover {
+    background: var(--paper-dim); border-radius: 10px; padding: 10px 12px;
+    font-family: "Newsreader", serif; font-style: italic; color: var(--ink-3); font-size: 13px;
+    border: 1px dashed var(--line-strong);
+  }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">13 / 45 — Span</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Slate/index.html" title="Previous: Slate">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Tether/index.html" title="Next: Tether">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Structural return · two-sided intimacy</div>
+  <h1 class="page-title serif">Span</h1>
+  <p class="page-tagline serif">The shape of the time between visits. Span turns the gap of being apart into something you're building together, not just enduring.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photographs.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Span/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-24" style={{ paddingTop: 80, height: '100%' }}>
+        <div className="col gap-16">
+          <div className="label" style={{ color: 'var(--rose)' }}>Span · for the time between</div>
+          <div className="span-orn" />
+        </div>
+        <div className="col gap-20" style={{ marginTop: 'auto', marginBottom: 'auto' }}>
+          <div className="h1 serif" style={{ fontSize: 38, lineHeight: 1.08 }}>
+            The shape<br/>of the time<br/><span className="ital" style={{ color: 'var(--rose)' }}>between visits.</span>
+          </div>
+          <div style={{ fontFamily: 'Newsreader, serif', fontSize: 16, fontStyle: 'italic', color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            Not a countdown. A stretch you build together, so the middle stops being a void.
+          </div>
+        </div>
+        <div className="col gap-12" style={{ marginBottom: 28 }}>
+          <button className="btn-primary">Set the next visit</button>
+          <button className="btn-secondary">My partner sent me a link</button>
+          <div className="small" style={{ textAlign: 'center', marginTop: 6 }}>You don't both need the app on day one.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // Set the visit (the anchor)
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 24 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <span className="label">Step 1 of 3</span>
+          <span className="small">Skip</span>
+        </div>
+        <div className="col gap-8">
+          <div className="h2 serif">When will you<br/>next be in the<br/>same room?</div>
+          <div className="meta ital">Even a guess is enough. You can move it later.</div>
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 8 }}>
+          <div className="field">
+            <span className="field-label">Approximate date</span>
+            <span className="field-value serif" style={{ fontStyle: 'italic' }}>End of August · around the 20th</span>
+          </div>
+          <div className="field">
+            <span className="field-label">Where</span>
+            <span className="field-value">Berlin · my place</span>
+          </div>
+          <div className="field">
+            <span className="field-label">For how long</span>
+            <span className="field-value">10 days</span>
+          </div>
+        </div>
+
+        <div className="card tinted col gap-6">
+          <span className="label" style={{ color: 'var(--indigo)' }}>Your span</span>
+          <div className="serif" style={{ fontSize: 17, fontWeight: 500 }}>
+            42 days · 6 Tuesdays · 5 weekends
+          </div>
+          <div className="small">That's the stretch Span will help you shape.</div>
+        </div>
+
+        <button className="btn-primary" style={{ marginTop: 'auto' }}>Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  // Pick how dense the moments are
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 24 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <span className="label">Step 2 of 3</span>
+          <span className="small">Skip</span>
+        </div>
+        <div className="col gap-8">
+          <div className="h2 serif">How thick do you<br/>want the trail?</div>
+          <div className="meta ital">A handful of real things — not nightly rituals.</div>
+        </div>
+
+        <div className="col gap-12">
+          <div className="card col gap-6" style={{ borderColor: 'var(--line)' }}>
+            <span className="label">Light</span>
+            <div className="serif" style={{ fontSize: 16 }}>2 moments across the span</div>
+            <div className="small">For weeks you're both slammed.</div>
+          </div>
+          <div className="card tinted col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="label" style={{ color: 'var(--indigo)' }}>Steady · recommended</span>
+              <span className="small" style={{ color: 'var(--indigo)' }}>● picked</span>
+            </div>
+            <div className="serif" style={{ fontSize: 17, fontWeight: 500 }}>1 moment a week · 6 total</div>
+            <div className="small">Enough to leave a trail, not enough to nag.</div>
+          </div>
+          <div className="card col gap-6">
+            <span className="label">Dense</span>
+            <div className="serif" style={{ fontSize: 16 }}>2 a week · 12 total</div>
+            <div className="small">If you both already love rituals.</div>
+          </div>
+        </div>
+
+        <div className="small ital" style={{ marginTop: 4 }}>
+          Either of you can adjust this anytime.
+        </div>
+
+        <button className="btn-primary" style={{ marginTop: 'auto' }}>Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  // Invite partner — answers the two-sided activation question
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 24 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <span className="label">Step 3 of 3</span>
+          <span className="small">Skip for now</span>
+        </div>
+        <div className="col gap-8">
+          <div className="h2 serif">Bring Jude in.</div>
+          <div className="meta ital">He doesn't need to install anything yet. The first moment works over a link.</div>
+        </div>
+
+        <div className="card col gap-12">
+          <span className="label">Preview · the message he gets</span>
+          <div className="serif" style={{ fontSize: 15, lineHeight: 1.5, fontStyle: 'italic', color: 'var(--ink-2)' }}>
+            "Hey — I started something for the gap before August. Took me a minute. Your turn is one question, no app needed: <span style={{ color: 'var(--indigo)', fontStyle: 'normal' }}>span.app/j/8k2x</span>"
+          </div>
+        </div>
+
+        <div className="col gap-12">
+          <div className="field">
+            <span className="field-label">His name</span>
+            <span className="field-value serif" style={{ fontStyle: 'italic' }}>Jude</span>
+          </div>
+          <div className="field">
+            <span className="field-label">Send via</span>
+            <div className="row gap-8" style={{ marginTop: 4 }}>
+              <span className="chip on">iMessage</span>
+              <span className="chip">WhatsApp</span>
+              <span className="chip">Copy link</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="small ital" style={{ color: 'var(--sage)' }}>
+          ✓ He won't see "download Span" until the third moment.
+        </div>
+
+        <button className="btn-primary" style={{ marginTop: 'auto' }}>Send Jude the first moment</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreStretchScreen() {
+  // Core 1: the span home view
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 22, paddingBottom: 96 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="col">
+            <span className="label">Tue · Jul 9</span>
+            <span className="serif" style={{ fontSize: 14, fontStyle: 'italic', color: 'var(--ink-2)' }}>Day 18 of 42</span>
+          </div>
+          <div className="row gap-8">
+            <div className="avatar m">M</div>
+            <div className="avatar j">J</div>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="h2 serif">The Berlin span.</div>
+          <div className="meta">24 days until you see Jude.</div>
+        </div>
+
+        <div className="stretch">
+          <span className="stretch-anchor" style={{ left: 14 }}>Jun 21 · last hug</span>
+          <span className="stretch-end">Aug 20 · Berlin</span>
+          <div className="stretch-bar" />
+          {/* 6 moments along the bar, plus current */}
+          <span className="stretch-dot done" style={{ left: '14%' }} />
+          <span className="stretch-dot done" style={{ left: '26%' }} />
+          <span className="stretch-dot done" style={{ left: '38%' }} />
+          <span className="stretch-dot now" style={{ left: '46%' }} />
+          <span className="stretch-dot" style={{ left: '60%' }} />
+          <span className="stretch-dot" style={{ left: '74%' }} />
+          <span className="stretch-dot" style={{ left: '88%' }} />
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">This week</span>
+          <div className="moment-card her-turn">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="label" style={{ color: 'var(--rose)' }}>Jude's turn</span>
+              <span className="small ital">left at 2pm his time</span>
+            </div>
+            <div className="serif" style={{ fontSize: 16, fontWeight: 500 }}>Tuesday-photo trade</div>
+            <div className="small">You sent the view from your desk. Waiting on his.</div>
+          </div>
+          <div className="moment-card your-turn">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="label" style={{ color: 'var(--indigo)' }}>Your turn</span>
+              <span className="small">2 questions left</span>
+            </div>
+            <div className="serif" style={{ fontSize: 16, fontWeight: 500 }}>The questions you saved</div>
+            <div className="small">He's answered 5 of 7. Reveal together Sunday.</div>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">Logistics held by Span</span>
+          <div className="card row gap-12" style={{ alignItems: 'center', padding: '12px 14px' }}>
+            <span className="serif ital" style={{ fontSize: 14, color: 'var(--ink-2)' }}>Next call:</span>
+            <span className="serif" style={{ fontSize: 14, fontWeight: 500 }}>Thu 9pm Boston / 3am Berlin</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--rose)' }}>your turn to call</span>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>●</span><span>Span</span></div>
+        <div className="nav-item"><span>○</span><span>Moments</span></div>
+        <div className="nav-item"><span>○</span><span>Trail</span></div>
+        <div className="nav-item"><span>○</span><span>Us</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreMomentScreen() {
+  // Core 2: doing your half of a moment — the questions game, mid-reveal
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 22, paddingBottom: 96 }}>
+        <div className="row gap-8">
+          <span className="serif ital" style={{ fontSize: 13, color: 'var(--ink-3)' }}>← Span</span>
+        </div>
+        <div className="col gap-6">
+          <span className="label" style={{ color: 'var(--indigo)' }}>Moment 04 · the questions you saved</span>
+          <div className="h2 serif">Five small things,<br/>revealed Sunday.</div>
+        </div>
+
+        <div className="card col gap-12" style={{ padding: '6px 16px' }}>
+          <div className="qa-line col gap-8">
+            <span className="serif ital" style={{ fontSize: 14, color: 'var(--ink-2)' }}>What's the song stuck in your head this week?</span>
+            <div className="row gap-8">
+              <div className="avatar m" style={{ width: 22, height: 22, fontSize: 11 }}>M</div>
+              <span className="serif" style={{ fontSize: 14 }}>"Linger" — The Cranberries. No idea why.</span>
+            </div>
+            <div className="reveal-cover">Jude answered · revealed Sun 8pm</div>
+          </div>
+          <div className="qa-line col gap-8">
+            <span className="serif ital" style={{ fontSize: 14, color: 'var(--ink-2)' }}>What did you almost call me about and then didn't?</span>
+            <div className="row gap-8">
+              <div className="avatar m" style={{ width: 22, height: 22, fontSize: 11 }}>M</div>
+              <span className="serif" style={{ fontSize: 14 }}>The cat sat on my keyboard during the call with Diane.</span>
+            </div>
+            <div className="reveal-cover">Jude hasn't answered yet</div>
+          </div>
+          <div className="qa-line col gap-8">
+            <span className="serif ital" style={{ fontSize: 14, color: 'var(--ink-2)' }}>One thing that surprised you about your day.</span>
+            <div className="row gap-8">
+              <div className="avatar j" style={{ width: 22, height: 22, fontSize: 11 }}>J</div>
+              <span className="serif ital" style={{ fontSize: 14, color: 'var(--ink-3)' }}>your turn — write 1 line</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">Your line</span>
+          <div className="field" style={{ minHeight: 56 }}>
+            <span className="field-value serif ital" style={{ color: 'var(--ink-3)' }}>The barista remembered my order. Three months in.</span>
+          </div>
+        </div>
+
+        <button className="btn-primary">Save · 2 more before Sunday</button>
+        <div className="small ital" style={{ textAlign: 'center', color: 'var(--sage)' }}>
+          You'll both see all five at once. No peeking.
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>○</span><span>Span</span></div>
+        <div className="nav-item on"><span>●</span><span>Moments</span></div>
+        <div className="nav-item"><span>○</span><span>Trail</span></div>
+        <div className="nav-item"><span>○</span><span>Us</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreSyncedScreen() {
+  // Core 3: synced movie night with timezone-aware framing
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 22, paddingBottom: 96 }}>
+        <div className="row gap-8">
+          <span className="serif ital" style={{ fontSize: 13, color: 'var(--ink-3)' }}>← Span</span>
+        </div>
+        <div className="col gap-6">
+          <span className="label" style={{ color: 'var(--indigo)' }}>Moment 05 · watch something together</span>
+          <div className="h2 serif">A movie that fits<br/>both your nights.</div>
+        </div>
+
+        <div className="card tinted col gap-12">
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <span className="label" style={{ color: 'var(--indigo)' }}>The window Span found</span>
+            <span className="small">6h apart</span>
+          </div>
+          <div className="col gap-6">
+            <div className="row gap-12">
+              <div className="avatar m" style={{ width: 24, height: 24, fontSize: 12 }}>M</div>
+              <span className="serif" style={{ fontSize: 15 }}>Sat 8:30pm Boston</span>
+            </div>
+            <div className="row gap-12">
+              <div className="avatar j" style={{ width: 24, height: 24, fontSize: 12 }}>J</div>
+              <span className="serif" style={{ fontSize: 15 }}>Sun 2:30am Berlin · he agreed, "I'll nap"</span>
+            </div>
+          </div>
+          <div className="small ital" style={{ color: 'var(--ink-2)' }}>The only 102-minute slot you're both free this week.</div>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">Three picks · he leaned toward #2</span>
+          <div className="card col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="serif" style={{ fontSize: 15, fontWeight: 500 }}>Past Lives</span>
+              <span className="small">105 min</span>
+            </div>
+            <div className="small ital">Long-distance childhood friends. On Mubi.</div>
+          </div>
+          <div className="card col gap-6" style={{ background: 'var(--indigo-soft)', borderColor: 'rgba(59,74,107,0.25)' }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="serif" style={{ fontSize: 15, fontWeight: 500 }}>Before Sunrise</span>
+              <span className="small" style={{ color: 'var(--indigo)' }}>● Jude picked</span>
+            </div>
+            <div className="small ital">One night, talking, then a train. 101 min.</div>
+          </div>
+          <div className="card col gap-6">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="serif" style={{ fontSize: 15, fontWeight: 500 }}>The Worst Person in the World</span>
+              <span className="small">128 min</span>
+            </div>
+            <div className="small ital">Too long for the window.</div>
+          </div>
+        </div>
+
+        <button className="btn-primary">Lock Saturday · sync playback</button>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>○</span><span>Span</span></div>
+        <div className="nav-item on"><span>●</span><span>Moments</span></div>
+        <div className="nav-item"><span>○</span><span>Trail</span></div>
+        <div className="nav-item"><span>○</span><span>Us</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreTrailScreen() {
+  // Core 4: the record — fifteen small things, the payoff for H3 retention
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 22, paddingBottom: 96 }}>
+        <div className="col gap-6">
+          <span className="label">The trail · Berlin span</span>
+          <div className="h2 serif">17 small things,<br/>three weeks in.</div>
+          <div className="meta ital">Open this on Aug 20 from the airport.</div>
+        </div>
+
+        <div className="col gap-12">
+          <div className="moment-card shared">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="serif" style={{ fontSize: 15, fontWeight: 500 }}>Sunday questions · week 3</span>
+              <span className="small">Jul 7</span>
+            </div>
+            <div className="serif ital" style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+              "Linger." · "The cat sat on Diane's keyboard." · "He cried at the bakery and didn't know why."
+            </div>
+          </div>
+          <div className="moment-card shared">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="serif" style={{ fontSize: 15, fontWeight: 500 }}>Past Lives · together</span>
+              <span className="small">Jul 6 · Sat 8:30pm</span>
+            </div>
+            <div className="serif ital" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+              He fell asleep at minute 73. You finished it for both of you.
+            </div>
+          </div>
+          <div className="moment-card shared">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="serif" style={{ fontSize: 15, fontWeight: 500 }}>Tuesday photo trade</span>
+              <span className="small">Jul 2</span>
+            </div>
+            <div className="row gap-8" style={{ marginTop: 2 }}>
+              <div style={{ flex: 1, height: 64, background: 'linear-gradient(135deg, var(--indigo-soft), var(--paper-dim))', borderRadius: 10, display: 'grid', placeItems: 'center' }}>
+                <span className="serif ital" style={{ fontSize: 12, color: 'var(--ink-2)' }}>your desk · 9:14am</span>
+              </div>
+              <div style={{ flex: 1, height: 64, background: 'linear-gradient(135deg, var(--rose-soft), var(--paper-dim))', borderRadius: 10, display: 'grid', placeItems: 'center' }}>
+                <span className="serif ital" style={{ fontSize: 12, color: 'var(--ink-2)' }}>his kitchen · 3pm</span>
+              </div>
+            </div>
+          </div>
+          <div className="moment-card shared">
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <span className="serif" style={{ fontSize: 15, fontWeight: 500 }}>Sunday questions · week 2</span>
+              <span className="small">Jun 30</span>
+            </div>
+            <div className="serif ital" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+              Four answers each. The one about your mother stayed with him.
+            </div>
+          </div>
+        </div>
+
+        <div className="card tinted col gap-6">
+          <span className="label" style={{ color: 'var(--indigo)' }}>What Span keeps</span>
+          <div className="serif" style={{ fontSize: 14, lineHeight: 1.5 }}>
+            The trail stays here after Aug 20. When the next span starts, this is what you reopen.
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>○</span><span>Span</span></div>
+        <div className="nav-item"><span>○</span><span>Moments</span></div>
+        <div className="nav-item on"><span>●</span><span>Trail</span></div>
+        <div className="nav-item"><span>○</span><span>Us</span></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. The thin span ornament does the work an icon would, and the second CTA pre-answers the two-sided problem.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Set the visit" caption="The visit is the anchor. Even a vague date turns the gap into a finite stretch with weekends and Tuesdays in it.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Pick the cadence" caption="Density is the lever H1 hinges on — too thick becomes nagging, too thin becomes nothing. Default is steady.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Invite without install" caption="The graveyard killer: partner B can answer the first question over a web link. No install demand until moment three.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The span home" caption="The stretch bar replaces the countdown. Each filled dot is a small thing you made — the void becomes a record.">
+        <CoreStretchScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Questions, revealed together" caption="You each answer at your own pace; reveal is locked until Sunday. The async loop that survives a 6-hour time gap.">
+        <CoreMomentScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Synced across time zones" caption="Span proposes the slot you're both actually free in, names the sacrifice (he naps), and frames the films by length.">
+        <CoreSyncedScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="The trail" caption="Seventeen small things, three weeks in. This is what gets opened on the plane, and reopened at the next span.">
+        <CoreTrailScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

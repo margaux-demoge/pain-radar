@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Even · Pain Radar proto 07/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F2EDE4;
+    --paper: #FBF8F1;
+    --paper-dim: #EFE9DC;
+    --ink: #2A2620;
+    --ink-2: #5A5246;
+    --ink-3: #8C8473;
+    --line: rgba(42, 38, 32, 0.12);
+    --line-strong: rgba(42, 38, 32, 0.22);
+    /* Even's three states — calm, non-clinical */
+    --free: #7A9E7E;      /* sage green */
+    --free-soft: #D8E2D2;
+    --restr: #6B85A6;     /* muted blue */
+    --restr-soft: #D5DDE5;
+    --binge: #B97A78;     /* dusty rose, never red */
+    --binge-soft: #E6D2CF;
+    --accent: #6B85A6;    /* primary accent = muted blue */
+    --accent-soft: rgba(107, 133, 166, 0.14);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: "Inter", -apple-system, "SF Pro Text", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 237, 228, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 760px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--accent); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--ink); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-4 { gap: 4px; } #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-10 { gap: 10px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--accent); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--accent); margin-top: 2px; }
+
+  /* Even-specific: state pills, color bands */
+  #app .state-pill {
+    padding: 10px 14px; border-radius: 14px;
+    border: 1.5px solid var(--line); background: var(--paper);
+    display: flex; flex-direction: column; gap: 4px;
+    cursor: pointer; flex: 1;
+    transition: all 120ms;
+  }
+  #app .state-pill .dot {
+    width: 10px; height: 10px; border-radius: 999px;
+    margin-bottom: 4px;
+  }
+  #app .state-pill .name { font-size: 13px; font-weight: 600; color: var(--ink); }
+  #app .state-pill .desc { font-size: 10px; color: var(--ink-3); line-height: 1.3; }
+  #app .state-pill.free .dot { background: var(--free); }
+  #app .state-pill.restr .dot { background: var(--restr); }
+  #app .state-pill.binge .dot { background: var(--binge); }
+  #app .state-pill.on.free { background: var(--free-soft); border-color: var(--free); }
+  #app .state-pill.on.restr { background: var(--restr-soft); border-color: var(--restr); }
+  #app .state-pill.on.binge { background: var(--binge-soft); border-color: var(--binge); }
+
+  /* The signature: bands of color */
+  #app .band-row {
+    display: grid; grid-template-columns: 28px 1fr;
+    gap: 8px; align-items: center;
+  }
+  #app .band-row .daylabel {
+    font-size: 10px; color: var(--ink-3); text-transform: uppercase;
+    letter-spacing: 0.08em; font-weight: 600;
+  }
+  #app .band {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 3px; height: 14px;
+  }
+  #app .band > div { border-radius: 3px; }
+  #app .b-free { background: var(--free); }
+  #app .b-restr { background: var(--restr); }
+  #app .b-binge { background: var(--binge); }
+  #app .b-skip { background: var(--paper-dim); border: 1px dashed var(--line-strong); }
+
+  #app .nudge-card {
+    background: var(--free-soft);
+    border: 1px solid var(--free);
+    border-radius: 18px;
+    padding: 18px;
+  }
+  #app .nudge-card .nudge-label {
+    font-size: 10px; color: var(--free); text-transform: uppercase;
+    letter-spacing: 0.14em; font-weight: 600; margin-bottom: 6px;
+  }
+  #app .nudge-card .nudge-text {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 18px; line-height: 1.4; color: var(--ink);
+    font-style: italic;
+  }
+
+  #app .meal-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+  }
+  #app .meal-time { font-size: 11px; color: var(--ink-3); width: 46px;
+    letter-spacing: 0.04em; font-variant-numeric: tabular-nums; }
+  #app .meal-name { flex: 1; font-size: 14px; color: var(--ink); }
+  #app .meal-dot { width: 12px; height: 12px; border-radius: 999px; }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">07 / 45 — Even</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Crumb/index.html" title="Previous: Crumb">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Lex/index.html" title="Next: Lex">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Anti-diet · restrict-binge loop</div>
+  <h1 class="page-title serif">Even</h1>
+  <p class="page-tagline serif">The binge isn't the failure, the restriction is. Even tracks the loop you're actually in and helps you exit it from the front end, not the back.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Even/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const Ico = {
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  loop: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10a6 6 0 0112-1 M16 10a6 6 0 01-12 1 M14 6l2 3-3 1 M6 14l-2-3 3-1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  add: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.5"/><path d="M11 7v8 M7 11h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Today', icon: Ico.home },
+    { id: 'loop', label: 'Loop', icon: Ico.loop },
+    { id: 'add', label: '', icon: Ico.add },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Helper: a band of 4 cells for one day (breakfast / lunch / dinner / snack)
+function Band({ cells }) {
+  return (
+    <div className="band">
+      {cells.map((c, i) => <div key={i} className={`b-${c}`} />)}
+    </div>
+  );
+}
+
+// ---------------- 1. HERO ----------------
+function HeroScreen() {
+  return (
+    <div className="scr col" style={{ padding: '64px 28px 28px', justifyContent: 'space-between', height: '100%' }}>
+      <div className="col gap-20" style={{ marginTop: 28 }}>
+        <div style={{ fontFamily: 'Newsreader, serif', fontStyle: 'italic', fontSize: 13,
+          color: 'var(--accent)', letterSpacing: '0.04em' }}>
+          for the loop you already know you're in
+        </div>
+        <div className="h1" style={{ fontSize: 38, lineHeight: 1.08 }}>
+          The binge isn't the failure.<br/>
+          <span style={{ color: 'var(--ink-2)', fontStyle: 'italic' }}>The restriction is.</span>
+        </div>
+        <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--ink-2)', margin: 0 }}>
+          Even tracks the restrict-binge loop and helps you exit it from the front end. No calories. No streaks. No shame.
+        </p>
+
+        {/* Mini band sample as visual texture */}
+        <div className="col gap-8" style={{ marginTop: 8, padding: '14px 16px', background: 'var(--paper-dim)', borderRadius: 14 }}>
+          <div className="label">A week, in bands</div>
+          <div className="col gap-6">
+            <div className="band-row"><span className="daylabel">M</span><Band cells={['restr','restr','restr','restr']} /></div>
+            <div className="band-row"><span className="daylabel">T</span><Band cells={['restr','restr','free','restr']} /></div>
+            <div className="band-row"><span className="daylabel">W</span><Band cells={['skip','restr','binge','binge']} /></div>
+            <div className="band-row"><span className="daylabel">T</span><Band cells={['restr','restr','restr','skip']} /></div>
+            <div className="band-row"><span className="daylabel">F</span><Band cells={['skip','restr','binge','binge']} /></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="col gap-10">
+        <button className="btn-primary">Start where you are</button>
+        <div className="small" style={{ textAlign: 'center' }}>Free · no weight goal asked</div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- 2. ONBOARDING — Name the loop ----------------
+function Onb1Screen() {
+  const [pick, setPick] = React.useState('years');
+  const options = [
+    { id: 'months', label: 'A few months', desc: 'I noticed it recently.' },
+    { id: 'years', label: 'A few years', desc: 'It comes and goes. I know the shape.' },
+    { id: 'always', label: 'As long as I can remember', desc: 'Diets, then binges, then diets again.' },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '64px 22px 22px', height: '100%' }}>
+      <div className="label" style={{ color: 'var(--accent)' }}>Step 1 of 3</div>
+      <div className="h2" style={{ marginTop: 10, fontSize: 24 }}>How long have you been in the loop?</div>
+      <div className="small" style={{ marginTop: 8, lineHeight: 1.5 }}>
+        We're not asking your weight. We're asking how long the restrict-then-binge pattern has had you.
+      </div>
+
+      <div className="col gap-10" style={{ marginTop: 22 }}>
+        {options.map(o => (
+          <div key={o.id} onClick={() => setPick(o.id)}
+            style={{
+              padding: '16px 16px',
+              borderRadius: 14,
+              border: `1.5px solid ${pick === o.id ? 'var(--accent)' : 'var(--line)'}`,
+              background: pick === o.id ? 'var(--accent-soft)' : 'var(--paper)',
+              cursor: 'pointer',
+            }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>{o.label}</div>
+            <div className="small" style={{ marginTop: 4, lineHeight: 1.4 }}>{o.desc}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <div style={{ padding: '14px 14px', background: 'var(--paper-dim)', borderRadius: 12, marginBottom: 14 }}>
+        <div className="small" style={{ fontStyle: 'italic', fontFamily: 'Newsreader, serif', fontSize: 13, lineHeight: 1.5 }}>
+          "You don't have to be in clinical treatment to deserve a tool that sees you. But if you are in treatment, talk to your clinician before using Even."
+        </div>
+      </div>
+      <button className="btn-primary">Continue</button>
+    </div>
+  );
+}
+
+// ---------------- 3. ONBOARDING — Define your three states ----------------
+function Onb2Screen() {
+  return (
+    <div className="scr col" style={{ padding: '64px 22px 22px', height: '100%' }}>
+      <div className="label" style={{ color: 'var(--accent)' }}>Step 2 of 3</div>
+      <div className="h2" style={{ marginTop: 10, fontSize: 24 }}>Your three labels</div>
+      <div className="small" style={{ marginTop: 8, lineHeight: 1.5 }}>
+        After each meal you'll tap one. That's the whole input. You can edit these words anytime.
+      </div>
+
+      <div className="col gap-12" style={{ marginTop: 22 }}>
+        <div className="state-pill free on" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="dot" />
+          <div className="name">Ate freely</div>
+          <div className="desc">I ate when hungry and stopped when satisfied. No rule was running.</div>
+        </div>
+        <div className="state-pill restr on" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="dot" />
+          <div className="name">Restricted</div>
+          <div className="desc">I skipped, ate less than I needed, or chose by rule instead of by hunger.</div>
+        </div>
+        <div className="state-pill binge on" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="dot" />
+          <div className="name">Binged</div>
+          <div className="desc">I ate past full, fast, hidden, or with that "lost it" feeling. Not a moral judgment.</div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <div className="small" style={{ textAlign: 'center', marginBottom: 12 }}>
+        These are <em style={{ fontFamily: 'Newsreader, serif' }}>your</em> definitions. Even never decides for you.
+      </div>
+      <button className="btn-primary">These work for me</button>
+    </div>
+  );
+}
+
+// ---------------- 4. ONBOARDING — Your meal rhythm ----------------
+function Onb3Screen() {
+  const meals = [
+    { name: 'Breakfast', time: '8:00', on: true },
+    { name: 'Lunch', time: '13:00', on: true },
+    { name: 'Snack', time: '16:30', on: false },
+    { name: 'Dinner', time: '19:30', on: true },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '64px 22px 22px', height: '100%' }}>
+      <div className="label" style={{ color: 'var(--accent)' }}>Step 3 of 3</div>
+      <div className="h2" style={{ marginTop: 10, fontSize: 24 }}>When do you usually eat?</div>
+      <div className="small" style={{ marginTop: 8, lineHeight: 1.5 }}>
+        Even checks in around these times — a soft cue, never a buzz at the wrong moment. Skip any you don't have.
+      </div>
+
+      <div className="col" style={{ marginTop: 22, borderRadius: 14, background: 'var(--paper-dim)', padding: '4px 16px' }}>
+        {meals.map((m, i) => (
+          <div key={m.name} style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '14px 0',
+            borderBottom: i < meals.length - 1 ? '1px solid var(--line)' : 'none'
+          }}>
+            <div className="col gap-4">
+              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}>{m.name}</div>
+              <div className="small">{m.time}</div>
+            </div>
+            <div style={{
+              width: 38, height: 22, borderRadius: 999,
+              background: m.on ? 'var(--accent)' : 'var(--paper-dim)',
+              border: `1px solid ${m.on ? 'var(--accent)' : 'var(--line-strong)'}`,
+              position: 'relative',
+            }}>
+              <div style={{
+                position: 'absolute', top: 2, left: m.on ? 18 : 2,
+                width: 16, height: 16, borderRadius: 999, background: 'var(--paper)',
+                transition: 'left 120ms'
+              }} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <div className="small" style={{ textAlign: 'center', marginBottom: 12, fontFamily: 'Newsreader, serif', fontStyle: 'italic' }}>
+        On binge days, Even goes quiet. That's by design.
+      </div>
+      <button className="btn-primary">Show me the loop</button>
+    </div>
+  );
+}
+
+// ---------------- 5. CORE — Today, after lunch ----------------
+function CoreLogScreen() {
+  const [pick, setPick] = React.useState(null);
+  return (
+    <div className="scr col" style={{ padding: '64px 22px 90px', height: '100%' }}>
+      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div className="col gap-4">
+          <div className="label" style={{ color: 'var(--ink-3)' }}>Tuesday · 13:42</div>
+          <div className="h2">Lunch — how was it?</div>
+        </div>
+        <div className="small">Day 12</div>
+      </div>
+
+      <div className="small" style={{ marginTop: 12, lineHeight: 1.5 }}>
+        No need to name what you ate. Just one tap — the one that's true.
+      </div>
+
+      <div className="col gap-10" style={{ marginTop: 22 }}>
+        <div className={`state-pill free ${pick === 'free' ? 'on' : ''}`} onClick={() => setPick('free')}>
+          <div className="dot" />
+          <div className="name">Ate freely</div>
+          <div className="desc">Hungry → ate → satisfied.</div>
+        </div>
+        <div className={`state-pill restr ${pick === 'restr' ? 'on' : ''}`} onClick={() => setPick('restr')}>
+          <div className="dot" />
+          <div className="name">Restricted</div>
+          <div className="desc">A rule was running. Or I skipped.</div>
+        </div>
+        <div className={`state-pill binge ${pick === 'binge' ? 'on' : ''}`} onClick={() => setPick('binge')}>
+          <div className="dot" />
+          <div className="name">Binged</div>
+          <div className="desc">Past full, fast, or that "lost it" feeling.</div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 18, padding: '12px 14px', background: 'var(--paper-dim)',
+        borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="small">Or skipped this meal?</div>
+        <div style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>Mark as skipped</div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <button className="btn-primary" style={{ opacity: pick ? 1 : 0.35 }}>Log it</button>
+      <NavBar active="add" />
+    </div>
+  );
+}
+
+// ---------------- 6. CORE — The loop view (signature screen) ----------------
+function CoreLoopScreen() {
+  const days = [
+    { d: 'Mon Jun 16', cells: ['restr','restr','restr','skip'] },
+    { d: 'Tue Jun 17', cells: ['restr','restr','free','restr'] },
+    { d: 'Wed Jun 18', cells: ['skip','restr','binge','binge'] },
+    { d: 'Thu Jun 19', cells: ['restr','restr','restr','skip'] },
+    { d: 'Fri Jun 20', cells: ['skip','restr','binge','binge'] },
+    { d: 'Sat Jun 21', cells: ['restr','restr','restr','restr'] },
+    { d: 'Sun Jun 22', cells: ['skip','free','free','restr'] },
+    { d: 'Mon Jun 23', cells: ['free','free','restr','free'] },
+    { d: 'Tue Jun 24', cells: ['free','restr','skip','skip'] },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '64px 22px 90px', height: '100%' }}>
+      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <div className="col gap-4">
+          <div className="label" style={{ color: 'var(--ink-3)' }}>The loop · last 9 days</div>
+          <div className="h2">Two binges, both after stacks.</div>
+        </div>
+      </div>
+
+      <div className="col gap-6" style={{ marginTop: 18 }}>
+        {days.map(d => (
+          <div key={d.d} style={{ display: 'grid', gridTemplateColumns: '78px 1fr', gap: 10, alignItems: 'center' }}>
+            <span style={{ fontSize: 10, color: 'var(--ink-3)', letterSpacing: '0.04em' }}>{d.d}</span>
+            <Band cells={d.cells} />
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 18, padding: '14px 16px', background: 'var(--paper-dim)',
+        borderRadius: 12, display: 'flex', gap: 14, justifyContent: 'space-around' }}>
+        <div className="col gap-4" style={{ alignItems: 'center' }}>
+          <div style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--free)' }} />
+          <div className="small">Freely</div>
+        </div>
+        <div className="col gap-4" style={{ alignItems: 'center' }}>
+          <div style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--restr)' }} />
+          <div className="small">Restricted</div>
+        </div>
+        <div className="col gap-4" style={{ alignItems: 'center' }}>
+          <div style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--binge)' }} />
+          <div className="small">Binged</div>
+        </div>
+        <div className="col gap-4" style={{ alignItems: 'center' }}>
+          <div style={{ width: 8, height: 8, borderRadius: 3, background: 'var(--paper)', border: '1px dashed var(--line-strong)' }} />
+          <div className="small">Skipped</div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 14, padding: '14px 16px', borderRadius: 14,
+        background: 'var(--paper)', border: '1px solid var(--line)' }}>
+        <div className="label" style={{ color: 'var(--ink-2)' }}>What Even sees</div>
+        <div className="serif" style={{ fontSize: 15, lineHeight: 1.5, marginTop: 8, color: 'var(--ink)', fontStyle: 'italic' }}>
+          Each binge this week followed 5+ restricted meals in a row. The binge isn't the start of the problem — it's the end of one.
+        </div>
+      </div>
+
+      <NavBar active="loop" />
+    </div>
+  );
+}
+
+// ---------------- 7. CORE — Front-of-loop nudge ----------------
+function CoreNudgeScreen() {
+  return (
+    <div className="scr col" style={{ padding: '64px 22px 90px', height: '100%' }}>
+      <div className="label" style={{ color: 'var(--accent)' }}>Today · 11:48</div>
+      <div className="h2" style={{ marginTop: 8, fontSize: 24 }}>A gentle note before lunch.</div>
+
+      <div className="nudge-card" style={{ marginTop: 18 }}>
+        <div className="nudge-label">Permission, not a plan</div>
+        <div className="nudge-text">
+          You've logged four restricted meals in a row. The next one can be a normal lunch. Eating sooner is what breaks the loop, not eating later.
+        </div>
+      </div>
+
+      <div className="col gap-12" style={{ marginTop: 18 }}>
+        <div className="label" style={{ color: 'var(--ink-3)' }}>The last 36 hours</div>
+        <div className="col gap-6">
+          <div style={{ display: 'grid', gridTemplateColumns: '78px 1fr', gap: 10, alignItems: 'center' }}>
+            <span style={{ fontSize: 10, color: 'var(--ink-3)' }}>Mon Jun 23</span>
+            <Band cells={['skip','restr','restr','restr']} />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '78px 1fr', gap: 10, alignItems: 'center' }}>
+            <span style={{ fontSize: 10, color: 'var(--ink-3)' }}>Tue Jun 24</span>
+            <Band cells={['restr','restr','restr','skip']} />
+          </div>
+        </div>
+      </div>
+
+      <div className="col gap-10" style={{ marginTop: 22 }}>
+        <div style={{ padding: '12px 14px', borderRadius: 12, border: '1px solid var(--line)',
+          background: 'var(--paper)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: 13, color: 'var(--ink)' }}>Okay — I'll eat lunch.</div>
+          <div style={{ fontSize: 11, color: 'var(--accent)', fontWeight: 600 }}>Tap</div>
+        </div>
+        <div style={{ padding: '12px 14px', borderRadius: 12, border: '1px solid var(--line)',
+          background: 'var(--paper)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ fontSize: 13, color: 'var(--ink)' }}>Not now.</div>
+          <div style={{ fontSize: 11, color: 'var(--ink-3)', fontWeight: 600 }}>Snooze 1h</div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <div className="small" style={{ textAlign: 'center', fontFamily: 'Newsreader, serif', fontStyle: 'italic', marginBottom: 10 }}>
+        Even nudges before, not after. There's nothing to "make up for."
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// ---------------- 8. CORE — The morning after a binge ----------------
+function CoreMorningAfterScreen() {
+  return (
+    <div className="scr col" style={{ padding: '64px 22px 90px', height: '100%' }}>
+      <div className="label" style={{ color: 'var(--ink-3)' }}>Wednesday morning</div>
+      <div className="h2" style={{ marginTop: 8, fontSize: 26 }}>Yesterday is in the loop. Today is just today.</div>
+
+      <div style={{ marginTop: 18, padding: '16px 16px', borderRadius: 14,
+        background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+        <div className="label" style={{ color: 'var(--ink-2)' }}>Yesterday</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '46px 1fr', gap: 10, alignItems: 'center', marginTop: 8 }}>
+          <span style={{ fontSize: 11, color: 'var(--ink-3)' }}>Tue</span>
+          <Band cells={['skip','restr','binge','binge']} />
+        </div>
+        <div className="small" style={{ marginTop: 10, lineHeight: 1.5 }}>
+          No make-up plan. No streak. No penalty. Tomorrow we'll show you the loop again.
+        </div>
+      </div>
+
+      <div className="col gap-8" style={{ marginTop: 20 }}>
+        <div className="label" style={{ color: 'var(--ink-3)' }}>One soft question</div>
+        <div className="serif" style={{ fontSize: 18, lineHeight: 1.45, color: 'var(--ink)', fontStyle: 'italic' }}>
+          What did you notice in the hours before?
+        </div>
+        <div style={{
+          marginTop: 4,
+          padding: '12px 14px',
+          borderRadius: 12,
+          background: 'var(--paper)',
+          border: '1px solid var(--line)',
+          minHeight: 72,
+          fontSize: 13, color: 'var(--ink-3)', fontStyle: 'italic'
+        }}>
+          I'd skipped breakfast and stayed late at work without lunch. By 8pm I was past hungry…
+        </div>
+      </div>
+
+      <div className="col gap-8" style={{ marginTop: 18 }}>
+        <div className="label" style={{ color: 'var(--ink-3)' }}>Optional · was anything else loud?</div>
+        <div className="row gap-6" style={{ flexWrap: 'wrap', gap: 6 }}>
+          {['Tired','Lonely','Work stress','Period','Argument','Boredom'].map(t => (
+            <span key={t} className="chip" style={{ fontSize: 11, padding: '6px 10px' }}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <button className="btn-secondary">Save and close</button>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="No app icon, no calorie promise. The bands of color are the product — visible from the first screen.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Name the loop" caption="Even refuses to ask weight or goals. The first question is how long the cycle has had you — the only thing that matters.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Your three states" caption="The whole input. Words are user-editable. 'Binged' carries a definition that explicitly refuses moral framing.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Meal rhythm" caption="Even checks in around your real meal times. Snack is off by default. On binge days, the app goes silent.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Log a meal" caption="Three taps. No photo, no calories, no portion. The friction has to stay this low or the data dies.">
+        <CoreLogScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="The loop view" caption="The signature screen. Bands of color make the cycle a chart instead of a feeling. The takeaway points at the restriction, not the binge.">
+        <CoreLoopScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Front-of-loop nudge" caption="Triggered by 4+ stacked restricted meals. A sentence, not a plan. The intervention happens before, not after.">
+        <CoreNudgeScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Morning after" caption="No make-up plan, no streak break, no penalty. One soft question about what was loud the hours before. The shame loop is what we're trying to break.">
+        <CoreMorningAfterScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

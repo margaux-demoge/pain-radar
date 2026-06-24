@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Lex · Pain Radar proto 08/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F1EEE7;
+    --paper-2: #E7E2D6;
+    --card: #FBFAF6;
+    --ink: #1E2A33;
+    --ink-2: #4A5A66;
+    --ink-3: #8693A0;
+    --line: rgba(30, 42, 51, 0.10);
+    --line-strong: rgba(30, 42, 51, 0.20);
+    --rust: #8C5A3A;       /* accent for gallery eyebrow */
+    --rust-soft: rgba(140, 90, 58, 0.12);
+    --slate: #3D5A6C;      /* primary brand — dusty blue */
+    --slate-soft: rgba(61, 90, 108, 0.10);
+    --sage: #87A08A;
+    --rose: #C49A95;
+    --gold: #C8A95B;
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(241, 238, 231, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--card);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--card);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-scoped styles */
+  #app .scr { width: 100%; height: 100%; background: var(--card); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--slate); color: var(--card);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .btn-ghost {
+    background: var(--slate-soft); color: var(--slate);
+    padding: 12px 18px; border-radius: 999px;
+    font-weight: 600; font-size: 13px;
+    border: none; cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+    cursor: pointer;
+  }
+  #app .chip.on {
+    background: var(--slate); color: var(--card);
+    border-color: var(--slate);
+  }
+  #app .chip.sm { padding: 6px 10px; font-size: 11px; }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--card);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--slate); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--slate); margin-top: 2px; }
+
+  /* Lex-specific bits */
+  #app .avatar {
+    width: 56px; height: 56px; border-radius: 999px;
+    display: grid; place-items: center;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; color: var(--card);
+    letter-spacing: 0.01em;
+  }
+  #app .avatar.sm { width: 36px; height: 36px; font-size: 14px; }
+  #app .avatar.xs { width: 24px; height: 24px; font-size: 11px; }
+  #app .flag-pair {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 14px; color: var(--ink-2);
+  }
+  #app .arrow-swap { color: var(--ink-3); font-size: 12px; }
+  #app .badge-verified {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 999px;
+    background: var(--sage); color: var(--card);
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .topic-card {
+    background: linear-gradient(135deg, var(--slate) 0%, #2C4452 100%);
+    color: var(--card);
+    padding: 18px 18px;
+    border-radius: 16px;
+    position: relative;
+  }
+  #app .streak-dot {
+    width: 18px; height: 18px; border-radius: 999px;
+    background: var(--gold);
+    display: inline-grid; place-items: center;
+    color: var(--card); font-size: 10px; font-weight: 700;
+  }
+  #app .streak-dot.empty { background: transparent; border: 1.5px dashed var(--line-strong); }
+  #app .streak-dot.paused { background: var(--rose); }
+  #app .week-bar {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+  #app .week-cell {
+    aspect-ratio: 1; border-radius: 6px;
+    background: var(--paper); border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-size: 10px; color: var(--ink-3);
+  }
+  #app .week-cell.done { background: var(--slate); color: var(--card); border-color: var(--slate); }
+  #app .week-cell.scheduled { background: var(--paper); border: 1px dashed var(--slate); color: var(--slate); }
+
+  /* Decorative type texture for hero */
+  #app .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 80% 10%, rgba(135, 160, 138, 0.18), transparent 50%),
+      radial-gradient(circle at 10% 80%, rgba(196, 154, 149, 0.18), transparent 55%),
+      var(--card);
+  }
+  #app .hero-quote {
+    position: absolute; left: 22px; right: 22px; top: 110px;
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 34px; line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  #app .hero-quote em { font-style: italic; color: var(--slate); font-weight: 500; }
+  #app .hero-foot {
+    position: absolute; left: 22px; right: 22px; bottom: 110px;
+  }
+  #app .hero-mark {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 13px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--ink-3);
+    font-style: normal;
+  }
+
+  /* level pill */
+  #app .level-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--paper-2); color: var(--ink-2);
+    font-size: 11px; font-weight: 600;
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">08 / 45 — Lex</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Even/index.html" title="Previous: Even">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Loop/index.html" title="Next: Loop">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Pair-shaped accountability · safer-by-constraint</div>
+  <h1 class="page-title serif">Lex</h1>
+  <p class="page-tagline serif">A human on the other side, three times a week. Matched on language, level, and timezone, with the streak that keeps you both showing up.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photographs.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Lex/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// helper avatar bg colors
+const AV = {
+  slate: '#3D5A6C', sage: '#87A08A', rose: '#C49A95', gold: '#C8A95B', clay: '#8C5A3A'
+};
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="hero-bg" />
+      <div style={{position:'absolute', top: 70, left: 22, right: 22}}>
+        <div className="hero-mark">Lex</div>
+      </div>
+      <div className="hero-quote">
+        One person, learning the inverse of you. <em>Twice a week, ten minutes, a topic card.</em> The streak you share is the reason you both keep showing up.
+      </div>
+      <div className="hero-foot col gap-12">
+        <button className="btn-primary">Find my pair</button>
+        <div className="small" style={{textAlign:'center'}}>Voice only · No photos · 18+</div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // Pick language pair
+  return (
+    <div className="scr">
+      <div className="pad" style={{paddingTop: 70}}>
+        <div className="label">Step 1 of 5</div>
+        <div className="h1" style={{marginTop: 10}}>What pair are you in?</div>
+        <div className="meta" style={{marginTop: 8, lineHeight: 1.5}}>
+          We match you with someone learning the mirror of yours.
+        </div>
+
+        <div className="col gap-12" style={{marginTop: 22}}>
+          <div className="field">
+            <div className="field-label">I'm learning</div>
+            <div className="row" style={{justifyContent:'space-between'}}>
+              <div className="field-value serif">Español</div>
+              <span className="meta">Castellano</span>
+            </div>
+          </div>
+          <div className="row" style={{justifyContent:'center', color: 'var(--ink-3)', fontSize: 18}}>↕</div>
+          <div className="field">
+            <div className="field-label">I speak fluently</div>
+            <div className="row" style={{justifyContent:'space-between'}}>
+              <div className="field-value serif">English</div>
+              <span className="meta">UK</span>
+            </div>
+          </div>
+
+          <div style={{marginTop: 14}}>
+            <div className="label" style={{marginBottom: 10}}>My level in Spanish</div>
+            <div className="row gap-6" style={{flexWrap:'wrap'}}>
+              <span className="chip sm">A1</span>
+              <span className="chip sm">A2</span>
+              <span className="chip sm on">B1</span>
+              <span className="chip sm">B2</span>
+              <span className="chip sm">C1</span>
+            </div>
+            <div className="small" style={{marginTop: 8}}>"I can hold a slow conversation about familiar topics."</div>
+          </div>
+        </div>
+
+        <div style={{position:'absolute', left: 22, right: 22, bottom: 28}}>
+          <button className="btn-primary">Continue</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  // Trust + slots
+  return (
+    <div className="scr">
+      <div className="pad" style={{paddingTop: 70}}>
+        <div className="label">Step 3 of 5</div>
+        <div className="h1" style={{marginTop: 10}}>Who you'd like to be paired with.</div>
+        <div className="meta" style={{marginTop: 8, lineHeight: 1.5}}>
+          You decide. We never override your filters.
+        </div>
+
+        <div className="col gap-12" style={{marginTop: 22}}>
+          <div>
+            <div className="label" style={{marginBottom: 10}}>Match me with</div>
+            <div className="row gap-6" style={{flexWrap:'wrap'}}>
+              <span className="chip sm on">Women only</span>
+              <span className="chip sm">Any gender</span>
+              <span className="chip sm">Non-binary</span>
+            </div>
+          </div>
+          <div>
+            <div className="label" style={{marginBottom: 10}}>Age band</div>
+            <div className="row gap-6" style={{flexWrap:'wrap'}}>
+              <span className="chip sm">18–24</span>
+              <span className="chip sm on">25–34</span>
+              <span className="chip sm on">35–44</span>
+              <span className="chip sm">45+</span>
+            </div>
+          </div>
+          <div className="field" style={{background: 'var(--slate-soft)', borderColor: 'rgba(61,90,108,0.18)'}}>
+            <div className="row gap-8" style={{alignItems:'flex-start'}}>
+              <div style={{fontSize: 16}}>🛡️</div>
+              <div className="col gap-6">
+                <div style={{fontSize: 13, fontWeight: 600, color: 'var(--slate)'}}>ID-verified pairs only</div>
+                <div className="small" style={{color:'var(--ink-2)'}}>
+                  Every Lex account passes a one-time selfie + ID check. No photos shared on profiles.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{position:'absolute', left: 22, right: 22, bottom: 28}}>
+          <button className="btn-primary">Set my slots →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  // Pick weekly slots
+  const hours = ['07', '08', '09', '12', '18', '19', '20', '21'];
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const picked = new Set(['Tue-20', 'Thu-20', 'Sun-09']);
+  return (
+    <div className="scr">
+      <div className="pad" style={{paddingTop: 70}}>
+        <div className="label">Step 5 of 5</div>
+        <div className="h1" style={{marginTop: 10}}>When can you show up?</div>
+        <div className="meta" style={{marginTop: 8, lineHeight: 1.5}}>
+          Pick two or three weekly slots. Your pair will need to overlap on at least two.
+        </div>
+
+        <div style={{marginTop: 18}}>
+          <div className="row" style={{justifyContent:'space-between', marginBottom: 8}}>
+            <div className="label">Manchester · BST</div>
+            <div className="meta serif" style={{fontStyle:'italic'}}>3 picked</div>
+          </div>
+          <div style={{display:'grid', gridTemplateColumns: '32px repeat(7, 1fr)', gap: 4, fontSize: 10}}>
+            <div></div>
+            {days.map(d => <div key={d} style={{textAlign:'center', color:'var(--ink-3)', textTransform:'uppercase', letterSpacing:'0.06em'}}>{d}</div>)}
+            {hours.map(h => (
+              <React.Fragment key={h}>
+                <div style={{color:'var(--ink-3)', fontVariantNumeric:'tabular-nums', display:'grid', placeItems:'center'}}>{h}</div>
+                {days.map(d => {
+                  const key = d + '-' + h;
+                  const on = picked.has(key);
+                  return (
+                    <div key={key} style={{
+                      aspectRatio: '1',
+                      borderRadius: 6,
+                      background: on ? 'var(--slate)' : 'var(--paper)',
+                      border: '1px solid ' + (on ? 'var(--slate)' : 'var(--line)'),
+                    }} />
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </div>
+        </div>
+
+        <div className="field" style={{marginTop: 16}}>
+          <div className="field-label">Estimated wait for first match</div>
+          <div className="row" style={{justifyContent:'space-between', alignItems:'baseline'}}>
+            <div className="field-value serif" style={{fontSize: 22, color: 'var(--slate)'}}>~14 hours</div>
+            <div className="small">142 B1 Spanish learners with overlapping slots</div>
+          </div>
+        </div>
+
+        <div style={{position:'absolute', left: 22, right: 22, bottom: 28}}>
+          <button className="btn-primary">Find my pair</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreMatchScreen() {
+  // Match revealed
+  return (
+    <div className="scr">
+      <div className="pad" style={{paddingTop: 70}}>
+        <div className="label" style={{color:'var(--slate)'}}>Match found · 11 hours after signup</div>
+        <div className="h1" style={{marginTop: 10}}>Meet Lucía.</div>
+
+        <div className="col gap-12" style={{marginTop: 22, alignItems:'center'}}>
+          <div className="avatar" style={{background: AV.rose, width: 96, height: 96, fontSize: 38}}>L</div>
+          <div className="col gap-6" style={{alignItems:'center'}}>
+            <div className="serif" style={{fontSize: 22, fontWeight: 600}}>Lucía, 31</div>
+            <div className="meta">Valencia · GMT+2 · she/her</div>
+            <span className="badge-verified">✓ ID verified</span>
+          </div>
+        </div>
+
+        <div className="row gap-16" style={{marginTop: 22, justifyContent:'center', alignItems:'center'}}>
+          <div className="col gap-6" style={{alignItems:'center'}}>
+            <div className="label">She's learning</div>
+            <div className="serif" style={{fontSize: 18}}>English</div>
+            <span className="level-pill">B2</span>
+          </div>
+          <div style={{color:'var(--ink-3)', fontSize: 20}}>⇄</div>
+          <div className="col gap-6" style={{alignItems:'center'}}>
+            <div className="label">You're learning</div>
+            <div className="serif" style={{fontSize: 18}}>Español</div>
+            <span className="level-pill">B1</span>
+          </div>
+        </div>
+
+        <div className="field" style={{marginTop: 22}}>
+          <div className="field-label">Your shared slots</div>
+          <div className="col gap-6" style={{marginTop: 4}}>
+            <div className="row" style={{justifyContent:'space-between'}}>
+              <span className="serif" style={{fontSize: 15}}>Tuesday 20:00</span>
+              <span className="meta">21:00 for Lucía</span>
+            </div>
+            <div className="row" style={{justifyContent:'space-between'}}>
+              <span className="serif" style={{fontSize: 15}}>Sunday 09:00</span>
+              <span className="meta">10:00 for Lucía</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{position:'absolute', left: 22, right: 22, bottom: 28}}>
+          <button className="btn-primary">Confirm Tuesday's call</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreCallScreen() {
+  // In-call topic card with timer
+  return (
+    <div className="scr" style={{background: '#1A2530'}}>
+      <div style={{position:'absolute', top: 60, left: 22, right: 22, display:'flex', justifyContent:'space-between', alignItems:'center', color: '#E7E2D6'}}>
+        <div className="row gap-8" style={{alignItems:'center'}}>
+          <div className="avatar sm" style={{background: AV.rose}}>L</div>
+          <div className="col">
+            <div className="serif" style={{fontSize: 15, color: '#FBFAF6'}}>Lucía</div>
+            <div style={{fontSize: 10, color: '#87A08A', letterSpacing:'0.08em', textTransform:'uppercase'}}>● Speaking · Español</div>
+          </div>
+        </div>
+        <div style={{fontFamily:'"Newsreader", serif', fontSize: 28, color: '#FBFAF6', fontVariantNumeric:'tabular-nums'}}>04:12</div>
+      </div>
+
+      <div style={{position:'absolute', top: 130, left: 22, right: 22}}>
+        <div className="topic-card">
+          <div style={{fontSize: 10, textTransform:'uppercase', letterSpacing:'0.14em', opacity: 0.7, marginBottom: 8}}>Topic card · half 1 of 2</div>
+          <div className="serif" style={{fontSize: 24, fontWeight: 500, lineHeight: 1.2}}>
+            Un objeto en tu casa que ya no usas, pero que no puedes tirar.
+          </div>
+          <div style={{marginTop: 14, fontSize: 12, opacity: 0.85, borderTop: '1px solid rgba(255,255,255,0.18)', paddingTop: 10}}>
+            Try these: ¿desde cuándo lo tienes? ¿quién te lo dio? ¿por qué te cuesta?
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 16}}>
+          <div style={{display:'flex', justifyContent:'space-between', fontSize: 11, color: '#8693A0', textTransform:'uppercase', letterSpacing:'0.08em'}}>
+            <span>00:00 — 05:00 · Español</span>
+            <span style={{color:'#C49A95'}}>05:00 — 10:00 · English</span>
+          </div>
+          <div style={{height: 6, borderRadius: 999, background: 'rgba(255,255,255,0.08)', overflow:'hidden', position:'relative'}}>
+            <div style={{position:'absolute', left: 0, top: 0, bottom: 0, width: '42%', background: 'var(--sage)'}} />
+            <div style={{position:'absolute', left: '50%', top: -2, bottom: -2, width: 2, background: 'rgba(255,255,255,0.4)'}} />
+          </div>
+          <div className="small" style={{color: '#8693A0'}}>Lex prompts the switch at the halfway mark.</div>
+        </div>
+      </div>
+
+      <div style={{position:'absolute', left: 22, right: 22, bottom: 60, display:'flex', justifyContent:'center', gap: 14}}>
+        <button style={{width: 56, height: 56, borderRadius: 999, border:'none', background:'rgba(255,255,255,0.10)', color:'#FBFAF6', fontSize: 20, cursor:'pointer'}}>🎤</button>
+        <button style={{width: 56, height: 56, borderRadius: 999, border:'none', background:'#C49A95', color:'#1A2530', fontSize: 18, cursor:'pointer'}}>⏎</button>
+        <button style={{width: 56, height: 56, borderRadius: 999, border:'none', background:'rgba(255,255,255,0.10)', color:'#FBFAF6', fontSize: 20, cursor:'pointer'}}>🚩</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreStreakScreen() {
+  // Shared streak — pair home
+  return (
+    <div className="scr">
+      <div className="pad" style={{paddingTop: 70}}>
+        <div className="row gap-8" style={{alignItems:'center'}}>
+          <div className="avatar sm" style={{background: AV.rose}}>L</div>
+          <div className="row gap-6" style={{alignItems:'baseline'}}>
+            <span className="serif" style={{fontSize: 16}}>Lucía</span>
+            <span className="meta">&amp; you</span>
+          </div>
+        </div>
+
+        <div className="col gap-6" style={{marginTop: 18, alignItems:'flex-start'}}>
+          <div className="label">Shared streak</div>
+          <div className="row gap-8" style={{alignItems:'baseline'}}>
+            <div className="serif" style={{fontSize: 46, fontWeight: 600, letterSpacing:'-0.02em', color: 'var(--slate)'}}>3</div>
+            <div className="meta serif" style={{fontStyle:'italic', fontSize: 16}}>weeks · both holding</div>
+          </div>
+        </div>
+
+        <div style={{marginTop: 18}}>
+          <div className="row" style={{justifyContent:'space-between', marginBottom: 8}}>
+            <div className="label">This week</div>
+            <div className="meta">2 of 2 done · Sun is rest</div>
+          </div>
+          <div className="week-bar">
+            <div className="week-cell done">M</div>
+            <div className="week-cell done">T</div>
+            <div className="week-cell">W</div>
+            <div className="week-cell done">T</div>
+            <div className="week-cell">F</div>
+            <div className="week-cell">S</div>
+            <div className="week-cell">S</div>
+          </div>
+        </div>
+
+        <div className="field" style={{marginTop: 16, background:'var(--slate-soft)', borderColor:'rgba(61,90,108,0.18)'}}>
+          <div className="row gap-8" style={{alignItems:'flex-start'}}>
+            <div style={{fontSize: 16}}>🪶</div>
+            <div className="col gap-6">
+              <div style={{fontSize: 13, fontWeight: 600, color:'var(--slate)'}}>Grace token available</div>
+              <div className="small" style={{color:'var(--ink-2)'}}>
+                One miss per pair per month doesn't break the streak. You both still have yours.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 18}}>
+          <div className="label">Next call</div>
+          <div className="field">
+            <div className="row" style={{justifyContent:'space-between', alignItems:'center'}}>
+              <div className="col gap-6">
+                <div className="serif" style={{fontSize: 18}}>Sunday, 09:00</div>
+                <div className="meta">In 2 days · Topic: A childhood food you'd defend.</div>
+              </div>
+              <button className="btn-ghost">Switch</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on">
+          <span>Pair</span>
+          <div className="nav-dot" />
+        </div>
+        <div className="nav-item"><span>Notes</span></div>
+        <div className="nav-item"><span>Settings</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreAsyncScreen() {
+  // Voice notes thread in target language only
+  return (
+    <div className="scr">
+      <div className="pad" style={{paddingTop: 70}}>
+        <div className="row" style={{justifyContent:'space-between', alignItems:'center'}}>
+          <div className="row gap-8" style={{alignItems:'center'}}>
+            <div className="avatar sm" style={{background: AV.rose}}>L</div>
+            <div className="col">
+              <div className="serif" style={{fontSize: 16}}>Lucía</div>
+              <div className="small">Voice notes only · 30s max</div>
+            </div>
+          </div>
+          <span className="level-pill" style={{background:'var(--sage)', color: 'var(--card)'}}>● Español</span>
+        </div>
+
+        <div className="col gap-12" style={{marginTop: 22}}>
+          {/* her note */}
+          <div className="col gap-6" style={{alignItems:'flex-start', maxWidth: '88%'}}>
+            <div style={{
+              background: 'var(--paper)', borderRadius: '14px 14px 14px 4px',
+              padding: '12px 14px', border: '1px solid var(--line)',
+              display:'flex', alignItems:'center', gap: 10
+            }}>
+              <div style={{width: 30, height: 30, borderRadius: 999, background:'var(--slate)', color:'var(--card)', display:'grid', placeItems:'center', fontSize: 12}}>▶</div>
+              <div style={{display:'flex', alignItems:'center', gap: 2, height: 22}}>
+                {[6,11,14,9,17,12,8,14,18,10,7,13,16,9,12,6,10,14].map((h,i)=>(
+                  <div key={i} style={{width: 2, height: h, background:'var(--slate)', borderRadius: 1, opacity: 0.7}} />
+                ))}
+              </div>
+              <div className="meta serif" style={{fontStyle:'italic'}}>0:24</div>
+            </div>
+            <div className="small">Lucía · Tue 18:42</div>
+          </div>
+
+          {/* my note */}
+          <div className="col gap-6" style={{alignItems:'flex-end', alignSelf:'flex-end', maxWidth: '88%'}}>
+            <div style={{
+              background: 'var(--slate)', color: 'var(--card)',
+              borderRadius: '14px 14px 4px 14px',
+              padding: '12px 14px',
+              display:'flex', alignItems:'center', gap: 10
+            }}>
+              <div style={{width: 30, height: 30, borderRadius: 999, background:'rgba(255,255,255,0.18)', color:'var(--card)', display:'grid', placeItems:'center', fontSize: 12}}>▶</div>
+              <div style={{display:'flex', alignItems:'center', gap: 2, height: 22}}>
+                {[8,12,9,15,11,7,16,10,13,18,9,7,12,14,8,11,15].map((h,i)=>(
+                  <div key={i} style={{width: 2, height: h, background:'var(--card)', borderRadius: 1, opacity: 0.85}} />
+                ))}
+              </div>
+              <div style={{fontFamily:'"Newsreader",serif', fontStyle:'italic', fontSize: 12, opacity: 0.8}}>0:28</div>
+            </div>
+            <div className="small">You · Tue 21:10</div>
+          </div>
+
+          {/* her note */}
+          <div className="col gap-6" style={{alignItems:'flex-start', maxWidth: '88%'}}>
+            <div style={{
+              background: 'var(--paper)', borderRadius: '14px 14px 14px 4px',
+              padding: '12px 14px', border: '1px solid var(--line)',
+              display:'flex', alignItems:'center', gap: 10
+            }}>
+              <div style={{width: 30, height: 30, borderRadius: 999, background:'var(--slate)', color:'var(--card)', display:'grid', placeItems:'center', fontSize: 12}}>▶</div>
+              <div style={{display:'flex', alignItems:'center', gap: 2, height: 22}}>
+                {[10,7,13,9,15,11,8,16,12,9,14,7,11,15,10,8].map((h,i)=>(
+                  <div key={i} style={{width: 2, height: h, background:'var(--slate)', borderRadius: 1, opacity: 0.7}} />
+                ))}
+              </div>
+              <div className="meta serif" style={{fontStyle:'italic'}}>0:19</div>
+            </div>
+            <div className="small">Lucía · Wed 08:05</div>
+          </div>
+        </div>
+
+        <div style={{position:'absolute', left: 22, right: 22, bottom: 80}}>
+          <div className="field" style={{padding: 10, background:'var(--card)', border:'1px solid var(--slate)', borderRadius: 999}}>
+            <div className="row" style={{justifyContent:'space-between', alignItems:'center'}}>
+              <div className="small" style={{color:'var(--slate)', paddingLeft: 8}}>Hold to reply · in Español</div>
+              <div style={{width: 38, height: 38, borderRadius: 999, background:'var(--slate)', color:'var(--card)', display:'grid', placeItems:'center'}}>🎤</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Pair</span></div>
+        <div className="nav-item on">
+          <span>Notes</span>
+          <div className="nav-dot" />
+        </div>
+        <div className="nav-item"><span>Settings</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreRatingScreen() {
+  // Post-call single-axis rating + safety
+  return (
+    <div className="scr">
+      <div className="pad" style={{paddingTop: 70}}>
+        <div className="label">Call ended · 10:04 · Tue Jun 23</div>
+        <div className="h1" style={{marginTop: 10}}>Did Lucía show up and try?</div>
+        <div className="meta" style={{marginTop: 8, lineHeight: 1.5}}>
+          One axis only. She won't see your answer — only the trend.
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 22}}>
+          <button className="btn-secondary" style={{textAlign:'left', borderColor:'var(--sage)', color:'var(--ink)'}}>
+            <span style={{marginRight: 10}}>🟢</span> Yes, she was present.
+          </button>
+          <button className="btn-secondary" style={{textAlign:'left'}}>
+            <span style={{marginRight: 10}}>🟡</span> Sort of. Mind elsewhere.
+          </button>
+          <button className="btn-secondary" style={{textAlign:'left'}}>
+            <span style={{marginRight: 10}}>🔴</span> No — distracted or rude.
+          </button>
+        </div>
+
+        <div className="divider" style={{margin:'22px 0'}} />
+
+        <div className="col gap-12">
+          <div className="label">Anything off?</div>
+          <div className="row gap-6" style={{flexWrap:'wrap'}}>
+            <span className="chip sm">Off-topic</span>
+            <span className="chip sm">Pushed personal stuff</span>
+            <span className="chip sm">Asked for my socials</span>
+            <span className="chip sm">Made me uncomfortable</span>
+          </div>
+          <div className="small" style={{marginTop: 4}}>
+            Two flags from any pair triggers a human review within 2 hours and immediate re-match.
+          </div>
+        </div>
+
+        <div style={{position:'absolute', left: 22, right: 22, bottom: 28}}>
+          <button className="btn-primary">Submit</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. No app icon, no faces — the promise is a person, not a feed.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Language pair" caption="One pair, one level. Match is the inverse of yours — no swiping, no browsing.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Safety filters" caption="Gender and age-band filters surfaced before slots. ID verification is the floor, not a perk.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Weekly slots" caption="Pick 2–3 slots. The estimate is honest about cold-start density — no fake 24h promise.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Match revealed" caption="The match is the call slot. No DM-first phase. Verified profile, shared slots in both timezones.">
+        <CoreMatchScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="The call" caption="Ten minutes, topic card, halfway language switch enforced by the bar. The constraint is the product.">
+        <CoreCallScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Shared streak" caption="The streak is the lever — but a monthly grace token softens the punish-both rule that worried the judges.">
+        <CoreStreakScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Async + rating" caption="Voice notes only, target language only. Post-call rating is one axis with explicit safety flags.">
+        <CoreAsyncScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

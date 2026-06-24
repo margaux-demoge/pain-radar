@@ -1,0 +1,786 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Tell · Pain Radar proto 37/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EEF1F4;
+    --paper: #F7F8FA;
+    --paper-dim: #E6EAEF;
+    --ink: #1F2530;
+    --ink-2: #4A5365;
+    --ink-3: #8590A2;
+    --line: rgba(31, 37, 48, 0.10);
+    --line-strong: rgba(31, 37, 48, 0.20);
+    --accent: #4A6B82;          /* dusty blue */
+    --accent-soft: rgba(74, 107, 130, 0.12);
+    --rose: #B07A78;            /* dusty rose */
+    --rose-soft: rgba(176, 122, 120, 0.14);
+    --sage: #7A8C7F;
+    --warn: #C58A4A;
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(238, 241, 244, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rose); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rose); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rose-soft); color: var(--rose);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App scoped styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .h-display {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-style: italic;
+    font-size: 36px; line-height: 1.15; letter-spacing: -0.01em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--ink); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .card-tinted {
+    background: var(--accent-soft); border: 1px solid rgba(74, 107, 130, 0.18);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .chip {
+    padding: 6px 12px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  #app .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  #app .input {
+    width: 100%;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper); border: 1px solid var(--line-strong);
+    font-size: 15px; color: var(--ink);
+    font-family: inherit;
+    box-sizing: border-box;
+  }
+  #app .ev-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 6px;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  #app .ev-tag.text { background: var(--accent-soft); color: var(--accent); }
+  #app .ev-tag.moment { background: var(--rose-soft); color: var(--rose); }
+  #app .ev-tag.feel { background: rgba(122, 140, 127, 0.18); color: var(--sage); }
+
+  #app .signal-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border-radius: 12px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .signal-dot { width: 8px; height: 8px; border-radius: 999px; }
+  #app .sd-yes { background: var(--sage); }
+  #app .sd-no { background: var(--rose); }
+  #app .sd-mid { background: var(--warn); }
+
+  /* Top bar */
+  #app .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 22px 6px;
+  }
+  #app .pill-back {
+    width: 32px; height: 32px; border-radius: 999px;
+    background: var(--paper-dim); display: grid; place-items: center;
+  }
+
+  /* Hero textured background */
+  #app .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(176,122,120,0.18), transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(74,107,130,0.18), transparent 55%),
+      var(--paper);
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 0 32px 60px;
+    font-size: 12px; color: var(--ink-3);
+  }
+  .foot a { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">37 / 45 — Tell</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Tally/index.html" title="Previous: Tally">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Tier/index.html" title="Next: Tier">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Honest-read · ambiguous romance</div>
+  <h1 class="page-title serif">Tell</h1>
+  <p class="page-tagline serif">The honest read on whether they like you back. Drop in what they did, what they said, how it felt, and Tell tells you what it actually means.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones">
+  <div id="app"></div>
+</div>
+
+<div class="foot">
+  Phase 1 prototype generated by the Pain Radar pipeline. See <a href="../../Apps/_radar/Tell/spec.md">spec.md</a> for the full concept and judgments.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function BackChev() {
+  return <svg width="14" height="14" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+}
+
+// 01 — Hero
+function ScrHero() {
+  return (
+    <div className="scr">
+      <div className="hero-bg" />
+      <div style={{ position: 'relative', height: '100%', display: 'flex', flexDirection: 'column', padding: '60px 28px 30px', boxSizing: 'border-box' }}>
+        <div className="label" style={{ color: 'var(--rose)' }}>Tell</div>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 18 }}>
+          <div className="h-display">
+            One calm voice<br/>on the situation<br/><span style={{ fontStyle: 'normal', color: 'var(--rose)' }}>you can't stop</span><br/>thinking about.
+          </div>
+          <div className="meta" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink-2)', maxWidth: 280 }}>
+            Tell you what they did. Tell you what it means. No advice, no horoscope, no scripts for the next text.
+          </div>
+        </div>
+        <div className="col gap-12">
+          <button className="btn-primary">Start a situation</button>
+          <div className="small" style={{ textAlign: 'center' }}>Nothing leaves your phone.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 02 — Onboarding: who is this person
+function ScrWho() {
+  return (
+    <div className="scr">
+      <div className="topbar">
+        <div className="pill-back"><BackChev /></div>
+        <div className="small">Step 1 of 3</div>
+        <div style={{ width: 32 }} />
+      </div>
+      <div className="pad col gap-20" style={{ marginTop: 22 }}>
+        <div className="col gap-8">
+          <div className="label" style={{ color: 'var(--rose)' }}>Who is this?</div>
+          <div className="h1">Give them a name<br/>only you'll see.</div>
+          <div className="meta" style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            A first name, an initial, a nickname. Tell never connects to contacts or messages.
+          </div>
+        </div>
+        <input className="input" defaultValue="Sam" />
+        <div className="col gap-12">
+          <div className="label">How do you know them?</div>
+          <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+            <span className="chip">Dating app match</span>
+            <span className="chip on">Friend of a friend</span>
+            <span className="chip">Coworker</span>
+            <span className="chip">From class</span>
+            <span className="chip">Old friend</span>
+          </div>
+        </div>
+        <div className="col gap-12">
+          <div className="label">How long has this been in your head?</div>
+          <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+            <span className="chip">Days</span>
+            <span className="chip on">A few weeks</span>
+            <span className="chip">Months</span>
+            <span className="chip">Longer</span>
+          </div>
+        </div>
+        <button className="btn-primary" style={{ marginTop: 8 }}>Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 03 — Onboarding: pour in the evidence
+function ScrPour() {
+  return (
+    <div className="scr">
+      <div className="topbar">
+        <div className="pill-back"><BackChev /></div>
+        <div className="small">Step 2 of 3</div>
+        <div style={{ width: 32 }} />
+      </div>
+      <div className="pad col gap-16" style={{ marginTop: 22 }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--rose)' }}>Sam · friend of a friend · 6 weeks</div>
+          <div className="h1">Pour it out.</div>
+          <div className="meta" style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            Texts, moments, half-thoughts. Tell sorts them later.
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: 14, minHeight: 180 }}>
+          <div className="row gap-8" style={{ marginBottom: 8 }}>
+            <span className="ev-tag text">Text</span>
+            <span className="small" style={{ marginLeft: 'auto' }}>Tue</span>
+          </div>
+          <div style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--ink)', fontStyle: 'italic' }}>
+            "haha yeah maybe — busy week tho, we'll see"
+          </div>
+          <div className="row gap-8" style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid var(--line)' }}>
+            <span className="ev-tag moment">Moment</span>
+            <span className="small" style={{ marginLeft: 'auto' }}>Sat night</span>
+          </div>
+          <div style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--ink)', marginTop: 6 }}>
+            Touched my arm twice at the bar. Left at 11 with Maya without saying bye.
+          </div>
+        </div>
+
+        <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+          <button className="btn-secondary" style={{ flex: 1, padding: '12px 14px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1v12 M1 7h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>
+              Paste screenshot
+            </span>
+          </button>
+          <button className="btn-secondary" style={{ flex: 1, padding: '12px 14px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <svg width="12" height="14" viewBox="0 0 12 14" fill="none"><rect x="3" y="1" width="6" height="9" rx="3" stroke="currentColor" strokeWidth="1.6"/><path d="M1 8a5 5 0 0010 0 M6 13v-2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></svg>
+              Talk it out
+            </span>
+          </button>
+        </div>
+
+        <button className="btn-primary">Read the situation</button>
+      </div>
+    </div>
+  );
+}
+
+// 04 — Onboarding: a few targeted follow-ups
+function ScrFollowup() {
+  return (
+    <div className="scr">
+      <div className="topbar">
+        <div className="pill-back"><BackChev /></div>
+        <div className="small">Step 3 of 3 · 2 left</div>
+        <div style={{ width: 32 }} />
+      </div>
+      <div className="pad col gap-20" style={{ marginTop: 18 }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--rose)' }}>One thing I'm not sure about</div>
+          <div className="h2" style={{ fontSize: 22, lineHeight: 1.25 }}>
+            When Sam said <span style={{ fontStyle: 'italic', color: 'var(--accent)' }}>"we'll see"</span> on Tuesday — were you suggesting a plan, or just chatting?
+          </div>
+        </div>
+        <div className="col gap-10">
+          <div className="card" style={{ padding: 14, cursor: 'pointer' }}>
+            <div className="meta" style={{ fontSize: 14, color: 'var(--ink)' }}>I asked them to a specific thing (movie, dinner, drink)</div>
+          </div>
+          <div className="card" style={{ padding: 14, cursor: 'pointer', borderColor: 'var(--ink)', background: 'var(--paper-dim)' }}>
+            <div className="meta" style={{ fontSize: 14, color: 'var(--ink)', fontWeight: 600 }}>I floated a vague "we should hang"</div>
+          </div>
+          <div className="card" style={{ padding: 14, cursor: 'pointer' }}>
+            <div className="meta" style={{ fontSize: 14, color: 'var(--ink)' }}>It came up casually, no real ask</div>
+          </div>
+        </div>
+        <div className="meta" style={{ fontSize: 12, color: 'var(--ink-3)', lineHeight: 1.5, marginTop: 4 }}>
+          Tell asks targeted follow-ups only on the parts that change the read. Skip anything you're unsure of.
+        </div>
+        <button className="btn-primary">Next question</button>
+      </div>
+    </div>
+  );
+}
+
+// 05 — Core: the read
+function ScrRead() {
+  return (
+    <div className="scr">
+      <div className="topbar">
+        <div className="pill-back"><BackChev /></div>
+        <div className="small" style={{ color: 'var(--ink-2)' }}>Sam · Day 1</div>
+        <div className="small" style={{ color: 'var(--accent)' }}>Edit</div>
+      </div>
+      <div className="pad col gap-16" style={{ marginTop: 12 }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--rose)' }}>The read</div>
+          <div className="h-display" style={{ fontSize: 26, lineHeight: 1.2 }}>
+            Warm to you,<br/>not pursuing you.
+          </div>
+        </div>
+
+        <div style={{ fontSize: 14, lineHeight: 1.65, color: 'var(--ink-2)', fontFamily: '"Newsreader", Georgia, serif' }}>
+          Sam likes the version of the evening they had with you. They do not, on this evidence, think about you between those evenings. The "we'll see" was not a brush-off, it was a real "we'll see" — they don't have you on their week.
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Consistent with</div>
+          <div className="signal-row">
+            <div className="row gap-8"><span className="signal-dot sd-yes" /><span style={{ fontSize: 13 }}>Enjoying you in the moment</span></div>
+            <span className="small">3 signals</span>
+          </div>
+          <div className="signal-row">
+            <div className="row gap-8"><span className="signal-dot sd-yes" /><span style={{ fontSize: 13 }}>Friend-shaped attention</span></div>
+            <span className="small">2 signals</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Not consistent with</div>
+          <div className="signal-row">
+            <div className="row gap-8"><span className="signal-dot sd-no" /><span style={{ fontSize: 13 }}>Actively making plans with you</span></div>
+            <span className="small">0 of 4</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Genuinely ambiguous</div>
+          <div className="signal-row" style={{ background: 'rgba(197,138,74,0.10)', borderColor: 'rgba(197,138,74,0.25)' }}>
+            <div className="row gap-8"><span className="signal-dot sd-mid" /><span style={{ fontSize: 13 }}>The arm-touch at the bar</span></div>
+            <span className="small">read both ways</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 06 — Core: timeline / situation thread
+function ScrThread() {
+  return (
+    <div className="scr">
+      <div className="topbar">
+        <div className="row gap-8"><div className="pill-back"><BackChev /></div></div>
+        <div className="col" style={{ alignItems: 'center' }}>
+          <div className="h2" style={{ fontSize: 18 }}>Sam</div>
+          <div className="small">friend of a friend · 6 wks</div>
+        </div>
+        <div className="small" style={{ color: 'var(--accent)' }}>+ add</div>
+      </div>
+
+      <div className="pad col gap-12" style={{ marginTop: 14, paddingBottom: 24 }}>
+        <div className="card-tinted">
+          <div className="label" style={{ color: 'var(--accent)' }}>Current read</div>
+          <div style={{ fontSize: 15, marginTop: 4, fontFamily: '"Newsreader", Georgia, serif', fontStyle: 'italic' }}>Warm to you, not pursuing you.</div>
+          <div className="small" style={{ marginTop: 6 }}>Last sharpened 2 days ago</div>
+        </div>
+
+        <div className="label" style={{ marginTop: 4 }}>Thread</div>
+
+        <div className="card" style={{ padding: 12 }}>
+          <div className="row gap-8">
+            <span className="ev-tag text">Text</span>
+            <span className="small" style={{ marginLeft: 'auto' }}>Today · 4:12pm</span>
+          </div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, marginTop: 6, fontStyle: 'italic' }}>"omg I forgot to reply yesterday, my bad 😅 how was the show??"</div>
+          <div className="small" style={{ marginTop: 8, color: 'var(--sage)' }}>↑ Fits the pattern. Warm in-moment, not initiating.</div>
+        </div>
+
+        <div className="card" style={{ padding: 12 }}>
+          <div className="row gap-8">
+            <span className="ev-tag feel">Feeling</span>
+            <span className="small" style={{ marginLeft: 'auto' }}>Yesterday</span>
+          </div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, marginTop: 6 }}>Felt invisible at the group dinner. They sat at the other end and didn't look up.</div>
+        </div>
+
+        <div className="card" style={{ padding: 12 }}>
+          <div className="row gap-8">
+            <span className="ev-tag moment">Moment</span>
+            <span className="small" style={{ marginLeft: 'auto' }}>Sun</span>
+          </div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, marginTop: 6 }}>Liked my story within 30s. Didn't reply to the DM I sent right after.</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 07 — Core: ask a follow-up question
+function ScrAsk() {
+  return (
+    <div className="scr">
+      <div className="topbar">
+        <div className="pill-back"><BackChev /></div>
+        <div className="small">Sam · ask</div>
+        <div style={{ width: 32 }} />
+      </div>
+      <div className="pad col gap-16" style={{ marginTop: 14 }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--rose)' }}>You asked</div>
+          <div className="h2" style={{ fontSize: 20, lineHeight: 1.3 }}>
+            Is the "haha yeah maybe" text actually a soft no, or am I reading too much into it?
+          </div>
+        </div>
+
+        <div className="card-tinted">
+          <div className="label" style={{ color: 'var(--accent)' }}>Tell</div>
+          <div style={{ fontSize: 14, lineHeight: 1.6, marginTop: 6, fontFamily: '"Newsreader", Georgia, serif' }}>
+            It is a soft no, and you are not reading too much into it. "Haha yeah maybe — busy week tho" is the polite version of "I'm not making time for this." If Sam wanted the plan, the reply would name a day.
+            <br/><br/>
+            That said: the soft no is about <span style={{ fontStyle: 'italic' }}>that</span> plan, not about you as a person. They still showed up Saturday. The pattern is "yes to what already exists, no to what I'd have to add."
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <div className="label">Things Tell will not do</div>
+          <div className="signal-row" style={{ background: 'transparent' }}>
+            <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>Write your reply</span>
+            <span className="small">—</span>
+          </div>
+          <div className="signal-row" style={{ background: 'transparent' }}>
+            <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>Tell you whether to text them again</span>
+            <span className="small">—</span>
+          </div>
+          <div className="signal-row" style={{ background: 'transparent' }}>
+            <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>Predict what happens next</span>
+            <span className="small">—</span>
+          </div>
+        </div>
+
+        <div className="small" style={{ textAlign: 'center', marginTop: 6, color: 'var(--ink-3)' }}>The next move is yours. That part doesn't outsource.</div>
+      </div>
+    </div>
+  );
+}
+
+// 08 — Core: home / past situations
+function ScrHome() {
+  return (
+    <div className="scr">
+      <div style={{ padding: '20px 22px 12px' }}>
+        <div className="label" style={{ color: 'var(--rose)' }}>Tell</div>
+        <div className="h1" style={{ marginTop: 4 }}>In your head.</div>
+        <div className="meta" style={{ fontSize: 13, marginTop: 6, color: 'var(--ink-2)' }}>Quiet space for the situations you're still figuring out.</div>
+      </div>
+
+      <div className="pad col gap-10">
+        <div className="card" style={{ padding: 14, borderColor: 'var(--line-strong)' }}>
+          <div className="row gap-8">
+            <div className="h2" style={{ fontSize: 18 }}>Sam</div>
+            <span className="ev-tag text" style={{ marginLeft: 'auto', background: 'rgba(74,107,130,0.12)', color: 'var(--accent)' }}>active</span>
+          </div>
+          <div className="small" style={{ marginTop: 4 }}>6 weeks · 14 entries · last updated today</div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, marginTop: 8, fontStyle: 'italic', color: 'var(--ink-2)', fontFamily: '"Newsreader", Georgia, serif' }}>
+            "Warm to you, not pursuing you."
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: 14 }}>
+          <div className="row gap-8">
+            <div className="h2" style={{ fontSize: 18 }}>J. (work)</div>
+            <span className="ev-tag feel" style={{ marginLeft: 'auto' }}>quiet</span>
+          </div>
+          <div className="small" style={{ marginTop: 4 }}>3 weeks · 5 entries · last updated 9 days ago</div>
+          <div style={{ fontSize: 13, lineHeight: 1.5, marginTop: 8, fontStyle: 'italic', color: 'var(--ink-2)', fontFamily: '"Newsreader", Georgia, serif' }}>
+            "Reading too much into Slack reacts."
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: 14, opacity: 0.7 }}>
+          <div className="row gap-8">
+            <div className="h2" style={{ fontSize: 18, color: 'var(--ink-2)' }}>M. from the wedding</div>
+            <span className="ev-tag moment" style={{ marginLeft: 'auto', background: 'var(--paper-dim)', color: 'var(--ink-3)' }}>resolved</span>
+          </div>
+          <div className="small" style={{ marginTop: 4 }}>Closed Apr 18 · "they met someone"</div>
+        </div>
+
+        <div className="card-tinted" style={{ marginTop: 6 }}>
+          <div className="label" style={{ color: 'var(--accent)' }}>Pattern across your reads</div>
+          <div style={{ fontSize: 13, lineHeight: 1.55, marginTop: 6, fontFamily: '"Newsreader", Georgia, serif' }}>
+            You read warmth as pursuit three times this year. Worth naming.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Tile + App ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      <div className="phone-caption">{caption}</div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Tile num="01" cat="Hero" label="Tagline" caption="No login, no quiz, no profile. The promise is one line: a calm voice, not a verdict.">
+        <ScrHero />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Who is this" caption="The only setup. A private name, a relationship type, a rough timeline. Tell never sees contacts or messages.">
+        <ScrWho />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Pour it out" caption="Three input modes — paste, type, talk. Tell sorts the raw evidence later into texts, moments, feelings.">
+        <ScrPour />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Targeted follow-up" caption="Only the questions that change the read. Tells the user what 'we'll see' actually means — by asking what they actually said back.">
+        <ScrFollowup />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The read" caption="Structured, not a verdict. Consistent-with / not-consistent-with / genuinely ambiguous. The honest read judges flag is engineered into the form.">
+        <ScrRead />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Situation thread" caption="One person, one thread. New evidence sharpens the read across days — the H1 bet that the loop is multi-day, not one-shot.">
+        <ScrThread />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Ask Tell" caption="A second layer for the one question you keep replaying. Tell answers — and visibly refuses to script the next text.">
+        <ScrAsk />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Across situations" caption="The home view. Past reads stay. The pattern across them is the retention bet against WEAK_RETURN — you come back because you're the recurring variable.">
+        <ScrHome />
+      </Tile>
+    </>
+  );
+}
+
+const grid = document.getElementById('app');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+
+</body>
+</html>

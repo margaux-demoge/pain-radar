@@ -1,0 +1,944 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Compass · Pain Radar proto 44/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #EDE9E1;
+    --paper: #F5F1E8;
+    --paper-dim: #E5DFD2;
+    --rust: #5B6F7A;              /* deep slate-blue accent */
+    --rust-soft: rgba(91, 111, 122, 0.12);
+    --rust-dim: #8DA1AB;
+    --sage: #8B9D83;
+    --rose: #B8867E;
+    --ink: #2A2E33;
+    --ink-2: #555A62;
+    --ink-3: #87877E;
+    --line: rgba(42, 46, 51, 0.12);
+    --line-strong: rgba(42, 46, 51, 0.22);
+    --you: #5B6F7A;               /* you = slate-blue */
+    --them: #B8867E;              /* partner = dusty rose */
+    --conflict: #C26B5C;
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(237, 233, 225, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h1-xl {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 42px; line-height: 1.04;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  #app .ital { font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rust); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .btn-ghost {
+    background: transparent; color: var(--ink-2);
+    padding: 10px 14px; font-weight: 500; font-size: 13px;
+    border: none; cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-4 { gap: 4px; } #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-10 { gap: 10px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 7px 12px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px;
+  }
+  #app .chip.on {
+    background: var(--rust); color: var(--paper);
+    border-color: var(--rust);
+  }
+  #app .chip.you {
+    background: rgba(91, 111, 122, 0.14); color: var(--you);
+    border-color: rgba(91, 111, 122, 0.25);
+  }
+  #app .chip.them {
+    background: rgba(184, 134, 126, 0.16); color: var(--them);
+    border-color: rgba(184, 134, 126, 0.3);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--rust); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--rust); margin-top: 2px; }
+
+  /* Compass-specific visual elements */
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .card-dim {
+    background: var(--paper-dim); border: 1px solid var(--line);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .tag-cat {
+    font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 700; padding: 3px 8px; border-radius: 4px;
+  }
+  #app .tag-nn { background: rgba(194, 107, 92, 0.16); color: var(--conflict); }
+  #app .tag-pref { background: rgba(139, 157, 131, 0.18); color: var(--sage); }
+  #app .tag-unk { background: rgba(135, 135, 126, 0.18); color: var(--ink-3); }
+  #app .dot { width: 8px; height: 8px; border-radius: 999px; display: inline-block; }
+  #app .dot.you { background: var(--you); }
+  #app .dot.them { background: var(--them); }
+  #app .dot.conflict { background: var(--conflict); box-shadow: 0 0 0 4px rgba(194,107,92,0.18); }
+  #app .compass-svg {
+    width: 100%; display: block;
+  }
+  #app .lock-row {
+    display: flex; align-items: center; gap: 8px;
+    color: var(--ink-3); font-size: 11px;
+  }
+  #app .progress-bar {
+    height: 3px; background: var(--paper-dim); border-radius: 999px; overflow: hidden;
+  }
+  #app .progress-fill {
+    height: 100%; background: var(--rust);
+  }
+  #app .textarea-mock {
+    background: var(--paper-dim); border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px;
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 14px; line-height: 1.45; color: var(--ink);
+    font-style: italic; min-height: 100px;
+  }
+  #app .axis-row {
+    display: grid; grid-template-columns: 70px 1fr 70px;
+    align-items: center; gap: 10px;
+    padding: 10px 0;
+  }
+  #app .axis-track {
+    position: relative; height: 28px;
+    background: var(--paper-dim); border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  #app .axis-marker {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    width: 14px; height: 14px; border-radius: 999px;
+    border: 2px solid var(--paper);
+  }
+  #app .axis-marker.you { background: var(--you); }
+  #app .axis-marker.them { background: var(--them); }
+  #app .axis-end {
+    font-size: 10px; color: var(--ink-3);
+    font-family: "Newsreader", Georgia, serif; font-style: italic;
+  }
+
+  /* SVG compass texture background */
+  .bg-texture {
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(91,111,122,0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(184,134,126,0.05) 0%, transparent 50%);
+  }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">44 / 45 — Compass</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Held/index.html" title="Previous: Held">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Prose/index.html" title="Next: Prose">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Decision clarity · pre-engagement</div>
+  <h1 class="page-title serif">Compass</h1>
+  <p class="page-tagline serif">The map between cold feet and real incompatibility. Compass tells you which differences are growth edges and which ones are the door.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 8</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🔴 NO_RETURN</span>
+    <span><strong>Interview</strong> · 🔴 BUILT_ON_SAND</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photographs.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Compass/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Icons ----------------
+const Ico = {
+  lock: <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.4"/><path d="M5 7V5a3 3 0 016 0v2" stroke="currentColor" strokeWidth="1.4"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  back: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M11 7H3 M7 3l-4 4 4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  plus: <svg width="13" height="13" viewBox="0 0 14 14"><path d="M7 1v12 M1 7h12" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg>,
+  check: <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7l3 3 7-7" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  compass: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="8" stroke="currentColor" strokeWidth="1.4"/><path d="M10 4l2 4 4 2-4 2-2 4-2-4-4-2 4-2z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/></svg>,
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  list: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 5h14 M3 10h14 M3 15h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'map', label: 'Map', icon: Ico.compass },
+    { id: 'items', label: 'Items', icon: Ico.list },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Compass rose SVG (decorative texture)
+function CompassRose({ size = 220, opacity = 0.08 }) {
+  return (
+    <svg className="compass-svg" viewBox="0 0 220 220" style={{ width: size, height: size, opacity }}>
+      <circle cx="110" cy="110" r="105" stroke="#2A2E33" strokeWidth="0.8" fill="none"/>
+      <circle cx="110" cy="110" r="82" stroke="#2A2E33" strokeWidth="0.5" fill="none"/>
+      <circle cx="110" cy="110" r="55" stroke="#2A2E33" strokeWidth="0.5" fill="none"/>
+      <path d="M110 10 L120 110 L110 210 L100 110 Z" fill="#5B6F7A" opacity="0.6"/>
+      <path d="M10 110 L110 100 L210 110 L110 120 Z" fill="#2A2E33" opacity="0.45"/>
+      <path d="M40 40 L115 105 L180 180 L105 115 Z" fill="#B8867E" opacity="0.35"/>
+      <path d="M180 40 L115 115 L40 180 L105 105 Z" fill="#8B9D83" opacity="0.35"/>
+      {[...Array(16)].map((_, i) => {
+        const a = (i * Math.PI * 2) / 16;
+        const x1 = 110 + Math.cos(a) * 82;
+        const y1 = 110 + Math.sin(a) * 82;
+        const x2 = 110 + Math.cos(a) * 105;
+        const y2 = 110 + Math.sin(a) * 105;
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#2A2E33" strokeWidth="0.4"/>;
+      })}
+      <circle cx="110" cy="110" r="6" fill="#2A2E33"/>
+      <text x="110" y="22" textAnchor="middle" fontSize="9" fill="#2A2E33" fontFamily="Newsreader" fontStyle="italic">N</text>
+    </svg>
+  );
+}
+
+// ---------------- Screens ----------------
+
+// 01 — Hero
+function HeroScreen() {
+  return (
+    <div className="scr col bg-texture" style={{ paddingTop: 60 }}>
+      <div style={{ position: 'absolute', top: 90, right: -40, opacity: 0.5 }}>
+        <CompassRose size={260} opacity={0.14}/>
+      </div>
+      <div className="pad col gap-20" style={{ marginTop: 80, position: 'relative', zIndex: 2 }}>
+        <div className="label" style={{ color: 'var(--rust)' }}>Compass</div>
+        <div className="h1-xl serif">
+          Which differences<br/>
+          are <span className="ital" style={{ color: 'var(--rust)' }}>the door</span>,
+          <br/>which are<br/>just life?
+        </div>
+        <div className="serif ital" style={{ fontSize: 15, lineHeight: 1.55, color: 'var(--ink-2)', maxWidth: 300 }}>
+          A 30-minute exercise, alone, to name your non-negotiables before you talk about them with your partner.
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ position: 'absolute', bottom: 60, left: 0, right: 0 }}>
+        <button className="btn-primary">Start the exercise · 30 min</button>
+        <div className="small" style={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+          {Ico.lock} Private. Nothing is shared until you choose.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 02 — Onboarding: who & how long
+function Onb1Screen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Step 1 of 3</div>
+          <div className="small">Skip</div>
+        </div>
+        <div className="progress-bar" style={{ marginTop: 10 }}>
+          <div className="progress-fill" style={{ width: '33%' }}/>
+        </div>
+      </div>
+      <div className="pad col gap-20" style={{ marginTop: 28 }}>
+        <div className="h1 serif">Before we start —</div>
+        <div className="serif ital" style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+          Compass is for genuine ambiguity. Not for justifying a decision you've already made, not for the first year.
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 8 }}>
+          <div className="field">
+            <div className="field-label">Their name (only you'll see this)</div>
+            <div className="field-value serif ital">Théo</div>
+          </div>
+          <div className="field">
+            <div className="field-label">How long together</div>
+            <div className="field-value">3 years, 4 months</div>
+          </div>
+          <div className="field">
+            <div className="field-label">What's bringing you here</div>
+            <div className="field-value" style={{ fontSize: 14 }}>Move + kids question, repeated</div>
+          </div>
+        </div>
+
+        <div className="card-dim" style={{ marginTop: 4, background: 'rgba(91,111,122,0.08)', borderColor: 'rgba(91,111,122,0.18)' }}>
+          <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            <strong style={{ color: 'var(--rust)' }}>One ground rule.</strong> You'll be tempted to write what they'd want to hear. Write what's actually true. The exercise only works on truth.
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ position: 'absolute', bottom: 50, left: 0, right: 0 }}>
+        <button className="btn-primary">Continue {Ico.arrowR}</button>
+      </div>
+    </div>
+  );
+}
+
+// 03 — Onboarding: the three buckets explained
+function Onb2Screen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Step 2 of 3</div>
+          <div className="small">Skip</div>
+        </div>
+        <div className="progress-bar" style={{ marginTop: 10 }}>
+          <div className="progress-fill" style={{ width: '66%' }}/>
+        </div>
+      </div>
+      <div className="pad col gap-16" style={{ marginTop: 24 }}>
+        <div className="h1 serif">You'll sort everything<br/>into three piles.</div>
+
+        <div className="card" style={{ borderLeft: '3px solid var(--conflict)' }}>
+          <div className="row gap-8" style={{ marginBottom: 6 }}>
+            <span className="tag-cat tag-nn">Non-negotiable</span>
+          </div>
+          <div className="serif" style={{ fontSize: 14, lineHeight: 1.4 }}>
+            Things you can't give up without becoming a different person.
+          </div>
+          <div className="small ital serif" style={{ marginTop: 6 }}>
+            "Kids before 35." Not "I want a kind partner."
+          </div>
+        </div>
+
+        <div className="card" style={{ borderLeft: '3px solid var(--sage)' }}>
+          <div className="row gap-8" style={{ marginBottom: 6 }}>
+            <span className="tag-cat tag-pref">Preference</span>
+          </div>
+          <div className="serif" style={{ fontSize: 14, lineHeight: 1.4 }}>
+            Things you'd like, but could trade for the right reason.
+          </div>
+        </div>
+
+        <div className="card" style={{ borderLeft: '3px solid var(--ink-3)' }}>
+          <div className="row gap-8" style={{ marginBottom: 6 }}>
+            <span className="tag-cat tag-unk">Unknown</span>
+          </div>
+          <div className="serif" style={{ fontSize: 14, lineHeight: 1.4 }}>
+            Things you genuinely haven't decided. Most of the work lives here.
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ position: 'absolute', bottom: 50, left: 0, right: 0 }}>
+        <button className="btn-primary">I understand — let's begin {Ico.arrowR}</button>
+      </div>
+    </div>
+  );
+}
+
+// 04 — Onboarding: privacy & joint version explained
+function Onb3Screen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 70 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Step 3 of 3</div>
+          <div className="small">Skip</div>
+        </div>
+        <div className="progress-bar" style={{ marginTop: 10 }}>
+          <div className="progress-fill" style={{ width: '100%' }}/>
+        </div>
+      </div>
+      <div className="pad col gap-16" style={{ marginTop: 24 }}>
+        <div className="h1 serif">Your answers stay<br/>with you.</div>
+        <div className="serif" style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+          Compass never sends Théo anything you write. If you both want a joint reading later, you each finish your own session first, separately.
+        </div>
+
+        <div className="card-dim col gap-10">
+          <div className="row gap-8">
+            <div style={{ width: 26, height: 26, borderRadius: 999, background: 'var(--paper)', display: 'grid', placeItems: 'center', color: 'var(--rust)' }}>{Ico.lock}</div>
+            <div className="serif" style={{ fontSize: 13, fontWeight: 600 }}>Solo first, always</div>
+          </div>
+          <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.45 }}>
+            You'll map yours. Then you'll guess theirs. Most people get the second part wrong, and that's where the conversation starts.
+          </div>
+        </div>
+
+        <div className="card-dim col gap-10">
+          <div className="row gap-8">
+            <div style={{ width: 26, height: 26, borderRadius: 999, background: 'var(--paper)', display: 'grid', placeItems: 'center', color: 'var(--rust)' }}>{Ico.compass}</div>
+            <div className="serif" style={{ fontSize: 13, fontWeight: 600 }}>Joint reading is opt-in</div>
+          </div>
+          <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.45 }}>
+            Only the conflict points surface, never the full lists. No "you said X." Just: <span className="ital">"you both have non-negotiables here, and they don't align."</span>
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ position: 'absolute', bottom: 50, left: 0, right: 0 }}>
+        <button className="btn-primary">Begin · 12 areas, ~30 min</button>
+      </div>
+    </div>
+  );
+}
+
+// 05 — Core: writing a non-negotiable (the uncomfortable part)
+function CoreWriteScreen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 60 }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="row gap-6" style={{ color: 'var(--ink-3)' }}>{Ico.back}<span className="small">Children</span></div>
+          <div className="small">4 of 12</div>
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 18 }}>
+        <div className="label" style={{ color: 'var(--rust)' }}>For you · alone</div>
+        <div className="h2 serif">Children — by when, how many, what kind of parent?</div>
+        <div className="serif ital" style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.5 }}>
+          Write the specific. "I want kids" is too vague to be useful. "Two, before 36, and I want to take a year off" is something Théo can recognize or push back on.
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 16 }}>
+        <div className="textarea-mock">
+          One kid by 35, two if it goes well. I'd want to take 6 months off, not just 8 weeks. I don't want to be the parent who notices everything later.
+        </div>
+        <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+          <div className="label" style={{ width: '100%', marginBottom: 2 }}>Place this in</div>
+          <div className="chip on" style={{ background: 'var(--conflict)', borderColor: 'var(--conflict)', color: 'var(--paper)' }}>Non-negotiable</div>
+          <div className="chip">Preference</div>
+          <div className="chip">Unknown</div>
+        </div>
+        <div className="card-dim" style={{ background: 'rgba(194,107,92,0.08)', borderColor: 'rgba(194,107,92,0.2)' }}>
+          <div className="small serif ital" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            Harder follow-up: if Théo said yes to kids but no to the year off, would you still be there?
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ position: 'absolute', bottom: 50, left: 0, right: 0 }}>
+        <button className="btn-primary">Next: Money {Ico.arrowR}</button>
+      </div>
+    </div>
+  );
+}
+
+// 06 — Core: guess your partner's answer
+function CoreGuessScreen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 60 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="row gap-6" style={{ color: 'var(--ink-3)' }}>{Ico.back}<span className="small">Théo · guess</span></div>
+          <div className="small">4 of 12</div>
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 18 }}>
+        <div className="label" style={{ color: 'var(--them)' }}>For Théo · your best guess</div>
+        <div className="h2 serif">What would <span className="ital">Théo</span> say about children?</div>
+        <div className="serif ital" style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.5 }}>
+          Don't write what you wish they'd say. Write what you think they'd actually say if no one was listening.
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 16 }}>
+        <div className="textarea-mock" style={{ borderColor: 'rgba(184,134,126,0.35)', background: 'rgba(184,134,126,0.06)' }}>
+          He'd say two kids, eventually, no rush. He'd say he wants to be hands-on but his dad wasn't and I think part of him isn't sure he knows how.
+        </div>
+        <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+          <div className="label" style={{ width: '100%', marginBottom: 2 }}>You think Théo would call this</div>
+          <div className="chip">Non-negotiable</div>
+          <div className="chip on" style={{ background: 'var(--them)', borderColor: 'var(--them)', color: 'var(--paper)' }}>Preference</div>
+          <div className="chip">Unknown</div>
+        </div>
+
+        <div className="card" style={{ background: 'rgba(91,111,122,0.06)', borderColor: 'rgba(91,111,122,0.2)' }}>
+          <div className="row gap-8" style={{ marginBottom: 8 }}>
+            <span className="dot conflict"/>
+            <div className="label" style={{ color: 'var(--conflict)' }}>Possible gap</div>
+          </div>
+          <div className="small serif" style={{ lineHeight: 1.5 }}>
+            You: non-negotiable. Them (your guess): preference. If you're right, this is where the work lives.
+          </div>
+        </div>
+      </div>
+      <div className="pad" style={{ position: 'absolute', bottom: 50, left: 0, right: 0 }}>
+        <button className="btn-primary">Save & continue {Ico.arrowR}</button>
+      </div>
+    </div>
+  );
+}
+
+// 07 — Core: the Map (your output, the heart of the app)
+function CoreMapScreen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 60 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Your map</div>
+          <div className="small ital serif">Saved · 2 hrs ago</div>
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 14 }}>
+        <div className="h2 serif">12 areas mapped.<br/><span className="ital" style={{ color: 'var(--rust)' }}>3 real conflicts.</span></div>
+        <div className="row gap-12">
+          <div className="row gap-6"><span className="dot you"/><span className="small">You</span></div>
+          <div className="row gap-6"><span className="dot them"/><span className="small">Théo (your guess)</span></div>
+        </div>
+      </div>
+
+      <div className="pad col" style={{ marginTop: 8 }}>
+        <div className="axis-row">
+          <div className="axis-end" style={{ textAlign: 'right' }}>No kids</div>
+          <div className="axis-track">
+            <div className="axis-marker you" style={{ left: '78%' }}/>
+            <div className="axis-marker them" style={{ left: '46%' }}/>
+          </div>
+          <div className="axis-end">Kids by 35</div>
+        </div>
+        <div className="row gap-8" style={{ marginTop: -4 }}>
+          <span className="tag-cat tag-nn">Conflict</span>
+          <span className="small ital serif" style={{ color: 'var(--ink-2)' }}>Children · timing</span>
+        </div>
+
+        <div className="axis-row" style={{ marginTop: 14 }}>
+          <div className="axis-end" style={{ textAlign: 'right' }}>Stay in Lyon</div>
+          <div className="axis-track">
+            <div className="axis-marker you" style={{ left: '32%' }}/>
+            <div className="axis-marker them" style={{ left: '88%' }}/>
+          </div>
+          <div className="axis-end">Open to move</div>
+        </div>
+        <div className="row gap-8" style={{ marginTop: -4 }}>
+          <span className="tag-cat tag-nn">Conflict</span>
+          <span className="small ital serif" style={{ color: 'var(--ink-2)' }}>Where you live</span>
+        </div>
+
+        <div className="axis-row" style={{ marginTop: 14 }}>
+          <div className="axis-end" style={{ textAlign: 'right' }}>Quiet life</div>
+          <div className="axis-track">
+            <div className="axis-marker you" style={{ left: '70%' }}/>
+            <div className="axis-marker them" style={{ left: '68%' }}/>
+          </div>
+          <div className="axis-end">Ambitious</div>
+        </div>
+        <div className="row gap-8" style={{ marginTop: -4 }}>
+          <span className="tag-cat tag-pref">Aligned</span>
+          <span className="small ital serif" style={{ color: 'var(--ink-2)' }}>Career intensity</span>
+        </div>
+
+        <div className="axis-row" style={{ marginTop: 14 }}>
+          <div className="axis-end" style={{ textAlign: 'right' }}>Pooled</div>
+          <div className="axis-track">
+            <div className="axis-marker you" style={{ left: '60%' }}/>
+            <div className="axis-marker them" style={{ left: '24%' }}/>
+          </div>
+          <div className="axis-end">Separate</div>
+        </div>
+        <div className="row gap-8" style={{ marginTop: -4 }}>
+          <span className="tag-cat tag-nn">Conflict</span>
+          <span className="small ital serif" style={{ color: 'var(--ink-2)' }}>Money</span>
+        </div>
+      </div>
+
+      <div style={{ position: 'absolute', bottom: 60, left: 22, right: 22 }}>
+        <div className="card-dim" style={{ background: 'rgba(91,111,122,0.07)' }}>
+          <div className="small serif ital" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            These are the conversations you actually need to have. Not the others.
+          </div>
+        </div>
+      </div>
+      <NavBar active="map"/>
+    </div>
+  );
+}
+
+// 08 — Core: joint reading (after both finish, opt-in)
+function CoreJointScreen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 60 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label" style={{ color: 'var(--rust)' }}>Joint reading</div>
+          <div className="small ital serif">Théo finished · today</div>
+        </div>
+      </div>
+      <div className="pad col gap-12" style={{ marginTop: 14 }}>
+        <div className="h2 serif">Three places<br/>you don't line up.</div>
+        <div className="serif ital" style={{ fontSize: 13, color: 'var(--ink-3)', lineHeight: 1.55 }}>
+          Compass surfaced only the items where both of you marked a non-negotiable and they conflict. No scores, no winners.
+        </div>
+      </div>
+
+      <div className="pad col gap-10" style={{ marginTop: 14 }}>
+        <div className="card" style={{ borderLeft: '3px solid var(--conflict)' }}>
+          <div className="row gap-8" style={{ marginBottom: 6 }}>
+            <span className="dot conflict"/>
+            <div className="label" style={{ color: 'var(--conflict)' }}>Real conflict · 01</div>
+          </div>
+          <div className="serif" style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.3 }}>
+            Children — timing
+          </div>
+          <div className="small serif ital" style={{ marginTop: 6, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            You: by 35. Théo: not before 38, and not certain.
+          </div>
+          <div className="small" style={{ marginTop: 8, color: 'var(--ink-3)' }}>
+            <span className="ital serif">You were wrong about Théo here.</span> They marked this firmer than you guessed.
+          </div>
+        </div>
+
+        <div className="card" style={{ borderLeft: '3px solid var(--conflict)' }}>
+          <div className="row gap-8" style={{ marginBottom: 6 }}>
+            <span className="dot conflict"/>
+            <div className="label" style={{ color: 'var(--conflict)' }}>Real conflict · 02</div>
+          </div>
+          <div className="serif" style={{ fontSize: 15, fontWeight: 500, lineHeight: 1.3 }}>
+            Where you live
+          </div>
+          <div className="small serif ital" style={{ marginTop: 6, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            You: within 2 hours of your mother. Théo: open to leaving France for work.
+          </div>
+        </div>
+
+        <div className="card" style={{ borderLeft: '3px solid var(--sage)', background: 'rgba(139,157,131,0.06)' }}>
+          <div className="row gap-8" style={{ marginBottom: 6 }}>
+            <span className="dot" style={{ background: 'var(--sage)' }}/>
+            <div className="label" style={{ color: 'var(--sage)' }}>Story you were telling yourself</div>
+          </div>
+          <div className="serif" style={{ fontSize: 14, lineHeight: 1.4 }}>
+            Money — you'd been treating this as a conflict. It isn't. You both want pooled, Théo just talks about it differently.
+          </div>
+        </div>
+      </div>
+
+      <div className="pad" style={{ position: 'absolute', bottom: 50, left: 0, right: 0 }}>
+        <button className="btn-primary">Open the first conversation {Ico.arrowR}</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-driven open. A faded compass rose in the corner, the question on the page in serif. No social proof, no testimonials — that would cheapen it.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Context" caption="Name the partner, name the trigger. The ground-rule card addresses the BUILT_ON_SAND assumption: this only works on truth.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Three buckets" caption="Non-negotiable / Preference / Unknown. The vocabulary the rest of the app runs on, taught up front with concrete examples.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Privacy contract" caption="Addresses the joint-version weaponization risk head-on: solo first always, joint surfaces only conflicts, never the underlying answers.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Write your own" caption="The uncomfortable part. Forces specificity (numbers, ages), then offers a harder follow-up to test the stated answer.">
+        <CoreWriteScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Guess them" caption="The wedge the benchmark called Compass's only real differentiator. Your guess is logged, gaps are flagged for the joint reading.">
+        <CoreGuessScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="The map" caption="Output is an axis per area with two markers. No compatibility score — just where the real conflicts are. Solo users stop here.">
+        <CoreMapScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Joint reading" caption="Optional, after both partners finish independently. Surfaces only conflicts, plus the stories you were telling yourself. Then the app gets out of the way.">
+        <CoreJointScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

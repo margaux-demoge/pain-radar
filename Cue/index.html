@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Cue · Pain Radar proto 22/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F2EBE6;
+    --paper: #FBF6F2;
+    --paper-dim: #ECE3DC;
+    --rose: #B07A78;
+    --rose-soft: rgba(176, 122, 120, 0.13);
+    --rose-dim: #C99A98;
+    --sage: #8FA194;
+    --plum: #6B5566;
+    --ink: #2C2629;
+    --ink-2: #5A5057;
+    --ink-3: #8B8189;
+    --line: rgba(44, 38, 41, 0.10);
+    --line-strong: rgba(44, 38, 41, 0.20);
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 235, 230, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rose); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rose); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rose-soft); color: var(--rose);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.25;
+    letter-spacing: -0.005em;
+  }
+  #app .ital { font-family: "Newsreader", Georgia, serif; font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rose); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--rose); color: var(--paper);
+    border-color: var(--rose);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 18px; padding: 18px;
+  }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--rose); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--rose); margin-top: 2px; }
+
+  /* Two-tone bubble for the asynchronous dialogue */
+  #app .bubble-you {
+    background: var(--paper-dim); border: 1px solid var(--line);
+    border-radius: 16px 16px 16px 4px;
+    padding: 12px 14px; max-width: 80%; align-self: flex-start;
+  }
+  #app .bubble-them {
+    background: var(--rose-soft); border: 1px solid transparent;
+    border-radius: 16px 16px 4px 16px;
+    padding: 12px 14px; max-width: 80%; align-self: flex-end;
+  }
+  #app .bubble-pending {
+    background: transparent; border: 1px dashed var(--line-strong);
+    border-radius: 16px 16px 4px 16px;
+    padding: 12px 14px; max-width: 80%; align-self: flex-end;
+    color: var(--ink-3); font-style: italic;
+  }
+
+  /* Soft wash background */
+  #app .wash {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(176,122,120,0.10), transparent 45%),
+      radial-gradient(circle at 88% 82%, rgba(143,161,148,0.10), transparent 45%);
+    pointer-events: none;
+  }
+
+  /* Connecting line motif (two dots, a thin line) */
+  #app .pair {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  #app .pair-dot { width: 9px; height: 9px; border-radius: 999px; background: var(--rose); }
+  #app .pair-dot.them { background: var(--sage); }
+  #app .pair-line { width: 28px; height: 1px; background: var(--line-strong); }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">22 / 45 — Cue</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Bare/index.html" title="Previous: Bare">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Ember/index.html" title="Next: Ember">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Two-person product · mismatched desire</div>
+  <h1 class="page-title serif">Cue</h1>
+  <p class="page-tagline serif">The conversation about sex you've been avoiding, broken into pieces small enough to actually have.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · See <a href="../../Apps/_radar/Cue/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="wash" />
+      <div className="pad col" style={{ paddingTop: 84, gap: 26, position: 'relative', height: '100%', boxSizing: 'border-box' }}>
+        <div className="col gap-12">
+          <div className="label" style={{ color: 'var(--rose)' }}>Cue</div>
+          <div className="pair" style={{ marginTop: 4 }}>
+            <span className="pair-dot" />
+            <span className="pair-line" />
+            <span className="pair-dot them" />
+          </div>
+        </div>
+        <div className="h1 serif" style={{ fontSize: 32, lineHeight: 1.22 }}>
+          The conversation<br/>
+          you've been avoiding,<br/>
+          <span className="ital" style={{ color: 'var(--rose)' }}>one piece at a time.</span>
+        </div>
+        <div className="serif ital" style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+          For two. Short questions, sent gently, answered when you have the words. The kind of small honesty you couldn't manage on a Tuesday night.
+        </div>
+        <div style={{ marginTop: 'auto', marginBottom: 28 }} className="col gap-12">
+          <button className="btn-primary">Invite my partner</button>
+          <button className="btn-secondary">I have an invite code</button>
+          <div className="small" style={{ textAlign: 'center', marginTop: 6, lineHeight: 1.5 }}>
+            No streaks. No scores. Nothing leaves the two of you.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // The invite copy chooser — addresses the "pairing invite is survivable" assumption
+  const drafts = [
+    { tone: 'Light', txt: "Found a thing. Tiny questions, one a week, just us. Want to try it with me?", on: true },
+    { tone: 'Direct', txt: "I've been wanting to talk to you about us and I keep losing the words. This app helps. Will you install it?", on: false },
+    { tone: 'Playful', txt: "I downloaded this weird little app for couples. You game?", on: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 76 }}>
+        <div className="col gap-8">
+          <div className="label">Step 1 of 3 · Inviting Daniel</div>
+          <div className="h1 serif">How do you<br/>want to ask?</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            The first message is the hardest. Pick one that sounds like you. You can edit before sending.
+          </div>
+        </div>
+        <div className="col gap-10">
+          {drafts.map((d, i) => (
+            <div key={i} className="card col gap-8" style={{ borderColor: d.on ? 'var(--rose)' : 'var(--line)', background: d.on ? 'var(--rose-soft)' : 'var(--paper)' }}>
+              <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+                <span className="label" style={{ color: d.on ? 'var(--rose)' : 'var(--ink-3)' }}>{d.tone}</span>
+                {d.on && <span style={{ width: 16, height: 16, borderRadius: 999, background: 'var(--rose)', color: 'var(--paper)', display: 'grid', placeItems: 'center', fontSize: 10 }}>✓</span>}
+              </div>
+              <div className="serif ital" style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--ink)' }}>"{d.txt}"</div>
+            </div>
+          ))}
+        </div>
+        <button className="btn-primary" style={{ marginTop: 4 }}>Send to Daniel by iMessage</button>
+        <div className="small" style={{ textAlign: 'center' }}>
+          The link installs the app. They see your draft, not ours.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  // Set the ground rules — both partners answer this together (safety rails)
+  const rails = [
+    { t: "One cue at a time. Never a thread.", on: true },
+    { t: "Answers wait until both of us are ready to read.", on: true },
+    { t: "Either of us can pause for a week. No notification.", on: true },
+    { t: "We won't screenshot or share outside Cue.", on: true },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 76 }}>
+        <div className="col gap-8">
+          <div className="label">Step 2 of 3 · Together</div>
+          <div className="h1 serif">A few small<br/>rules, before<br/>anything else.</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            Both of you have to tap the same things. This is the only part Cue won't let one person decide for the other.
+          </div>
+        </div>
+        <div className="col gap-10">
+          {rails.map((r, i) => (
+            <div key={i} className="row gap-12" style={{ padding: '13px 14px', borderRadius: 12, background: 'var(--paper-dim)', border: '1px solid var(--line)' }}>
+              <div className="pair" style={{ gap: 6 }}>
+                <span style={{ width: 14, height: 14, borderRadius: 4, background: 'var(--rose)', color: 'var(--paper)', display: 'grid', placeItems: 'center', fontSize: 9 }}>✓</span>
+                <span style={{ width: 14, height: 14, borderRadius: 4, background: 'var(--sage)', color: 'var(--paper)', display: 'grid', placeItems: 'center', fontSize: 9 }}>✓</span>
+              </div>
+              <div className="serif" style={{ fontSize: 14, lineHeight: 1.45, color: 'var(--ink)', flex: 1 }}>{r.t}</div>
+            </div>
+          ))}
+        </div>
+        <div className="small" style={{ textAlign: 'center', color: 'var(--ink-2)', marginTop: 4 }}>
+          You ↓ Daniel · Both agreed
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  // Calibrate the conversation — soft framing of where we are
+  const where = [
+    { t: "We've stopped, and I don't know why.", on: false },
+    { t: "I want more. They don't seem to.", on: true },
+    { t: "We're out of sync but no one's said so.", on: false },
+    { t: "I'm curious about things I've never told them.", on: false },
+    { t: "I'd rather not name it yet.", on: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 76 }}>
+        <div className="col gap-8">
+          <div className="label">Step 3 of 3 · Just you</div>
+          <div className="h1 serif">Where are you,<br/>privately?</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            Daniel won't see this. Cue uses it to choose softer first cues, so the early ones don't land like an accusation.
+          </div>
+        </div>
+        <div className="col gap-8">
+          {where.map((b, i) => (
+            <div key={i} className="row gap-12" style={{ padding: '13px 16px', borderRadius: 12, background: b.on ? 'var(--rose-soft)' : 'var(--paper)', border: '1px solid ' + (b.on ? 'var(--rose)' : 'var(--line)') }}>
+              <div style={{ width: 18, height: 18, borderRadius: 999, border: '1.5px solid ' + (b.on ? 'var(--rose)' : 'var(--ink-3)'), background: b.on ? 'var(--rose)' : 'transparent', color: 'var(--paper)', display: 'grid', placeItems: 'center', fontSize: 11 }}>{b.on ? '✓' : ''}</div>
+              <div className="serif" style={{ fontSize: 14, lineHeight: 1.4, color: 'var(--ink)' }}>{b.t}</div>
+            </div>
+          ))}
+        </div>
+        <button className="btn-primary" style={{ marginTop: 4 }}>Send the first cue</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreInboxScreen() {
+  // The home — the small list of cues, with status
+  const items = [
+    { from: 'Daniel sent', date: 'today', q: "What's a moment recently you felt close to me, physically?", state: 'unread', tag: 'New cue' },
+    { from: 'You sent', date: 'Sun', q: "Is there something you've been curious about and haven't said?", state: 'waiting' },
+    { from: 'Both answered', date: 'Thu', q: "What would make you feel wanted this week?", state: 'done' },
+    { from: 'Both answered', date: 'Jun 10', q: "When did you last feel like we were a we?", state: 'done' },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+            <div className="label">You & Daniel · Week 3</div>
+            <div className="pair"><span className="pair-dot" /><span className="pair-line" style={{ width: 14 }} /><span className="pair-dot them" /></div>
+          </div>
+          <div className="h2 serif">Four cues so far.<br/>One waiting for you.</div>
+        </div>
+        <div className="col gap-10">
+          {items.map((it, i) => (
+            <div key={i} className="card col gap-8" style={{ borderColor: it.state === 'unread' ? 'var(--rose)' : 'var(--line)', background: it.state === 'unread' ? 'var(--rose-soft)' : 'var(--paper)' }}>
+              <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+                <span className="label" style={{ color: it.state === 'unread' ? 'var(--rose)' : 'var(--ink-3)' }}>{it.from} · {it.date}</span>
+                {it.state === 'unread' && <span style={{ fontSize: 10, color: 'var(--rose)', fontWeight: 700, letterSpacing: '0.1em' }}>NEW</span>}
+                {it.state === 'waiting' && <span className="small ital">waiting</span>}
+                {it.state === 'done' && <span className="small">✓</span>}
+              </div>
+              <div className="serif" style={{ fontSize: 14, lineHeight: 1.45, color: it.state === 'done' ? 'var(--ink-2)' : 'var(--ink)' }}>"{it.q}"</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>Cues</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>Send</span></div>
+        <div className="nav-item"><span>Us</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreAnswerScreen() {
+  // The answer composer — addresses "writing is harder than saying" assumption
+  return (
+    <div className="scr">
+      <div className="wash" />
+      <div className="pad col gap-16" style={{ paddingTop: 70, position: 'relative' }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--rose)' }}>From Daniel · today, 7:14 PM</div>
+        </div>
+        <div className="card col gap-10" style={{ borderColor: 'var(--rose)', background: 'var(--paper)' }}>
+          <div className="h2 serif" style={{ fontSize: 19, lineHeight: 1.35 }}>
+            "What's a moment recently you felt close to me, physically?"
+          </div>
+        </div>
+        <div className="col gap-8">
+          <div className="label">Your answer · just for him</div>
+          <div className="field" style={{ minHeight: 110, padding: '14px 16px' }}>
+            <div className="serif" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink)' }}>
+              Saturday morning, when you put your hand on the back of my neck while I was making coff
+              <span style={{ display: 'inline-block', width: 1, height: 16, background: 'var(--rose)', verticalAlign: 'middle', marginLeft: 1 }} />
+            </div>
+          </div>
+          <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+            <span className="chip" style={{ fontSize: 11 }}>↺ Try again</span>
+            <span className="chip" style={{ fontSize: 11 }}>Too short?</span>
+            <span className="chip" style={{ fontSize: 11 }}>Sit with it</span>
+          </div>
+        </div>
+        <div className="col gap-8" style={{ marginTop: 4 }}>
+          <button className="btn-primary">Send to Daniel</button>
+          <button className="btn-secondary" style={{ border: 'none', color: 'var(--ink-3)' }}>Save and come back</button>
+        </div>
+        <div className="small" style={{ textAlign: 'center', color: 'var(--ink-3)', lineHeight: 1.5 }}>
+          He'll see it once. You can take it back within an hour.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreThreadScreen() {
+  // Both sides answered — the small artifact of one finished cue
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label">Cue · Thursday, June 18</div>
+          <div className="h2 serif" style={{ lineHeight: 1.3 }}>"What would make you feel wanted this week?"</div>
+          <div className="meta serif ital">From the Coral library · curated by Dr. K. Hess, sex therapist</div>
+        </div>
+        <div className="col gap-12" style={{ marginTop: 8 }}>
+          <div className="col gap-6" style={{ alignItems: 'flex-start' }}>
+            <div className="small" style={{ paddingLeft: 6 }}>You · answered Wed 10:48 PM</div>
+            <div className="bubble-you serif" style={{ fontSize: 14, lineHeight: 1.55 }}>
+              If you texted me once during the day, about nothing. I think I'd notice.
+            </div>
+          </div>
+          <div className="col gap-6" style={{ alignItems: 'flex-end' }}>
+            <div className="small" style={{ paddingRight: 6 }}>Daniel · answered Thu 8:02 AM</div>
+            <div className="bubble-them serif" style={{ fontSize: 14, lineHeight: 1.55 }}>
+              If you came to bed when I did. Not after the dishes. Just with me.
+            </div>
+          </div>
+        </div>
+        <div className="card col gap-8" style={{ background: 'var(--paper-dim)', borderColor: 'transparent', marginTop: 6 }}>
+          <div className="label" style={{ color: 'var(--rose)' }}>One small honesty</div>
+          <div className="serif ital" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+            Cue won't tell you what to do with this. It's yours now.
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>Cues</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>Send</span></div>
+        <div className="nav-item"><span>Us</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreSafetyScreen() {
+  // "An answer landed hard" — addresses the third dangerous assumption
+  return (
+    <div className="scr">
+      <div className="wash" />
+      <div className="pad col gap-16" style={{ paddingTop: 76, position: 'relative' }}>
+        <div className="col gap-8">
+          <div className="label" style={{ color: 'var(--rose)' }}>You paused this cue</div>
+          <div className="h1 serif" style={{ fontSize: 26, lineHeight: 1.25 }}>An answer can<br/>land harder than<br/>you expected.</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.55 }}>
+            That's okay. You don't have to reply right now. Nothing shows him you've seen it.
+          </div>
+        </div>
+        <div className="card col gap-12">
+          <div className="label">A few things you can do</div>
+          <div className="col gap-10">
+            <div className="row gap-10"><span style={{ color: 'var(--rose)', fontSize: 14 }}>·</span><div className="serif" style={{ fontSize: 14, lineHeight: 1.5 }}>Sit with it for 48 hours. Cue waits.</div></div>
+            <div className="row gap-10"><span style={{ color: 'var(--rose)', fontSize: 14 }}>·</span><div className="serif" style={{ fontSize: 14, lineHeight: 1.5 }}>Ask Cue for a softer follow-up cue, not an answer.</div></div>
+            <div className="row gap-10"><span style={{ color: 'var(--rose)', fontSize: 14 }}>·</span><div className="serif" style={{ fontSize: 14, lineHeight: 1.5 }}>Pause Cue for a week, together. He'll see it's mutual.</div></div>
+            <div className="row gap-10"><span style={{ color: 'var(--rose)', fontSize: 14 }}>·</span><div className="serif" style={{ fontSize: 14, lineHeight: 1.5 }}>Talk to a couples therapist. We'll send one name.</div></div>
+          </div>
+        </div>
+        <button className="btn-secondary" style={{ marginTop: 4 }}>Hand this to a therapist</button>
+        <div className="small" style={{ textAlign: 'center', color: 'var(--ink-3)' }}>
+          Cue is a way in, not a substitute for the rest.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreShapeScreen() {
+  // The accumulated shape — H2: leading to the real conversation
+  const themes = [
+    { t: 'Touch outside the bedroom', you: 4, them: 2, txt: 'You both mentioned it. Different words.' },
+    { t: 'Being wanted vs. needed', you: 3, them: 1, txt: 'He brought it up first, week 2.' },
+    { t: 'After the kids are asleep', you: 2, them: 4, txt: 'He keeps returning here.' },
+    { t: 'Something neither of us has named yet', you: 1, them: 1, txt: 'Soft circling. Not avoided.' },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 70 }}>
+        <div className="col gap-6">
+          <div className="label">Week 6 · 12 cues answered</div>
+          <div className="h2 serif">A shape is<br/>starting to show.</div>
+          <div className="meta serif ital" style={{ lineHeight: 1.5 }}>
+            Not a verdict. Just the threads you've each pulled on, side by side.
+          </div>
+        </div>
+        <div className="col gap-12">
+          {themes.map((th, i) => (
+            <div key={i} className="col gap-6" style={{ paddingBottom: 12, borderBottom: '1px solid var(--line)' }}>
+              <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+                <span className="serif" style={{ fontSize: 14, fontWeight: 500, color: 'var(--ink)' }}>{th.t}</span>
+                <span className="pair" style={{ gap: 4 }}>
+                  <span style={{ fontSize: 10, color: 'var(--rose)', fontWeight: 700 }}>{th.you}</span>
+                  <span className="pair-dot" />
+                  <span className="pair-line" style={{ width: 10 }} />
+                  <span className="pair-dot them" />
+                  <span style={{ fontSize: 10, color: 'var(--sage)', fontWeight: 700 }}>{th.them}</span>
+                </span>
+              </div>
+              <div className="small ital serif">{th.txt}</div>
+            </div>
+          ))}
+        </div>
+        <div className="card col gap-8" style={{ background: 'var(--rose-soft)', borderColor: 'transparent' }}>
+          <div className="serif ital" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+            "When you're both ready, this could be a 20-minute talk. Not the two-hour one you were dreading."
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Cues</span></div>
+        <div className="nav-item"><span>Send</span></div>
+        <div className="nav-item on"><span>Us</span><div className="nav-dot" /></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Two dots, one thin line. Sets the tone: a two-person object, restrained, almost shy.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Choose the invite" caption="Defuses the first bomb the product is built to avoid: the ask itself. Three drafts, your tone, sent by iMessage so the lift is one tap.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Set the rules, together" caption="The only screen both partners must complete jointly. Safety rails before any cue is sent. Addresses the trust gap directly.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Where are you, privately" caption="Solo screen, never shown to the partner. Calibrates how soft the first cues are so they don't land like accusations.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The cue inbox" caption="The home. Four cues in three weeks. One new, one waiting on him, two done. Low-pressure list, no streaks, no counts.">
+        <CoreInboxScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Answering a cue" caption="The composer. Take-back window, scaffolding chips, no read receipts. The whole UX bets that writing one sentence is easier than saying it cold.">
+        <CoreAnswerScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="A finished cue" caption="Both answered. Two short bubbles, a tiny artifact. Cue won't synthesize, won't advise, won't gamify. It just holds the answers.">
+        <CoreThreadScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="When it lands hard" caption="The safety net. Pausing is named and easy. Therapist hand-off is one tap. Addresses the 'what if the answer hurts' assumption the judge flagged.">
+        <CoreSafetyScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

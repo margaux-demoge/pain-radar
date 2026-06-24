@@ -1,0 +1,812 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Held · Pain Radar proto 43/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F2EDE6;
+    --paper: #F8F4ED;
+    --paper-dim: #ECE4D7;
+    --rust: #8A5A6B;             /* dusty rose / mauve accent */
+    --rust-soft: rgba(138, 90, 107, 0.12);
+    --rust-dim: #B08596;
+    --sage: #6B7B6A;
+    --sage-soft: rgba(107, 123, 106, 0.14);
+    --ink: #2A2520;
+    --ink-2: #5A5048;
+    --ink-3: #8B8175;
+    --line: rgba(42, 37, 32, 0.12);
+    --line-strong: rgba(42, 37, 32, 0.22);
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 237, 230, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  #app .it { font-family: "Newsreader", Georgia, serif; font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--rust); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--rust); color: var(--paper);
+    border-color: var(--rust);
+  }
+  #app .chip.sage.on { background: var(--sage); border-color: var(--sage); }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .card {
+    border-radius: 16px; padding: 18px; background: var(--paper-dim);
+    border: 1px solid var(--line);
+  }
+  #app .card.warm { background: #EFE2DC; border-color: rgba(138,90,107,0.18); }
+  #app .badge-sage { background: var(--sage-soft); color: var(--sage); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; }
+  #app .badge-rust { background: var(--rust-soft); color: var(--rust); padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; }
+
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--rust); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--rust); margin-top: 2px; }
+
+  /* Held-specific decorative */
+  #app .breath-ring {
+    width: 180px; height: 180px; border-radius: 999px;
+    background: radial-gradient(circle at center, rgba(138,90,107,0.18) 0%, rgba(138,90,107,0.06) 60%, transparent 100%);
+    display: grid; place-items: center;
+    margin: 0 auto;
+  }
+  #app .breath-ring-inner {
+    width: 120px; height: 120px; border-radius: 999px;
+    background: radial-gradient(circle at center, rgba(138,90,107,0.32) 0%, rgba(138,90,107,0.14) 70%, transparent 100%);
+    display: grid; place-items: center;
+    font-family: "Newsreader", Georgia, serif; font-style: italic;
+    color: var(--rust); font-size: 18px;
+  }
+  #app .check {
+    width: 22px; height: 22px; border-radius: 999px;
+    background: var(--sage); color: var(--paper);
+    display: grid; place-items: center; font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  #app .dot {
+    width: 8px; height: 8px; border-radius: 999px;
+    background: var(--rust); flex-shrink: 0;
+  }
+  #app .seg {
+    flex: 1; height: 4px; border-radius: 999px;
+    background: var(--paper-dim);
+  }
+  #app .seg.on { background: var(--rust); }
+  #app .roster-cell {
+    aspect-ratio: 1; border-radius: 12px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    display: grid; place-items: center;
+    font-family: "Newsreader", Georgia, serif; font-style: italic;
+    color: var(--ink-2); font-size: 13px;
+  }
+  #app .roster-cell.you { background: var(--rust); color: var(--paper); border-color: var(--rust); }
+  #app .roster-cell.host { background: var(--sage); color: var(--paper); border-color: var(--sage); }
+  #app .timeline-row { display: flex; gap: 10px; align-items: flex-start; }
+  #app .timeline-time { width: 44px; font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink-3); padding-top: 2px; }
+  #app .timeline-rail { width: 2px; background: var(--line); align-self: stretch; margin-top: 6px; margin-bottom: 0; }
+  #app .timeline-content { flex: 1; padding-bottom: 14px; }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">43 / 45 — Held</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Cast/index.html" title="Previous: Cast">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Compass/index.html" title="Next: Compass">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Body-needs · structurally non-romantic</div>
+  <h1 class="page-title serif">Held</h1>
+  <p class="page-tagline serif">Touch is a basic human need, and nobody talks about not getting any. Held finds the people near you who are missing it too, and gets you in a room together.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 7</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🔴 BUILT_ON_SAND</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven proto, no photographs (intimate domain).
+  Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Held/spec.md">spec.md</a>.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+// 01 Hero
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="col gap-24" style={{padding: '34px 22px 22px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="label" style={{color: 'var(--rust)'}}>HELD · LONDON</div>
+
+        <div style={{flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 28}}>
+          <div className="breath-ring">
+            <div className="breath-ring-inner">held</div>
+          </div>
+          <div className="serif" style={{fontSize: 26, lineHeight: 1.3, color: 'var(--ink)', textAlign: 'center'}}>
+            Touch is a basic <span className="it">human need.</span>
+            <br/>You don't have to keep enduring it.
+          </div>
+          <div className="small" style={{textAlign: 'center', maxWidth: 280, margin: '0 auto', lineHeight: 1.55}}>
+            Held is platonic, fully clothed, in groups of eight to twelve, with a trained facilitator. Never one on one. Always consent-first.
+          </div>
+        </div>
+
+        <div className="col gap-12">
+          <button className="btn-primary">See the next gathering near me</button>
+          <div className="small" style={{textAlign: 'center'}}>Identity verified · facilitator-led · £24 sliding</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 02 Onboarding — the deal
+function Onb1Screen() {
+  const items = [
+    'Platonic and fully clothed. Always.',
+    'Groups of 8 to 12. Never one on one for first meetings.',
+    'A trained facilitator is in the room the whole time.',
+    'Nobody is touched without explicit asking.',
+    'You can leave, or sit out any part, at any moment.',
+    'No DMs, no profiles, no photos to scroll.',
+  ];
+  return (
+    <div className="scr">
+      <div className="col gap-20" style={{padding: '34px 22px 22px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="row" style={{gap: 6}}>
+          <div className="seg on" /><div className="seg" /><div className="seg" />
+        </div>
+        <div className="label">Step 1 of 3 · The deal</div>
+        <div className="h2 serif">Before anything else, the shape of the thing.</div>
+        <div className="col gap-12" style={{flex: 1}}>
+          {items.map((t, i) => (
+            <div key={i} className="row gap-12" style={{alignItems: 'flex-start'}}>
+              <div className="check">✓</div>
+              <div style={{fontSize: 14, lineHeight: 1.45, color: 'var(--ink)'}}>{t}</div>
+            </div>
+          ))}
+        </div>
+        <div className="col gap-8">
+          <button className="btn-primary">I understand. Continue.</button>
+          <button className="btn-secondary">This isn't for me</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 03 Onboarding — Identity
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="col gap-20" style={{padding: '34px 22px 22px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="row" style={{gap: 6}}>
+          <div className="seg on" /><div className="seg on" /><div className="seg" />
+        </div>
+        <div className="label">Step 2 of 3 · Identity</div>
+        <div className="h2 serif">Held is built on knowing who is in the room.</div>
+        <div className="small" style={{lineHeight: 1.5}}>
+          We verify every attendee through a government ID and a 30-second video selfie. Your face is matched once, then the ID document is deleted. The check is required by our insurer and by every other person showing up.
+        </div>
+
+        <div className="col gap-12">
+          <div className="field">
+            <span className="field-label">Legal name</span>
+            <span className="field-value">Sasha Renard</span>
+          </div>
+          <div className="card" style={{display: 'flex', gap: 12, alignItems: 'center'}}>
+            <div style={{width: 44, height: 44, borderRadius: 999, background: 'var(--sage)', display:'grid', placeItems:'center', color:'var(--paper)', fontSize: 18}}>✓</div>
+            <div className="col gap-6" style={{flex: 1}}>
+              <div style={{fontSize: 14, fontWeight: 600}}>ID confirmed</div>
+              <div className="small">Passport · matched in 11s</div>
+            </div>
+            <span className="badge-sage">VERIFIED</span>
+          </div>
+          <div className="card warm" style={{padding: 14}}>
+            <div className="row" style={{gap: 8, alignItems: 'flex-start'}}>
+              <div className="dot" style={{marginTop: 6}} />
+              <div className="small" style={{lineHeight: 1.5, color: 'var(--ink-2)'}}>
+                <strong style={{color:'var(--ink)'}}>One strike removal.</strong> Romantic or sexual approach gets you removed for life. No appeal.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{marginTop: 'auto'}}>
+          <button className="btn-primary">Continue</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 04 Onboarding — Honest questions
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="col gap-16" style={{padding: '34px 22px 22px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="row" style={{gap: 6}}>
+          <div className="seg on" /><div className="seg on" /><div className="seg on" />
+        </div>
+        <div className="label">Step 3 of 3 · Honest answers</div>
+        <div className="h2 serif">What do you want, and what do you not want?</div>
+        <div className="small" style={{lineHeight: 1.45}}>Pick what feels true today. You can change any of this before every event.</div>
+
+        <div className="col gap-12" style={{marginTop: 4}}>
+          <div className="col gap-8">
+            <div className="label" style={{textTransform:'none', letterSpacing: 0, fontSize: 12, color: 'var(--ink-2)', fontWeight: 500}}>What I'd welcome</div>
+            <div className="row" style={{flexWrap:'wrap', gap: 8}}>
+              <span className="chip sage on">a long hug</span>
+              <span className="chip sage on">head on a shoulder</span>
+              <span className="chip">hand on a back</span>
+              <span className="chip sage on">leaning, listening</span>
+              <span className="chip">held while crying</span>
+            </div>
+          </div>
+          <div className="divider" />
+          <div className="col gap-8">
+            <div className="label" style={{textTransform:'none', letterSpacing: 0, fontSize: 12, color: 'var(--ink-2)', fontWeight: 500}}>Not today</div>
+            <div className="row" style={{flexWrap:'wrap', gap: 8}}>
+              <span className="chip on">face touch</span>
+              <span className="chip on">lying down</span>
+              <span className="chip">whispering</span>
+            </div>
+          </div>
+          <div className="divider" />
+          <div className="field">
+            <span className="field-label">One thing I want the facilitator to know</span>
+            <span className="field-value it serif" style={{fontSize: 14, color: 'var(--ink-2)'}}>"I cried at my dad's funeral nine months ago and nobody has held me since."</span>
+          </div>
+        </div>
+
+        <div style={{marginTop: 'auto'}}>
+          <button className="btn-primary">Find my first gathering</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 05 Core — Find event
+function CoreEventScreen() {
+  return (
+    <div className="scr">
+      <div className="col gap-16" style={{padding: '34px 22px 80px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="row" style={{justifyContent: 'space-between', alignItems: 'baseline'}}>
+          <div className="h2 serif">Near you</div>
+          <span className="small">London · 6 mi</span>
+        </div>
+
+        <div className="card warm" style={{padding: 18}}>
+          <div className="row" style={{justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8}}>
+            <span className="badge-rust">SAT · JUN 28</span>
+            <span className="small" style={{color:'var(--rust)'}}>3 spots left</span>
+          </div>
+          <div className="serif" style={{fontSize: 20, lineHeight: 1.25, marginBottom: 10}}>
+            A quiet evening, hands and shoulders.
+          </div>
+          <div className="small" style={{lineHeight: 1.55, color:'var(--ink-2)'}}>
+            7–9 pm · Stoke Newington community room · 10 people · facilitated by Margo Devereux (somatic, 6 yrs)
+          </div>
+          <div className="row" style={{gap: 10, marginTop: 14, flexWrap: 'wrap'}}>
+            <span className="chip">5 women</span>
+            <span className="chip">5 men</span>
+            <span className="chip">first-timers welcome</span>
+          </div>
+        </div>
+
+        <div className="card" style={{padding: 16}}>
+          <div className="row" style={{justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6}}>
+            <span className="label">SUN · JUN 29</span>
+            <span className="small">7 spots</span>
+          </div>
+          <div className="serif" style={{fontSize: 17, marginBottom: 6}}>Sunday afternoon · grief-aware group</div>
+          <div className="small">2–4 pm · Peckham · 12 people · Yusuf Rahimi</div>
+        </div>
+
+        <div className="card" style={{padding: 16}}>
+          <div className="row" style={{justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6}}>
+            <span className="label">WED · JUL 02</span>
+            <span className="small">2 spots</span>
+          </div>
+          <div className="serif" style={{fontSize: 17, marginBottom: 6}}>Returning members · second-circle</div>
+          <div className="small">8–10 pm · Hackney · 8 people · Margo Devereux</div>
+        </div>
+
+        <div className="small" style={{textAlign:'center', marginTop: 4}}>
+          Held only shows events with a facilitator and a confirmed gender mix.
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>Gatherings</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>Tonight</span></div>
+        <div className="nav-item"><span>You</span></div>
+      </div>
+    </div>
+  );
+}
+
+// 06 Core — RSVP confirmation
+function CoreRsvpScreen() {
+  return (
+    <div className="scr">
+      <div className="col gap-16" style={{padding: '34px 22px 80px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="label">Saturday · 7:00 pm</div>
+        <div className="h1 serif">You're in.</div>
+        <div className="small" style={{lineHeight: 1.55, color:'var(--ink-2)'}}>
+          The room is held for ten people. The other nine know your first name and your one line. You'll know theirs when you arrive.
+        </div>
+
+        <div className="card" style={{padding: 16}}>
+          <div className="label" style={{marginBottom: 10}}>WHO IS IN THE ROOM</div>
+          <div style={{display:'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8}}>
+            <div className="roster-cell host">M</div>
+            <div className="roster-cell">A</div>
+            <div className="roster-cell">J</div>
+            <div className="roster-cell you">you</div>
+            <div className="roster-cell">N</div>
+            <div className="roster-cell">P</div>
+            <div className="roster-cell">L</div>
+            <div className="roster-cell">D</div>
+            <div className="roster-cell">R</div>
+            <div className="roster-cell">S</div>
+          </div>
+          <div className="small" style={{marginTop: 10}}>
+            <span style={{color:'var(--sage)', fontWeight:600}}>M</span> · Margo, your facilitator · 5 women, 5 men · 4 first-timers
+          </div>
+        </div>
+
+        <div className="card warm" style={{padding: 16}}>
+          <div className="label" style={{marginBottom: 8, color: 'var(--rust)'}}>BEFORE YOU COME</div>
+          <ul style={{margin:0, paddingLeft: 16, fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)'}}>
+            <li>Wear something soft you can sit on the floor in.</li>
+            <li>Eat beforehand. No alcohol in the room.</li>
+            <li>Arrive 10 minutes early so you can settle.</li>
+          </ul>
+        </div>
+
+        <div className="row" style={{gap: 10}}>
+          <button className="btn-secondary" style={{flex: 1}}>Cancel</button>
+          <button className="btn-primary" style={{flex: 1.4}}>Add to calendar</button>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Gatherings</span></div>
+        <div className="nav-item on"><span>Tonight</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>You</span></div>
+      </div>
+    </div>
+  );
+}
+
+// 07 Core — In-room arc
+function CoreArcScreen() {
+  return (
+    <div className="scr">
+      <div className="col gap-12" style={{padding: '34px 22px 80px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="label">7:00 pm · the room</div>
+        <div className="h2 serif">Tonight's shape</div>
+        <div className="small" style={{lineHeight: 1.5}}>Margo walks the room through this. You can sit out any part.</div>
+
+        <div style={{marginTop: 6}}>
+          <div className="timeline-row">
+            <div className="timeline-time">7:00</div>
+            <div className="col" style={{alignItems:'center'}}><div className="dot" /><div className="timeline-rail" /></div>
+            <div className="timeline-content">
+              <div style={{fontSize: 14, fontWeight: 600}}>Arrival, tea, names</div>
+              <div className="small">Twenty minutes of nothing-but-talking. Find a place on the floor.</div>
+            </div>
+          </div>
+          <div className="timeline-row">
+            <div className="timeline-time">7:20</div>
+            <div className="col" style={{alignItems:'center'}}><div className="dot" /><div className="timeline-rail" /></div>
+            <div className="timeline-content">
+              <div style={{fontSize: 14, fontWeight: 600}}>Asking, refusing</div>
+              <div className="small">Margo runs three rounds of "can I have ___? · yes · no thank you." The no muscle first.</div>
+            </div>
+          </div>
+          <div className="timeline-row">
+            <div className="timeline-time">7:45</div>
+            <div className="col" style={{alignItems:'center'}}><div className="dot" /><div className="timeline-rail" /></div>
+            <div className="timeline-content">
+              <div style={{fontSize: 14, fontWeight: 600}}>Held space</div>
+              <div className="small">The hour. Hugs, heads on shoulders, leaning. You ask, or are asked.</div>
+            </div>
+          </div>
+          <div className="timeline-row">
+            <div className="timeline-time">8:45</div>
+            <div className="col" style={{alignItems:'center'}}><div className="dot" style={{background:'var(--sage)'}}/></div>
+            <div className="timeline-content">
+              <div style={{fontSize: 14, fontWeight: 600}}>Closing circle</div>
+              <div className="small">One word each. Then tea, then home.</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card" style={{padding: 14, marginTop: 4}}>
+          <div className="row gap-8" style={{alignItems:'flex-start'}}>
+            <div className="dot" style={{background:'var(--sage)', marginTop: 6}} />
+            <div className="small" style={{lineHeight: 1.5}}>
+              <strong style={{color: 'var(--ink)'}}>Tap the band on your wrist</strong> any time you want Margo to come over. It's silent. She'll be there in seconds.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Gatherings</span></div>
+        <div className="nav-item on"><span>Tonight</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>You</span></div>
+      </div>
+    </div>
+  );
+}
+
+// 08 Core — After / progression
+function CoreAfterScreen() {
+  return (
+    <div className="scr">
+      <div className="col gap-16" style={{padding: '34px 22px 80px', height: '100%', boxSizing: 'border-box'}}>
+        <div className="label">The morning after · Sun, Jun 29</div>
+        <div className="h2 serif">How is the body, today?</div>
+
+        <div className="card warm" style={{padding: 18}}>
+          <div className="small" style={{color:'var(--rust)', fontWeight: 600, letterSpacing:'0.06em', textTransform:'uppercase', marginBottom: 8}}>FROM MARGO</div>
+          <div className="serif it" style={{fontSize: 16, lineHeight: 1.5, color:'var(--ink)'}}>
+            "You stayed for the held space and let Priya hold your shoulder for a long time. That took something. Rest today."
+          </div>
+        </div>
+
+        <div className="col gap-12">
+          <div className="label">YOUR ARC</div>
+          <div className="card" style={{padding: 14}}>
+            <div className="row" style={{justifyContent:'space-between', alignItems:'baseline'}}>
+              <div className="serif" style={{fontSize: 17}}>Three gatherings attended</div>
+              <span className="badge-sage">RETURNING</span>
+            </div>
+            <div className="small" style={{marginTop: 6, lineHeight: 1.5}}>
+              May 17 · Jun 7 · Jun 28. You can apply to steward after your fifth.
+            </div>
+            <div className="row" style={{gap: 6, marginTop: 12}}>
+              <div className="seg on" /><div className="seg on" /><div className="seg on" /><div className="seg" /><div className="seg" />
+            </div>
+          </div>
+        </div>
+
+        <div className="card" style={{padding: 14}}>
+          <div className="label" style={{marginBottom: 8}}>NEXT</div>
+          <div style={{fontSize: 14, fontWeight: 600, marginBottom: 4}}>Wed Jul 02 · second-circle</div>
+          <div className="small">Same room. Four of last night's people will be back. Margo facilitating.</div>
+          <button className="btn-primary" style={{marginTop: 12}}>Hold a spot</button>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Gatherings</span></div>
+        <div className="nav-item"><span>Tonight</span></div>
+        <div className="nav-item on"><span>You</span><div className="nav-dot" /></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="The opening is a soft breathing ring, not a marketing splash. The deal is named in the same breath as the need.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="The deal" caption="The safety scaffolding is the first screen, not a footnote. If this is not for you, the app says so before asking for ID.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Identity check" caption="Verified ID is a hard gate. One-strike-removal is named here, not buried in T&Cs — answering the BUILT_ON_SAND safety risk.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Honest answers" caption="Two opt-in/opt-out lists and one line for the facilitator. No profile, no photo — what shapes the event is what you'd welcome.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Find a gathering" caption="The only meaningful action. Gender mix and facilitator are shown up front; events without them never reach the feed.">
+        <CoreEventScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="RSVP" caption="The roster is initials, not photos. You see the shape of the room — facilitator, mix, first-timer count — and what to bring.">
+        <CoreRsvpScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="The room" caption="The two-hour structure visible in advance. The 'asking, refusing' round is the no-muscle warm-up — consent is a skill, practised first.">
+        <CoreArcScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="After" caption="The between-events surface the WEAK_RETURN verdict asked for: facilitator note, arc count, stewardship path — never a social graph.">
+        <CoreAfterScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

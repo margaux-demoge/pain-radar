@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Norm · Pain Radar proto 28/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F1EEE7;
+    --paper: #FAF8F3;
+    --paper-dim: #ECE7DC;
+    --sage: #5B7368;
+    --sage-soft: rgba(91, 115, 104, 0.12);
+    --sage-dim: #8AA095;
+    --rust: #9C5B49;
+    --rust-soft: rgba(156, 91, 73, 0.12);
+    --ink: #25282A;
+    --ink-2: #50555A;
+    --ink-3: #858B90;
+    --line: rgba(37, 40, 42, 0.10);
+    --line-strong: rgba(37, 40, 42, 0.20);
+    --amber: #C68E3E;
+    --amber-soft: rgba(198, 142, 62, 0.14);
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(241, 238, 231, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--sage-soft); color: var(--sage);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--sage); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--sage); color: var(--paper);
+    border-color: var(--sage);
+  }
+  #app .chip.amber {
+    background: var(--amber-soft); color: var(--amber); border-color: var(--amber-soft);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--sage); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--sage); margin-top: 2px; }
+
+  /* Spectrum bar — Norm signature visual */
+  #app .spectrum {
+    position: relative; height: 10px; border-radius: 999px;
+    background: linear-gradient(to right, #B7C9BE 0%, #D9D2BC 50%, #C68E3E 80%, #9C5B49 100%);
+  }
+  #app .spectrum-mark {
+    position: absolute; top: -6px; width: 22px; height: 22px;
+    border-radius: 999px; background: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transform: translateX(-50%);
+  }
+  #app .spectrum-ticks { display: flex; justify-content: space-between; margin-top: 10px;
+    font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* Foot */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">28 / 45 — Norm</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Mend/index.html" title="Previous: Mend">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Orbit/index.html" title="Next: Orbit">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Calibrated calm · parenting second opinion</div>
+  <h1 class="page-title serif">Norm</h1>
+  <p class="page-tagline serif">Is this a phase or a flag? Norm walks you through the behavior you're worried about and tells you, honestly, where it sits on the concern spectrum.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 6</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven, no photos. This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Norm/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined from huashu-design skill assets) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screen components ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{paddingTop: 64, gap: 28}}>
+        <div className="label" style={{color: 'var(--sage)'}}>Norm</div>
+        <div className="h1 serif" style={{fontSize: 34, lineHeight: 1.12}}>
+          Is this a phase,<br/>
+          <span style={{fontStyle: 'italic', color: 'var(--sage)'}}>or a flag?</span>
+        </div>
+        <div className="serif" style={{fontStyle: 'italic', fontSize: 17, lineHeight: 1.55, color: 'var(--ink-2)'}}>
+          A calm, calibrated second opinion on the behavior that's been bothering you today.
+        </div>
+
+        <div style={{marginTop: 8, padding: '16px 18px', borderRadius: 16, background: 'var(--paper-dim)', border: '1px solid var(--line)'}}>
+          <div className="label" style={{marginBottom: 8}}>Calibration source</div>
+          <div style={{fontSize: 13, lineHeight: 1.5, color: 'var(--ink-2)'}}>
+            Age norms reviewed by a panel of <strong style={{color: 'var(--ink)'}}>4 pediatric psychologists</strong> and grounded in published developmental research.
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 12}}>
+          <button className="btn-primary">Describe what happened today</button>
+          <button className="btn-secondary">I already have an account</button>
+        </div>
+
+        <div className="small" style={{textAlign: 'center', marginTop: 6, color: 'var(--ink-3)'}}>
+          No diagnoses. No forums. No scrolling.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{paddingTop: 28}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <span className="small">Step 1 of 3</span>
+          <span className="small" style={{color: 'var(--sage)'}}>About your child</span>
+        </div>
+        <div className="h2 serif">Tell us about your kid.</div>
+        <div className="meta" style={{lineHeight: 1.5}}>
+          Norm's reads are calibrated by age. We only ask what we need.
+        </div>
+
+        <div className="field">
+          <span className="field-label">First name</span>
+          <span className="field-value">Léa</span>
+        </div>
+        <div className="field">
+          <span className="field-label">Age</span>
+          <span className="field-value">5 years, 4 months</span>
+        </div>
+        <div className="col gap-8">
+          <span className="label">Sibling order</span>
+          <div className="row gap-8" style={{flexWrap: 'wrap'}}>
+            <span className="chip">Only child</span>
+            <span className="chip on">Older</span>
+            <span className="chip">Middle</span>
+            <span className="chip">Younger</span>
+          </div>
+        </div>
+        <div className="col gap-8">
+          <span className="label">Any clinical follow-up?</span>
+          <div className="row gap-8" style={{flexWrap: 'wrap'}}>
+            <span className="chip on">No</span>
+            <span className="chip">Yes</span>
+            <span className="chip">Was, not now</span>
+          </div>
+        </div>
+
+        <button className="btn-primary" style={{marginTop: 6}}>Continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 28}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <span className="small">Step 2 of 3</span>
+          <span className="small" style={{color: 'var(--sage)'}}>What worries you</span>
+        </div>
+        <div className="h2 serif">What's the behavior on your mind?</div>
+        <div className="meta" style={{lineHeight: 1.5}}>
+          In plain words. Norm translates it into the developmental categories it knows.
+        </div>
+
+        <div style={{padding: 16, borderRadius: 14, background: 'var(--paper-dim)', border: '1px solid var(--line)', minHeight: 110}}>
+          <div className="serif" style={{fontStyle: 'italic', fontSize: 15, lineHeight: 1.55, color: 'var(--ink)'}}>
+            "She melts down every single time we leave the park. Screaming, going limp, sometimes hitting. It can last 30 minutes."
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 4}}>
+          <span className="label">Norm hears</span>
+          <div className="row gap-6" style={{flexWrap: 'wrap'}}>
+            <span className="chip on">Transitions</span>
+            <span className="chip on">Tantrums</span>
+            <span className="chip">Sensory</span>
+            <span className="chip">Defiance</span>
+            <span className="chip">Hitting</span>
+          </div>
+          <span className="small" style={{marginTop: 4}}>Tap to correct what we picked up.</span>
+        </div>
+
+        <button className="btn-primary" style={{marginTop: 10}}>That's right, continue</button>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 28}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <span className="small">Step 3 of 3</span>
+          <span className="small" style={{color: 'var(--sage)'}}>Frequency &amp; recovery</span>
+        </div>
+        <div className="h2 serif">How often, and how does she come back?</div>
+
+        <div className="col gap-8">
+          <span className="label">How often, lately</span>
+          <div className="row gap-6" style={{flexWrap: 'wrap'}}>
+            <span className="chip">Rare</span>
+            <span className="chip">Weekly</span>
+            <span className="chip on">A few / week</span>
+            <span className="chip">Daily</span>
+            <span className="chip">Multiple / day</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">How long does it last</span>
+          <div className="row gap-6" style={{flexWrap: 'wrap'}}>
+            <span className="chip">&lt; 5 min</span>
+            <span className="chip">5–15 min</span>
+            <span className="chip on">15–30 min</span>
+            <span className="chip">&gt; 30 min</span>
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">After it ends, she</span>
+          <div className="row gap-6" style={{flexWrap: 'wrap'}}>
+            <span className="chip on">Wants a hug</span>
+            <span className="chip">Withdraws</span>
+            <span className="chip">Bounces back quickly</span>
+            <span className="chip">Stays upset for hours</span>
+          </div>
+        </div>
+
+        <button className="btn-primary" style={{marginTop: 12}}>Give me the read</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreReadScreen() {
+  return (
+    <div className="scr" style={{overflow: 'auto'}}>
+      <div className="pad col gap-16" style={{paddingTop: 24, paddingBottom: 100}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <span className="label" style={{color: 'var(--sage)'}}>Norm's read · Léa, 5y4m</span>
+          <span className="small">Just now</span>
+        </div>
+
+        <div className="h2 serif" style={{fontSize: 24, lineHeight: 1.25}}>
+          What you described is <span style={{color: 'var(--sage)', fontStyle: 'italic'}}>within the typical range</span> for a five-year-old around transitions.
+        </div>
+
+        <div style={{marginTop: 4}}>
+          <div className="small" style={{marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--ink-3)', fontWeight: 600}}>Where Léa sits</div>
+          <div className="spectrum">
+            <div className="spectrum-mark" style={{left: '38%'}} />
+          </div>
+          <div className="spectrum-ticks">
+            <span>Mild</span>
+            <span>Typical</span>
+            <span>Watch</span>
+            <span>Bring up</span>
+          </div>
+        </div>
+
+        <div style={{padding: 14, borderRadius: 14, background: 'var(--sage-soft)', border: '1px solid var(--sage-soft)'}}>
+          <div className="label" style={{color: 'var(--sage)', marginBottom: 6}}>Typical at this age</div>
+          <div style={{fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)'}}>
+            Around 65% of 5-year-olds still have meltdowns at transitions a few times a week. They peak between 4 and 6 and taper by 7. Length under 30 min is in range.
+          </div>
+        </div>
+
+        <div style={{padding: 14, borderRadius: 14, background: 'var(--paper-dim)', border: '1px solid var(--line)'}}>
+          <div className="label" style={{marginBottom: 6}}>Generally helpful here</div>
+          <div style={{fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)'}}>
+            A 5-minute warning before leaving. A small ritual on the way out ("one last slide"). Naming the feeling, not the behavior.
+          </div>
+        </div>
+
+        <div style={{padding: 14, borderRadius: 14, background: 'var(--amber-soft)', border: '1px solid var(--amber-soft)'}}>
+          <div className="label" style={{color: 'var(--amber)', marginBottom: 6}}>Worth bringing up if</div>
+          <div style={{fontSize: 13, lineHeight: 1.55, color: 'var(--ink-2)'}}>
+            Meltdowns regularly pass 45 minutes, recovery starts taking hours, or hitting becomes the default rather than the exception.
+          </div>
+        </div>
+
+        <button className="btn-secondary" style={{marginTop: 4}}>Start logging when this happens</button>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>Read</span><div className="nav-dot"/></div>
+        <div className="nav-item"><span>Log</span></div>
+        <div className="nav-item"><span>Pattern</span></div>
+        <div className="nav-item"><span>Léa</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreLogScreen() {
+  const days = [
+    {d: 'Mon', count: 0},
+    {d: 'Tue', count: 1},
+    {d: 'Wed', count: 0},
+    {d: 'Thu', count: 0},
+    {d: 'Fri', count: 2},
+    {d: 'Sat', count: 0},
+    {d: 'Sun', count: 1},
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 24, paddingBottom: 100}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <span className="h2 serif" style={{fontSize: 22}}>One-tap log</span>
+          <span className="small">Park meltdown</span>
+        </div>
+
+        <div style={{padding: 18, borderRadius: 16, background: 'var(--paper-dim)', border: '1px solid var(--line)'}}>
+          <div className="label" style={{marginBottom: 8}}>It just happened?</div>
+          <button className="btn-primary" style={{background: 'var(--rust)'}}>Tap to log · 18:42</button>
+          <div className="small" style={{marginTop: 10, lineHeight: 1.5}}>
+            Two seconds. You can add the trigger later — or not.
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{marginTop: 8}}>
+          <span className="label">This week</span>
+          <div className="row" style={{justifyContent: 'space-between', alignItems: 'flex-end', height: 72}}>
+            {days.map((day, i) => (
+              <div key={i} className="col" style={{alignItems: 'center', gap: 6}}>
+                <div style={{
+                  width: 16,
+                  height: Math.max(4, day.count * 22),
+                  background: day.count ? 'var(--sage)' : 'var(--line)',
+                  borderRadius: 4,
+                }}/>
+                <span className="small" style={{fontSize: 10}}>{day.d}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{padding: 14, borderRadius: 14, background: 'var(--sage-soft)', border: '1px solid var(--sage-soft)'}}>
+          <div className="serif" style={{fontStyle: 'italic', fontSize: 14, lineHeight: 1.55, color: 'var(--ink)'}}>
+            "Tuesday 4pm, Friday twice (after school + before dinner), Sunday morning. Three days had none."
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Read</span></div>
+        <div className="nav-item on"><span>Log</span><div className="nav-dot"/></div>
+        <div className="nav-item"><span>Pattern</span></div>
+        <div className="nav-item"><span>Léa</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CorePatternScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 24, paddingBottom: 100}}>
+        <div className="row" style={{justifyContent: 'space-between'}}>
+          <span className="label" style={{color: 'var(--sage)'}}>Week 3 · what you've observed</span>
+        </div>
+
+        <div className="h2 serif" style={{fontSize: 22, lineHeight: 1.3}}>
+          You logged <span style={{color: 'var(--sage)'}}>4 meltdowns</span> this week. You thought it was happening daily.
+        </div>
+
+        <div style={{padding: 14, borderRadius: 14, background: 'var(--paper-dim)', border: '1px solid var(--line)'}}>
+          <div className="label" style={{marginBottom: 8}}>21-day picture</div>
+          <div className="row" style={{justifyContent: 'space-between', alignItems: 'flex-end', height: 56}}>
+            {[0,1,0,0,2,1,0,1,0,0,1,0,2,0,1,0,0,1,0,1,1].map((n, i) => (
+              <div key={i} style={{
+                width: 6,
+                height: Math.max(3, n * 14),
+                background: n ? 'var(--sage)' : 'var(--line)',
+                borderRadius: 2,
+              }}/>
+            ))}
+          </div>
+          <div className="row" style={{justifyContent: 'space-between', marginTop: 10}}>
+            <span className="small">Jun 3</span>
+            <span className="small">Jun 24</span>
+          </div>
+        </div>
+
+        <div style={{padding: 14, borderRadius: 14, background: 'var(--sage-soft)', border: '1px solid var(--sage-soft)'}}>
+          <div className="label" style={{color: 'var(--sage)', marginBottom: 6}}>The pattern</div>
+          <div style={{fontSize: 13, lineHeight: 1.6, color: 'var(--ink-2)'}}>
+            12 meltdowns in 21 days — roughly <strong style={{color: 'var(--ink)'}}>one every other day</strong>. Eight of them happened at a transition out of something fun. None lasted longer than 28 minutes.
+          </div>
+        </div>
+
+        <div style={{padding: 14, borderRadius: 14, background: 'var(--paper-dim)', border: '1px solid var(--line)'}}>
+          <div className="label" style={{marginBottom: 6}}>Trigger breakdown</div>
+          <div className="col gap-8" style={{marginTop: 8}}>
+            <div className="row" style={{justifyContent: 'space-between', alignItems: 'center'}}>
+              <span style={{fontSize: 13}}>Leaving the park / playground</span>
+              <span className="small" style={{color: 'var(--ink)', fontWeight: 600}}>8</span>
+            </div>
+            <div className="row" style={{justifyContent: 'space-between', alignItems: 'center'}}>
+              <span style={{fontSize: 13}}>Bedtime</span>
+              <span className="small" style={{color: 'var(--ink)', fontWeight: 600}}>2</span>
+            </div>
+            <div className="row" style={{justifyContent: 'space-between', alignItems: 'center'}}>
+              <span style={{fontSize: 13}}>Sibling fight</span>
+              <span className="small" style={{color: 'var(--ink)', fontWeight: 600}}>2</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Read</span></div>
+        <div className="nav-item"><span>Log</span></div>
+        <div className="nav-item on"><span>Pattern</span><div className="nav-dot"/></div>
+        <div className="nav-item"><span>Léa</span></div>
+      </div>
+    </div>
+  );
+}
+
+function CoreNewWorryScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{paddingTop: 24, paddingBottom: 100}}>
+        <div className="label" style={{color: 'var(--sage)'}}>New worry</div>
+        <div className="h2 serif" style={{fontSize: 22, lineHeight: 1.25}}>
+          Something different is bothering you today?
+        </div>
+        <div className="meta" style={{lineHeight: 1.5}}>
+          Norm remembers Léa. Just describe the new thing.
+        </div>
+
+        <div style={{padding: 16, borderRadius: 14, background: 'var(--paper-dim)', border: '1px solid var(--line)', minHeight: 90}}>
+          <div className="serif" style={{fontStyle: 'italic', fontSize: 14, lineHeight: 1.55, color: 'var(--ink-2)'}}>
+            "She won't look at her grandparents on video calls. Just stares at the floor or runs off."
+          </div>
+        </div>
+
+        <div className="col gap-8">
+          <span className="label">Previous worries (still tracking)</span>
+          <div style={{padding: 12, borderRadius: 12, background: 'var(--paper)', border: '1px solid var(--line)'}}>
+            <div className="row" style={{justifyContent: 'space-between'}}>
+              <span style={{fontSize: 13, fontWeight: 500}}>Park meltdowns</span>
+              <span className="small" style={{color: 'var(--sage)'}}>Typical · easing</span>
+            </div>
+          </div>
+          <div style={{padding: 12, borderRadius: 12, background: 'var(--paper)', border: '1px solid var(--line)'}}>
+            <div className="row" style={{justifyContent: 'space-between'}}>
+              <span style={{fontSize: 13, fontWeight: 500}}>Hitting little brother</span>
+              <span className="small" style={{color: 'var(--amber)'}}>Watch · 6 logged</span>
+            </div>
+          </div>
+        </div>
+
+        <button className="btn-primary" style={{marginTop: 8}}>Get a read on the new worry</button>
+
+        <div className="small" style={{textAlign: 'center', marginTop: 4, color: 'var(--ink-3)'}}>
+          Norm earns its keep on the worry, not on your time.
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><span>Read</span><div className="nav-dot"/></div>
+        <div className="nav-item"><span>Log</span></div>
+        <div className="nav-item"><span>Pattern</span></div>
+        <div className="nav-item"><span>Léa</span></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="The open leans on the question itself — and answers the credibility worry up front by naming who built the calibration.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="About the kid" caption="The minimum needed for age-calibrated reads. No personality test, no philosophy quiz.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Describe the worry" caption="Parent writes in plain words. Norm translates into developmental categories and shows what it heard, correctable in one tap.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Frequency &amp; recovery" caption="The three knobs that actually move the verdict: how often, how long, and how the kid comes back down.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The read" caption="A single calibrated sentence, a spectrum position, and three calm follow-ons. Not a diagnosis, not a forum.">
+        <CoreReadScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="One-tap log" caption="Two seconds in the moment. The button is the whole job; details can wait. The bar chart is the immediate reframing reward.">
+        <CoreLogScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Three-week pattern" caption="Anxiety-shrinking math: 'every day' becomes 'one every other day, mostly at transitions out of fun.' The observation itself is the relief.">
+        <CorePatternScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="New worry" caption="Norm remembers Léa. The re-entry cost is zero: prior worries are listed with their current read so the parent feels held over time.">
+        <CoreNewWorryScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

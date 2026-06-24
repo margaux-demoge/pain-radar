@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Mirror · Pain Radar proto 18/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #11151C;
+    --night-2: #1B2230;
+    --paper: #F2EEE7;
+    --paper-dim: #E6E0D4;
+    --cream: #EFEAE0;
+    --amber: #D4946B;
+    --amber-soft: rgba(212, 148, 107, 0.14);
+    --amber-dim: #B6764E;
+    --ink: #1A1F28;
+    --ink-2: #4D5462;
+    --ink-3: #8A8F9B;
+    --line: rgba(26, 31, 40, 0.12);
+    --line-strong: rgba(26, 31, 40, 0.22);
+    --night-line: rgba(242, 238, 231, 0.10);
+    --night-line-strong: rgba(242, 238, 231, 0.20);
+  }
+  html, body { margin: 0; padding: 0; background: var(--cream); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(239, 234, 224, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--amber-dim); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--amber-dim); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--amber-soft); color: var(--amber-dim);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles — Mirror is dark, late-night */
+  #app .scr {
+    width: 100%; height: 100%;
+    background: var(--night); color: var(--paper);
+    position: relative; overflow: hidden;
+  }
+  #app .scr-light {
+    background: var(--cream); color: var(--ink);
+  }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 30px; line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  #app .h1-big {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 38px; line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 500; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  #app .italic { font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .small-light { font-size: 12px; color: rgba(242,238,231,0.55); }
+  #app .meta { font-size: 12px; color: rgba(242,238,231,0.65); }
+  #app .label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; color: rgba(242,238,231,0.55); }
+  #app .label-warm { color: var(--amber); }
+  #app .btn-primary {
+    background: var(--paper); color: var(--night);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+    font-family: "Newsreader", Georgia, serif;
+  }
+  #app .btn-warm {
+    background: var(--amber); color: var(--night);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    font-family: "Newsreader", Georgia, serif;
+  }
+  #app .btn-ghost {
+    background: transparent; color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 400; font-size: 14px;
+    border: 1px solid var(--night-line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-10 { gap: 10px; } #app .gap-12 { gap: 12px; }
+  #app .gap-16 { gap: 16px; } #app .gap-20 { gap: 20px; }
+  #app .gap-24 { gap: 24px; } #app .gap-32 { gap: 32px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--night-2); border: 1px solid var(--night-line);
+  }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: transparent; border: 1px solid var(--night-line-strong);
+    font-size: 13px; color: rgba(242,238,231,0.75);
+  }
+  #app .chip.on {
+    background: var(--amber); color: var(--night);
+    border-color: var(--amber);
+  }
+  #app .divider-d { height: 1px; background: var(--night-line); }
+  #app .card {
+    background: var(--night-2); border: 1px solid var(--night-line);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .card-warm {
+    background: rgba(212, 148, 107, 0.08);
+    border: 1px solid rgba(212, 148, 107, 0.22);
+    border-radius: 16px; padding: 16px;
+  }
+  #app .bubble-them {
+    background: var(--night-2); border-radius: 16px 16px 16px 4px;
+    padding: 14px 16px; max-width: 80%;
+    font-size: 15px; line-height: 1.45;
+    font-family: "Newsreader", Georgia, serif;
+    color: var(--paper);
+  }
+  #app .bubble-me {
+    background: var(--amber); color: var(--night);
+    border-radius: 16px 16px 4px 16px;
+    padding: 12px 14px; max-width: 80%;
+    font-size: 14px; line-height: 1.4;
+    align-self: flex-end;
+  }
+  #app .bubble-quiet {
+    background: transparent;
+    border: 1px solid var(--night-line);
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 13px; line-height: 1.5;
+    color: rgba(242,238,231,0.65);
+    font-style: italic;
+    font-family: "Newsreader", Georgia, serif;
+  }
+  #app .tag-loop {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px; border-radius: 999px;
+    background: var(--amber-soft);
+    border: 1px solid rgba(212,148,107,0.30);
+    font-size: 11px; color: var(--amber);
+    text-transform: uppercase; letter-spacing: 0.10em;
+    font-weight: 600;
+  }
+  #app .breath-ring {
+    width: 180px; height: 180px;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 148, 107, 0.35);
+    display: grid; place-items: center;
+    position: relative;
+  }
+  #app .breath-ring::before {
+    content: ""; position: absolute; inset: 18px;
+    border-radius: 999px;
+    border: 1px solid rgba(212, 148, 107, 0.22);
+  }
+  #app .breath-ring::after {
+    content: ""; position: absolute; inset: 36px;
+    border-radius: 999px;
+    background: radial-gradient(circle at center, rgba(212, 148, 107, 0.20), transparent 70%);
+  }
+  #app .star-field {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(1px 1px at 22% 14%, rgba(242,238,231,0.55), transparent 60%),
+      radial-gradient(1px 1px at 78% 22%, rgba(242,238,231,0.40), transparent 60%),
+      radial-gradient(1px 1px at 42% 8%, rgba(242,238,231,0.30), transparent 60%),
+      radial-gradient(1px 1px at 12% 36%, rgba(242,238,231,0.40), transparent 60%),
+      radial-gradient(1px 1px at 88% 48%, rgba(242,238,231,0.25), transparent 60%),
+      radial-gradient(1px 1px at 64% 58%, rgba(242,238,231,0.35), transparent 60%),
+      radial-gradient(1px 1px at 32% 70%, rgba(242,238,231,0.30), transparent 60%);
+  }
+  #app .pattern-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--night-line);
+  }
+  #app .pattern-dot {
+    width: 8px; height: 8px; border-radius: 999px;
+    background: var(--amber); flex-shrink: 0;
+  }
+  #app .pattern-dot.faint { background: rgba(212,148,107,0.35); }
+  #app .session-strip {
+    display: flex; gap: 3px; align-items: flex-end; height: 32px;
+  }
+  #app .session-bar {
+    flex: 1; background: rgba(212,148,107,0.35);
+    border-radius: 2px;
+  }
+  #app .session-bar.tall { background: var(--amber); }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">18 / 45 — Mirror</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Ledger/index.html" title="Previous: Ledger">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Mull/index.html" title="Next: Mull">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">In-spiral interrupter · late-night appearance anxiety</div>
+  <h1 class="page-title serif">Mirror</h1>
+  <p class="page-tagline serif">The flaw you can't stop seeing isn't the one anyone else sees. Mirror catches the spiral, names what's happening, and gets you out before the day is gone.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 5</span>
+    <span><strong>Benchmark</strong> · 🟢 EMERGING</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Mirror is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Mirror/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined from huashu-design skill assets) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '11:42 PM', battery = 38, statusColor = '#F2EEE7' }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: statusColor }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screen components ----------------
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="star-field" />
+      <div className="pad col" style={{ paddingTop: 80, height: '100%' }}>
+        <div className="label label-warm">When the spiral starts</div>
+        <div style={{ height: 18 }} />
+        <div className="h1-big serif">
+          You're already<br/>
+          <span className="italic">in it.</span>
+        </div>
+        <div style={{ height: 20 }} />
+        <div className="serif" style={{ fontSize: 17, lineHeight: 1.55, color: 'rgba(242,238,231,0.72)', maxWidth: 300 }}>
+          Mirror reads the loop, not the trigger. It names what's happening and gets you out before the night is gone.
+        </div>
+        <div style={{ flex: 1 }} />
+        <div className="col gap-10" style={{ paddingBottom: 36 }}>
+          <button className="btn-warm">Tell Mirror what just happened</button>
+          <div className="small-light" style={{ textAlign: 'center', paddingTop: 4 }}>
+            Private. Not stored on a server. No feed.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 64 }}>
+        <div className="label">Step 1 of 3</div>
+        <div className="h1 serif">
+          When do the spirals<br/>usually hit you?
+        </div>
+        <div className="small-light serif italic" style={{ fontSize: 14 }}>
+          So Mirror can be quiet the rest of the time.
+        </div>
+        <div className="col gap-10" style={{ marginTop: 6 }}>
+          {[
+            { t: 'Late night, in bed', s: '10pm — 2am', on: true },
+            { t: 'Right after a mirror or window', s: 'Catching a reflection' },
+            { t: 'After scrolling', s: 'Instagram, TikTok, dating apps' },
+            { t: 'Morning routine', s: 'Getting ready, doing my face' },
+            { t: 'After a photo of me', s: 'Tagged, posted, sent in a group' },
+          ].map((o, i) => (
+            <div key={i} className="card" style={{
+              padding: '14px 16px',
+              borderColor: o.on ? 'rgba(212,148,107,0.45)' : 'rgba(242,238,231,0.10)',
+              background: o.on ? 'rgba(212,148,107,0.08)' : 'var(--night-2)'
+            }}>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <div className="col gap-6">
+                  <div className="serif" style={{ fontSize: 16, color: 'var(--paper)' }}>{o.t}</div>
+                  <div className="small-light">{o.s}</div>
+                </div>
+                <div style={{
+                  width: 22, height: 22, borderRadius: 999,
+                  border: '1.5px solid ' + (o.on ? 'var(--amber)' : 'rgba(242,238,231,0.25)'),
+                  background: o.on ? 'var(--amber)' : 'transparent',
+                  display: 'grid', placeItems: 'center'
+                }}>
+                  {o.on && <svg width="10" height="10" viewBox="0 0 10 10"><path d="M2 5l2 2 4-4" stroke="#11151C" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 64 }}>
+        <div className="label">Step 2 of 3</div>
+        <div className="h1 serif">
+          What does the loop<br/>usually sound like?
+        </div>
+        <div className="small-light serif italic" style={{ fontSize: 14 }}>
+          Pick the ones that ring. Mirror won't show these back to you.
+        </div>
+        <div className="row" style={{ flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+          {[
+            { t: 'my skin', on: true },
+            { t: 'my nose', on: true },
+            { t: 'my jaw' },
+            { t: 'my weight', on: true },
+            { t: 'my hair' },
+            { t: 'my eyes' },
+            { t: 'I look tired', on: true },
+            { t: 'I look old' },
+            { t: 'I look different in photos' },
+            { t: 'nobody finds me attractive' },
+            { t: 'I should not eat this' },
+          ].map((c, i) => (
+            <div key={i} className={'chip ' + (c.on ? 'on' : '')}>{c.t}</div>
+          ))}
+        </div>
+        <div className="card-warm" style={{ marginTop: 12 }}>
+          <div className="label label-warm">A note from Mirror</div>
+          <div className="serif" style={{ fontSize: 14, lineHeight: 1.5, color: 'rgba(242,238,231,0.85)', marginTop: 6 }}>
+            If at any point this app feels like it's making things worse, close it. The spiral is bigger than what we can hold here. There's a list of people who can help on the last screen.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 64 }}>
+        <div className="label">Step 3 of 3</div>
+        <div className="h1 serif">
+          One thing before<br/>we start.
+        </div>
+        <div className="serif" style={{ fontSize: 15, lineHeight: 1.55, color: 'rgba(242,238,231,0.78)', marginTop: 4 }}>
+          When you open Mirror, you're probably already in it. So the home screen is just one button. No mood scales, no streaks, no graphs of how often you spiral. That would make the spiral into content.
+        </div>
+        <div className="card" style={{ marginTop: 8 }}>
+          <div className="col gap-12">
+            <div className="row gap-12">
+              <div style={{ width: 26, height: 26, borderRadius: 999, border: '1px solid rgba(242,238,231,0.20)', display: 'grid', placeItems: 'center', color: 'var(--amber)' }}>
+                <svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 6l2 2 4-4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <div className="serif" style={{ fontSize: 14, color: 'var(--paper)' }}>Notify me at 10pm with a soft cue — only on the days I usually spiral.</div>
+            </div>
+            <div className="divider-d" />
+            <div className="row gap-12">
+              <div style={{ width: 26, height: 26, borderRadius: 999, border: '1px solid rgba(242,238,231,0.20)' }} />
+              <div className="serif" style={{ fontSize: 14, color: 'rgba(242,238,231,0.65)' }}>Add a home-screen shortcut "I'm in it"</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <button className="btn-warm" style={{ marginTop: 8 }}>I'm ready</button>
+        <div className="small-light" style={{ textAlign: 'center' }}>You can change all of this later.</div>
+      </div>
+    </div>
+  );
+}
+
+function CoreOpenScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{ paddingTop: 72, height: '100%' }}>
+        <div className="label">11:42 PM · Tuesday</div>
+        <div style={{ height: 20 }} />
+        <div className="h2 serif">What just happened?</div>
+        <div className="small-light serif italic" style={{ marginTop: 6 }}>
+          The photo. The mirror. The thing somebody said. Type it, or hold to talk.
+        </div>
+        <div style={{ marginTop: 20 }} className="card" >
+          <div className="serif" style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--paper)' }}>
+            I went to put pyjamas on and saw myself in the wardrobe mirror and now I've been zooming into my stomach in selfies for like 35 minutes. I have a thing tomorrow and I can't go.
+          </div>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 14 }}>
+            <div className="small-light">147 words · still typing</div>
+            <div style={{ width: 8, height: 14, background: 'var(--amber)', borderRadius: 2 }} />
+          </div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <div className="row gap-10" style={{ paddingBottom: 24 }}>
+          <button className="btn-ghost" style={{ width: 56, padding: '14px 0' }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" style={{ display:'block', margin:'0 auto' }}><path d="M10 3v10m-4-4l4 4 4-4M4 17h12" stroke="currentColor" strokeWidth="1.4" fill="none" strokeLinecap="round" strokeLinejoin="round" opacity="0.8"/></svg>
+          </button>
+          <button className="btn-warm" style={{ flex: 1 }}>Read this back to me</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreNameLoopScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 64, paddingBottom: 24, height: '100%' }}>
+        <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Mirror is reading</div>
+          <div className="small-light">11:44 PM</div>
+        </div>
+        <div className="col gap-12" style={{ marginTop: 4 }}>
+          <div className="bubble-them">
+            Okay. I read it.
+          </div>
+          <div className="bubble-them">
+            <span style={{ color: 'var(--amber)', fontStyle: 'normal', fontFamily: 'Inter, sans-serif', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', display: 'block', marginBottom: 6 }}>This one's a comparison loop</span>
+            You went from your own body in your own mirror, to your body in a tiny rectangle, to your body next to other bodies the rectangle picked for you. None of those are the same body. The one in the wardrobe is the only one that's actually in your room tonight.
+          </div>
+          <div className="bubble-them">
+            And there's a forecasting part: <span className="italic">"I have a thing tomorrow and I can't go."</span> That's the spiral picking what tomorrow will be from inside a 35-minute zoom session. Tomorrow doesn't know yet.
+          </div>
+          <div className="row gap-6" style={{ marginTop: 4 }}>
+            <div className="tag-loop">comparison</div>
+            <div className="tag-loop">forecasting</div>
+            <div className="tag-loop">zoom</div>
+          </div>
+        </div>
+        <div style={{ flex: 1 }} />
+        <div className="col gap-8">
+          <div className="small-light serif italic" style={{ textAlign: 'center', fontSize: 13 }}>
+            Does that fit? Or does it feel off?
+          </div>
+          <div className="row gap-8">
+            <button className="btn-ghost" style={{ flex: 1, fontSize: 13 }}>That fits</button>
+            <button className="btn-ghost" style={{ flex: 1, fontSize: 13 }}>Not quite</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreExitScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col" style={{ paddingTop: 64, height: '100%' }}>
+        <div className="label label-warm">A way out, fitted to this loop</div>
+        <div style={{ height: 14 }} />
+        <div className="h2 serif">
+          Put the phone face down<br/>for four minutes.
+        </div>
+        <div className="serif italic" style={{ fontSize: 14, color: 'rgba(242,238,231,0.65)', marginTop: 8, lineHeight: 1.5 }}>
+          A zoom loop needs distance from the rectangle. Not a reframe. Not breathing. Just distance.
+        </div>
+        <div style={{ flex: 1, display: 'grid', placeItems: 'center', marginTop: 8 }}>
+          <div className="breath-ring">
+            <div className="col" style={{ alignItems: 'center', gap: 4, position: 'relative', zIndex: 2 }}>
+              <div className="serif" style={{ fontSize: 42, color: 'var(--paper)', fontWeight: 500 }}>4:00</div>
+              <div className="small-light" style={{ fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' }}>face down</div>
+            </div>
+          </div>
+        </div>
+        <div className="card-warm" style={{ marginTop: 20 }}>
+          <div className="serif" style={{ fontSize: 14, lineHeight: 1.5, color: 'rgba(242,238,231,0.85)' }}>
+            One fact, if you want it: nobody at the thing tomorrow has zoomed into your stomach for 35 minutes. They are also in their own wardrobe mirror.
+          </div>
+        </div>
+        <div className="row gap-8" style={{ paddingBottom: 24, marginTop: 16 }}>
+          <button className="btn-ghost" style={{ flex: 1, fontSize: 13 }}>Give me something else</button>
+          <button className="btn-warm" style={{ flex: 1, fontSize: 14 }}>Start the four</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CorePatternScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 64, paddingBottom: 24, height: '100%' }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="label">Quietly, between spirals</div>
+          <div className="small-light">June</div>
+        </div>
+        <div className="h2 serif">
+          You're starting to<br/>recognise the shape.
+        </div>
+        <div className="serif" style={{ fontSize: 14, lineHeight: 1.55, color: 'rgba(242,238,231,0.72)', marginTop: -4 }}>
+          Eleven sessions this month. The loop closed less each time.
+        </div>
+
+        <div className="card" style={{ padding: 14 }}>
+          <div className="label" style={{ marginBottom: 10 }}>Time to put the phone down</div>
+          <div className="session-strip">
+            <div className="session-bar" style={{ height: '90%' }} />
+            <div className="session-bar" style={{ height: '78%' }} />
+            <div className="session-bar" style={{ height: '85%' }} />
+            <div className="session-bar" style={{ height: '62%' }} />
+            <div className="session-bar" style={{ height: '70%' }} />
+            <div className="session-bar" style={{ height: '54%' }} />
+            <div className="session-bar tall" style={{ height: '48%' }} />
+            <div className="session-bar tall" style={{ height: '42%' }} />
+            <div className="session-bar tall" style={{ height: '36%' }} />
+            <div className="session-bar tall" style={{ height: '40%' }} />
+            <div className="session-bar tall" style={{ height: '28%' }} />
+          </div>
+          <div className="row" style={{ justifyContent: 'space-between', marginTop: 10 }}>
+            <div className="small-light">June 3</div>
+            <div className="small-light">12 min → 4 min</div>
+            <div className="small-light">June 22</div>
+          </div>
+        </div>
+
+        <div className="col">
+          <div className="label" style={{ marginBottom: 4 }}>The loops that keep coming back</div>
+          <div className="pattern-row">
+            <div className="pattern-dot" />
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div className="serif" style={{ fontSize: 15, color: 'var(--paper)' }}>Comparison · selfies → strangers</div>
+              <div className="small-light">6 sessions · usually 11pm – 1am</div>
+            </div>
+          </div>
+          <div className="pattern-row">
+            <div className="pattern-dot faint" />
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div className="serif" style={{ fontSize: 15, color: 'var(--paper)' }}>Forecasting · "I can't go tomorrow"</div>
+              <div className="small-light">3 sessions · before things you care about</div>
+            </div>
+          </div>
+          <div className="pattern-row" style={{ borderBottom: 'none' }}>
+            <div className="pattern-dot faint" />
+            <div className="col gap-6" style={{ flex: 1 }}>
+              <div className="serif" style={{ fontSize: 15, color: 'var(--paper)' }}>Mirror-pass · wardrobe, hallway</div>
+              <div className="small-light">2 sessions · getting ready</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bubble-quiet">
+          Nothing here is a streak. You can have a bad month and Mirror will not punish you for it. The pattern is for you, not for the app.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile (label + IosFrame + caption) ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="No journal prompt, no mood scale. One button: the spiral starts, you tap, Mirror starts reading.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="When the spirals hit" caption="Mirror needs to know your windows so it can stay quiet the rest of the time. No daily nudge, no streak, no badge.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="The shape of the loop" caption="Picks the user's own vocabulary so Mirror can name the loop in their words later. Never echoed back as a feed.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="The contract" caption="States the design refusals upfront: no streaks, no graphs of spirals. The exit-to-help line is set before the first session.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="What just happened" caption="The single home screen. Type or hold to talk. The whole product is this prompt and the response that follows.">
+        <CoreOpenScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Mirror names the loop" caption="Reads the spiral, not the trigger. Names parts in plain language (comparison, forecasting, zoom) and asks if it fits.">
+        <CoreNameLoopScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="A fitted exit" caption="One way out, picked for THIS loop. A zoom loop gets distance, a forecasting loop gets a fact, a rumination gets sitting with it.">
+        <CoreExitScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Pattern, quietly" caption="The calm-day surface. Recognition without scoreboarding. Never a place where appearance anxiety becomes content.">
+        <CorePatternScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

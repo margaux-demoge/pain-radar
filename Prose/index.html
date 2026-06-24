@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Prose · Pain Radar proto 45/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EEF0F3;
+    --paper: #F7F8FA;
+    --paper-dim: #E6EAEF;
+    --ink: #1B2230;
+    --ink-2: #4A546A;
+    --ink-3: #8590A4;
+    --accent: #3A4E7A;
+    --accent-soft: rgba(58, 78, 122, 0.10);
+    --accent-dim: #6B7FA8;
+    --rose: #B47A86;
+    --sage: #7E9486;
+    --line: rgba(27, 34, 48, 0.10);
+    --line-strong: rgba(27, 34, 48, 0.20);
+  }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Newsreader", Georgia, serif; }
+  a { color: inherit; }
+
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(238, 240, 243, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--accent); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.1;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Newsreader", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.005em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--accent); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-dim); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+  }
+  #app .chip.on {
+    background: var(--accent); color: var(--paper);
+    border-color: var(--accent);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--accent); }
+
+  /* Prose-specific: blurred avatar tile */
+  #app .blur-avatar {
+    width: 64px; height: 64px; border-radius: 999px;
+    background: linear-gradient(135deg, #B6C2D6 0%, #8590A4 45%, #6B7FA8 100%);
+    filter: blur(6px);
+    position: relative;
+  }
+  #app .blur-avatar.lg {
+    width: 120px; height: 120px;
+  }
+  #app .blur-avatar.xl {
+    width: 180px; height: 180px;
+    background: linear-gradient(140deg, #C6BBAA 0%, #B47A86 35%, #6B7FA8 75%, #3A4E7A 100%);
+    filter: blur(10px);
+  }
+  #app .blur-avatar.rose { background: linear-gradient(135deg, #D9C0C6 0%, #B47A86 55%, #6B5460 100%); }
+  #app .blur-avatar.sage { background: linear-gradient(135deg, #C2D0C6 0%, #7E9486 55%, #4F6359 100%); }
+  #app .blur-avatar.dusk { background: linear-gradient(135deg, #BFC8D9 0%, #6B7FA8 55%, #2C3856 100%); }
+
+  #app .lock-pill {
+    position: absolute; bottom: -2px; right: -2px;
+    background: var(--ink); color: var(--paper);
+    width: 22px; height: 22px; border-radius: 999px;
+    display: grid; place-items: center;
+    font-size: 11px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  }
+
+  #app .profile-card {
+    background: var(--paper); border: 1px solid var(--line);
+    border-radius: 18px; padding: 18px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  #app .prompt-block {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  #app .prompt-q {
+    font-size: 11px; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.10em;
+    font-weight: 600;
+  }
+  #app .prompt-a {
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 15px; line-height: 1.4; color: var(--ink);
+  }
+
+  #app .msg-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  #app .msg {
+    padding: 10px 14px; border-radius: 18px;
+    font-size: 13px; line-height: 1.4;
+    max-width: 78%;
+  }
+  #app .msg.them { background: var(--paper-dim); color: var(--ink); border-bottom-left-radius: 6px; }
+  #app .msg.you { background: var(--accent); color: var(--paper); border-bottom-right-radius: 6px; margin-left: auto; }
+  #app .msg-meta { font-size: 10px; color: var(--ink-3); margin-top: 2px; }
+
+  #app .progress-track {
+    height: 4px; background: var(--paper-dim);
+    border-radius: 999px; overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  #app .progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 999px;
+  }
+
+  #app .counter-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  #app .write-area {
+    background: var(--paper-dim); border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px;
+    font-family: "Newsreader", Georgia, serif;
+    font-style: italic; font-size: 15px; line-height: 1.5;
+    color: var(--ink); min-height: 100px;
+  }
+  #app .charcount {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--ink-3); margin-top: 6px;
+  }
+  #app .charcount .ok { color: var(--sage); font-weight: 600; }
+
+  #app .unblur-glow {
+    background: radial-gradient(circle at 50% 40%,
+      rgba(180, 122, 134, 0.22) 0%,
+      rgba(58, 78, 122, 0.10) 40%,
+      transparent 70%);
+    border-radius: 18px;
+    padding: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">45 / 45 — Prose</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Compass/index.html" title="Previous: Compass">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow disabled" title="No next">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Dating · text-first · blurred reveal</div>
+  <h1 class="page-title serif">Prose</h1>
+  <p class="page-tagline serif">Dating that starts with what you wrote, not how you look. Photos are blurred until you have exchanged real messages. You judge each other on words first.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 8</span>
+    <span><strong>Benchmark</strong> · 🔴 GRAVEYARD</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🔴 BUILT_ON_SAND</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven mockups, no photographs (photos are blurred — that's the point).
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Prose/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const IMG = window.IMG;
+
+// ---------------- Screen components ----------------
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'read', label: 'Read' },
+    { id: 'inbox', label: 'Threads' },
+    { id: 'me', label: 'You' },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={'nav-item' + (active === it.id ? ' on' : '')}>
+          <span>{it.label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-24" style={{ paddingTop: 60, paddingBottom: 40, height: '100%', boxSizing: 'border-box' }}>
+        <div className="col gap-8">
+          <div className="label" style={{ color: 'var(--accent)' }}>Prose</div>
+          <div className="small">A dating app for people who write.</div>
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 20 }}>
+          <div className="h1 serif" style={{ fontSize: 36, lineHeight: 1.08 }}>
+            Dating that starts with <em style={{ fontStyle: 'italic', color: 'var(--accent)' }}>what you wrote</em>, not how you look.
+          </div>
+          <div className="serif" style={{ fontStyle: 'italic', fontSize: 15, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+            Photos stay blurred until you've exchanged real messages. Three each. Then the face.
+          </div>
+
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', marginTop: 8 }}>
+            <div className="blur-avatar rose" style={{ width: 44, height: 44 }} />
+            <div className="blur-avatar dusk" style={{ width: 44, height: 44 }} />
+            <div className="blur-avatar sage" style={{ width: 44, height: 44 }} />
+            <div className="small" style={{ marginLeft: 4 }}>Locked until message 6.</div>
+          </div>
+        </div>
+
+        <div className="col gap-12">
+          <button className="btn-primary">Write your first profile</button>
+          <button className="btn-secondary">I already have an account</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb1Screen() {
+  // Three open-ended prompts to pick from
+  const prompts = [
+    { q: 'Tell me about a place you go when you need to think.', selected: true },
+    { q: 'What is something you changed your mind about?', selected: false },
+    { q: 'A friendship in your life that has lasted.', selected: false },
+    { q: 'The last sentence you reread three times.', selected: false },
+    { q: 'A small thing that quietly fixed your week.', selected: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 64, paddingBottom: 100 }}>
+        <div className="col gap-6">
+          <div className="label">Step 1 of 3</div>
+          <div className="h1 serif">Pick a prompt to answer.</div>
+          <div className="meta">You'll answer three. Between 80 and 300 characters each.</div>
+        </div>
+
+        <div className="col gap-8">
+          {prompts.map((p, i) => (
+            <div key={i} style={{
+              padding: '14px 16px', borderRadius: 14,
+              background: p.selected ? 'var(--accent-soft)' : 'var(--paper-dim)',
+              border: '1px solid ' + (p.selected ? 'var(--accent)' : 'var(--line)'),
+              display: 'flex', alignItems: 'center', gap: 10
+            }}>
+              <div style={{
+                width: 18, height: 18, borderRadius: 999,
+                border: '1.5px solid ' + (p.selected ? 'var(--accent)' : 'var(--ink-3)'),
+                background: p.selected ? 'var(--accent)' : 'transparent',
+                flexShrink: 0
+              }} />
+              <div className="serif" style={{ fontSize: 14, lineHeight: 1.35 }}>{p.q}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <NavBar active="me" />
+    </div>
+  );
+}
+
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 64, paddingBottom: 100 }}>
+        <div className="col gap-6">
+          <div className="label">Step 2 of 3</div>
+          <div className="h1 serif">Write your answer.</div>
+          <div className="prompt-q">A place you go when you need to think</div>
+        </div>
+
+        <div className="write-area">
+          The wooden bench at the back of Abney Park cemetery. Half-collapsed angels, ivy doing whatever it wants, and a couple of foxes who've stopped pretending to be shy. I go there when I can't tell the difference between tired and sad.
+        </div>
+        <div className="charcount">
+          <span>Min 80 · Max 300</span>
+          <span className="ok">247 / 300</span>
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 4 }}>
+          <button className="btn-primary">Next answer</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 64, paddingBottom: 100 }}>
+        <div className="col gap-6">
+          <div className="label">Step 3 of 3</div>
+          <div className="h1 serif">Upload photos. They'll be blurred for now.</div>
+          <div className="meta">Other people will see them only after you've exchanged three messages each. Same the other way.</div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          {[0,1,2,3].map(i => (
+            <div key={i} style={{
+              aspectRatio: '1', borderRadius: 14,
+              background: i < 2 ? 'linear-gradient(135deg, #C6BBAA 0%, #B47A86 50%, #6B7FA8 100%)' : 'var(--paper-dim)',
+              filter: i < 2 ? 'blur(8px)' : 'none',
+              border: '1px solid var(--line)',
+              display: 'grid', placeItems: 'center',
+              color: 'var(--ink-3)', fontSize: 24
+            }}>
+              {i >= 2 && '+'}
+            </div>
+          ))}
+        </div>
+
+        <div style={{
+          background: 'var(--accent-soft)', borderRadius: 12,
+          padding: '12px 14px', display: 'flex', gap: 10, alignItems: 'flex-start'
+        }}>
+          <div style={{ fontSize: 16 }}>🔒</div>
+          <div className="meta" style={{ color: 'var(--accent)', lineHeight: 1.45 }}>
+            Your photos unblur the moment both sides have sent three messages. Not before.
+          </div>
+        </div>
+
+        <div className="col gap-12" style={{ marginTop: 8 }}>
+          <button className="btn-primary">Finish · Start reading profiles</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// CORE LOOP
+
+function CoreReadScreen() {
+  // Browsing a profile — photo locked, three written prompts visible
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 60, paddingBottom: 100 }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="col gap-6">
+            <div className="h2 serif">Naomi, 31</div>
+            <div className="small">Hackney · 4 km away</div>
+          </div>
+          <div style={{ position: 'relative' }}>
+            <div className="blur-avatar rose" />
+            <div className="lock-pill">🔒</div>
+          </div>
+        </div>
+
+        <div className="profile-card">
+          <div className="prompt-block">
+            <div className="prompt-q">Something I changed my mind about</div>
+            <div className="prompt-a">That I needed a small flat in a big city. I tried six months in a town with one cinema and it turned out the thing I missed wasn't the noise. It was the strangers. I'm back, but I sit in cafés more.</div>
+          </div>
+          <div className="divider" />
+          <div className="prompt-block">
+            <div className="prompt-q">A friendship that has lasted</div>
+            <div className="prompt-a">Esi, since we were 14. We have lived in four cities and through two of my worst years. She does not flatter me. She is the only person who can tell me I'm being a coward and I will, quietly, agree.</div>
+          </div>
+        </div>
+
+        <button className="btn-primary">Write to Naomi →</button>
+        <div className="small" style={{ textAlign: 'center' }}>No taps. No likes. The only way in is a 50+ character message.</div>
+      </div>
+      <NavBar active="read" />
+    </div>
+  );
+}
+
+function CoreWriteScreen() {
+  return (
+    <div className="scr">
+      <div className="pad col gap-16" style={{ paddingTop: 60, paddingBottom: 100 }}>
+        <div className="col gap-6">
+          <div className="label">Opening message to Naomi</div>
+          <div className="h2 serif">Don't say hey.</div>
+          <div className="meta">She'll only ever see your words first. Reply to something specific she wrote.</div>
+        </div>
+
+        <div className="profile-card" style={{ background: 'var(--paper-dim)', padding: 14 }}>
+          <div className="prompt-q">Replying to:</div>
+          <div className="prompt-a" style={{ fontSize: 13, color: 'var(--ink-2)' }}>
+            "Esi, since we were 14. … She is the only person who can tell me I'm being a coward and I will, quietly, agree."
+          </div>
+        </div>
+
+        <div className="write-area">
+          The "quietly, agree" part is the bit I keep rereading. Mine is Tom — 17 years, and the closest he gets to flattery is a two-word text after I do something brave. Does Esi know she's that person, or is it the kind of thing you can only say to a stranger?
+        </div>
+        <div className="charcount">
+          <span>Min 50 characters</span>
+          <span className="ok">312 ✓</span>
+        </div>
+
+        <button className="btn-primary">Send</button>
+      </div>
+    </div>
+  );
+}
+
+function CoreThreadScreen() {
+  // Active thread — counting down to unblur
+  return (
+    <div className="scr">
+      <div className="pad col gap-12" style={{ paddingTop: 60, paddingBottom: 100 }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="row gap-12" style={{ alignItems: 'center' }}>
+            <div style={{ position: 'relative' }}>
+              <div className="blur-avatar rose" style={{ width: 44, height: 44 }} />
+              <div className="lock-pill" style={{ width: 16, height: 16, fontSize: 9 }}>🔒</div>
+            </div>
+            <div className="col">
+              <div style={{ fontWeight: 600, fontSize: 15 }}>Naomi</div>
+              <div className="small">started Tue 11:42</div>
+            </div>
+          </div>
+          <div className="counter-pill">2 / 3 each</div>
+        </div>
+
+        <div style={{ background: 'var(--accent-soft)', padding: '8px 12px', borderRadius: 10 }}>
+          <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>
+            One more message each and the photos unblur.
+          </div>
+        </div>
+
+        <div style={{ flex: 1, marginTop: 6 }}>
+          <div className="msg-row"><div className="msg you">The "quietly, agree" part is the bit I keep rereading. Mine is Tom — does Esi know she's that person?</div></div>
+          <div className="msg-row"><div className="msg them">She knows. I told her on her 30th, slightly drunk, in a kebab queue. She rolled her eyes. That was the receipt.</div></div>
+          <div className="msg-row"><div className="msg you">A kebab queue is the most honest possible venue. Where do you go when you need to think — is Abney Park still the bench?</div></div>
+          <div className="msg-row"><div className="msg them">Bench is occupied by a man with a clarinet today. I'm in the café opposite, pretending to read Annie Ernaux.</div></div>
+          <div className="msg-row"><div className="msg you">"Pretending to read" is doing some heavy lifting in that sentence.</div></div>
+        </div>
+
+        <div className="write-area" style={{ minHeight: 44, fontStyle: 'normal', color: 'var(--ink-3)', fontFamily: 'inherit', fontSize: 13 }}>
+          Write your third message…
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CoreUnblurScreen() {
+  // The commitment moment — both reveal at once
+  return (
+    <div className="scr">
+      <div className="pad col gap-20" style={{ paddingTop: 64, paddingBottom: 100, height: '100%', boxSizing: 'border-box' }}>
+        <div className="col gap-6">
+          <div className="label" style={{ color: 'var(--rose)' }}>Just now · with Naomi</div>
+          <div className="h1 serif">Three messages each. Time to see each other.</div>
+        </div>
+
+        <div className="unblur-glow">
+          <div className="small" style={{ color: 'var(--accent)', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+            Unblurring in 3…
+          </div>
+          <div style={{ position: 'relative' }}>
+            <div className="blur-avatar xl" style={{ filter: 'blur(14px)' }} />
+          </div>
+          <div className="serif" style={{ fontStyle: 'italic', fontSize: 14, color: 'var(--ink-2)', textAlign: 'center', maxWidth: 260, lineHeight: 1.5 }}>
+            You already decided she was interesting. Whatever you see next, the conversation is the thing you chose.
+          </div>
+        </div>
+
+        <div className="col gap-12">
+          <button className="btn-primary">Reveal · together</button>
+          <button className="btn-secondary">Wait a bit longer</button>
+        </div>
+
+        <div className="small" style={{ textAlign: 'center' }}>If either of you closes the chat after, it ends without continuation.</div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Type-led open. Three blurred avatars stand in for what the app withholds — the face is the last thing you see, not the first.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Pick a prompt" caption="Five open-ended prompts, all designed for substance over vibes. You pick three and write 80–300 characters each.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Write the answer" caption="The character counter is the whole craft signal. Below 80 is rejected. The serif italic body nudges writing, not posting.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="Upload, locked" caption="Photos go in, but they go in blurred from the start. The lock is the contract, surfaced before the first profile is seen.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Read a profile" caption="Name, age, neighbourhood, three written answers. The avatar is a coloured blur with a lock — visual texture only, no face.">
+        <CoreReadScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Write the opener" caption="No tap-to-like. The only way in is a 50+ character message anchored to something specific she wrote. Removes the 'hey' floor.">
+        <CoreWriteScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Thread · 2 / 3" caption="The counter is the structural reward retention-validator asked for: every message moves a visible bar toward the unblur, not just toward a maybe-reply.">
+        <CoreThreadScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="The unblur" caption="The commitment moment. Both reveal at once, with the line that names what just happened: the conversation is the thing you chose.">
+        <CoreUnblurScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+
+</body>
+</html>

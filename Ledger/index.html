@@ -1,0 +1,888 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Ledger · Pain Radar proto 17/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EFEAE2;
+    --paper-2: #F6F2EA;
+    --paper-dim: #E4DED1;
+    --ink: #1F2933;
+    --ink-2: #4A5560;
+    --ink-3: #8089906;
+    --ink-3: #808990;
+    --slate: #2C3E50;
+    --slate-soft: rgba(44, 62, 80, 0.10);
+    --indigo: #36506E;
+    --indigo-soft: rgba(54, 80, 110, 0.12);
+    --sage: #6E8273;
+    --rust: #8C4A3A;
+    --rust-soft: rgba(140, 74, 58, 0.12);
+    --rule: rgba(31, 41, 51, 0.12);
+    --rule-strong: rgba(31, 41, 51, 0.22);
+    --self: #36506E;
+    --them: #B58A5A;
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: -apple-system, "SF Pro Text", "Inter", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Crimson Pro", Georgia, serif; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(239, 234, 226, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Crimson Pro", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--rule-strong); background: var(--paper-2);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--rule-strong); background: var(--paper-2);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--rust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Crimson Pro", Georgia, serif;
+    font-weight: 600; font-size: 56px; letter-spacing: -0.02em;
+    line-height: 1.05; margin: 0 0 18px;
+  }
+  .page-tagline {
+    font-family: "Crimson Pro", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Crimson Pro", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--rust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--rust-soft); color: var(--rust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-specific styles, scoped via #app */
+  #app .scr { width: 100%; height: 100%; background: var(--paper-2); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Crimson Pro", Georgia, serif;
+    font-weight: 600; font-size: 30px; line-height: 1.15;
+    letter-spacing: -0.01em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Crimson Pro", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.2;
+    letter-spacing: -0.005em;
+  }
+  #app .ital { font-family: "Crimson Pro", Georgia, serif; font-style: italic; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--ink); color: var(--paper-2);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--rule-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-4 { gap: 4px; }
+  #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .chip {
+    padding: 9px 14px; border-radius: 999px;
+    background: var(--paper); border: 1px solid var(--rule);
+    font-size: 13px; color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  #app .chip.on {
+    background: var(--ink); color: var(--paper-2);
+    border-color: var(--ink);
+  }
+  #app .divider { height: 1px; background: var(--rule); }
+  #app .card {
+    background: var(--paper); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 16px;
+  }
+  #app .pill-self {
+    background: var(--indigo-soft); color: var(--indigo);
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+  }
+  #app .pill-them {
+    background: rgba(181, 138, 90, 0.16); color: #8C6736;
+    padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 600;
+  }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--rule);
+    background: var(--paper-2);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--ink); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--ink); margin-top: 2px; }
+
+  /* Ledger-specific: ruled paper feel */
+  #app .ruled {
+    background-image: linear-gradient(transparent 28px, var(--rule) 28px, var(--rule) 29px, transparent 29px);
+    background-size: 100% 29px;
+  }
+  #app .tally {
+    display: inline-flex; align-items: center; gap: 2px;
+    font-family: "Crimson Pro", Georgia, serif;
+    color: var(--indigo); font-size: 24px;
+  }
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--rule);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">17 / 45 — Ledger</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Tune/index.html" title="Previous: Tune">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Mirror/index.html" title="Next: Mirror">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Private journal · relational invisible labor</div>
+  <h1 class="page-title serif">Ledger</h1>
+  <p class="page-tagline serif">A private record of who's been carrying the relationship. Not to keep score, to stop pretending the scoring isn't already happening in your head.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 5</span>
+    <span><strong>Benchmark</strong> · 🟢 EMERGING</span>
+    <span><strong>Retention</strong> · 🟡 WEAK_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven proto, no photography.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Ledger/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom reference) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Screen components ----------------
+
+// 01 — Hero
+function HeroScreen() {
+  return (
+    <div className="scr">
+      <div style={{ padding: '64px 28px 24px', height: '100%', boxSizing: 'border-box',
+                    display: 'flex', flexDirection: 'column' }}>
+        <div className="label" style={{ marginBottom: 18 }}>Private · only you see this</div>
+        <div className="h1 serif" style={{ fontSize: 38, lineHeight: 1.1, marginBottom: 14 }}>
+          Ledger.
+        </div>
+        <div className="serif ital" style={{ fontSize: 19, lineHeight: 1.45, color: 'var(--ink-2)', marginBottom: 28 }}>
+          A quiet shelf for who's been carrying it. So you can stop running the math in your head at 2am.
+        </div>
+
+        {/* Quiet visual: two columns of small marks, uneven on purpose */}
+        <div style={{ background: 'var(--paper)', border: '1px solid var(--rule)',
+                      borderRadius: 14, padding: 18, marginBottom: 28 }}>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 14 }}>
+            <span className="label">You</span>
+            <span className="label">Sam</span>
+          </div>
+          <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+            <div className="tally" style={{ letterSpacing: 1 }}>│││││ │││││ ││</div>
+            <div className="tally" style={{ color: 'var(--them)', letterSpacing: 1 }}>│││</div>
+          </div>
+          <div className="small" style={{ marginTop: 10, fontStyle: 'italic', fontFamily: 'Crimson Pro, serif' }}>
+            fourteen days. you don't have to do anything with this yet.
+          </div>
+        </div>
+
+        <div style={{ marginTop: 'auto' }}>
+          <button className="btn-primary">Start a private ledger</button>
+          <div className="small" style={{ textAlign: 'center', marginTop: 14 }}>
+            No partner login. No cloud sharing. No streaks.
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 02 — Onboarding: pick what counts
+function Onb1Screen() {
+  const cats = [
+    { k: 'init', label: 'Initiating contact', sub: 'first text, calls, voice notes', on: true },
+    { k: 'plan', label: 'Planning shared time', sub: 'dates, weekends, holidays', on: true },
+    { k: 'check', label: 'Emotional check-ins', sub: '"how was the meeting?"', on: true },
+    { k: 'log', label: 'Logistics', sub: 'groceries, bills, appointments', on: false },
+    { k: 'repair', label: 'Repair after a fight', sub: 'who reaches back first', on: true },
+    { k: 'fam', label: 'Family / friends upkeep', sub: 'birthdays, in-laws, replies', on: false },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad" style={{ paddingTop: 16 }}>
+        <div className="label" style={{ marginBottom: 10 }}>Step 1 of 3</div>
+        <div className="h2 serif" style={{ marginBottom: 8 }}>What counts in your relationship?</div>
+        <div className="small" style={{ marginBottom: 18, lineHeight: 1.5 }}>
+          Pick what's load-bearing for you. Everything else stays off the page. You can change this later.
+        </div>
+        <div className="col gap-8" style={{ marginBottom: 100 }}>
+          {cats.map(c => (
+            <div key={c.k} style={{
+              padding: '14px 16px', borderRadius: 14,
+              background: c.on ? 'var(--ink)' : 'var(--paper)',
+              border: '1px solid ' + (c.on ? 'var(--ink)' : 'var(--rule)'),
+              color: c.on ? 'var(--paper-2)' : 'var(--ink)',
+            }}>
+              <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14 }}>{c.label}</div>
+                  <div style={{ fontSize: 11, opacity: 0.7, marginTop: 2 }}>{c.sub}</div>
+                </div>
+                <div style={{
+                  width: 22, height: 22, borderRadius: 999,
+                  border: '1.5px solid ' + (c.on ? 'var(--paper-2)' : 'var(--rule-strong)'),
+                  background: c.on ? 'var(--paper-2)' : 'transparent',
+                  display: 'grid', placeItems: 'center'
+                }}>
+                  {c.on && <div style={{ width: 8, height: 8, borderRadius: 999, background: 'var(--ink)' }} />}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ paddingTop: 14 }}>
+        <button className="btn-primary" style={{ width: '100%' }}>Continue with 4 categories</button>
+      </div>
+    </div>
+  );
+}
+
+// 03 — Onboarding: name the partner (private)
+function Onb2Screen() {
+  return (
+    <div className="scr">
+      <div className="pad" style={{ paddingTop: 16 }}>
+        <div className="label" style={{ marginBottom: 10 }}>Step 2 of 3</div>
+        <div className="h2 serif" style={{ marginBottom: 8 }}>Just for your eyes.</div>
+        <div className="small" style={{ marginBottom: 22, lineHeight: 1.5 }}>
+          A name to label the other side of the page. Never leaves this device. Never sent anywhere.
+        </div>
+
+        <div className="card" style={{ padding: '18px 18px', marginBottom: 14 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Their name (or initial)</div>
+          <div className="serif" style={{ fontSize: 28, color: 'var(--ink)' }}>Sam</div>
+          <div style={{ height: 1, background: 'var(--rule-strong)', marginTop: 8 }} />
+        </div>
+
+        <div className="card" style={{ padding: '18px 18px', marginBottom: 14 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Relationship</div>
+          <div className="row gap-8" style={{ flexWrap: 'wrap' }}>
+            <span className="chip">Dating</span>
+            <span className="chip on">Living together</span>
+            <span className="chip">Married</span>
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: '18px 18px', marginBottom: 24, background: 'var(--paper-dim)' }}>
+          <div className="row gap-8" style={{ alignItems: 'flex-start' }}>
+            <div style={{ width: 22, height: 22, borderRadius: 999, background: 'var(--ink)',
+                          color: 'var(--paper-2)', fontSize: 12, fontWeight: 700,
+                          display: 'grid', placeItems: 'center', flexShrink: 0, marginTop: 2 }}>i</div>
+            <div className="serif ital" style={{ fontSize: 14, lineHeight: 1.5, color: 'var(--ink-2)' }}>
+              Ledger is a private journal, not a couples app. Sam won't see this, won't get any notification, won't know it exists unless you tell them.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ paddingTop: 14 }}>
+        <button className="btn-primary" style={{ width: '100%' }}>Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 04 — Onboarding: set expectations on the 2-week window
+function Onb3Screen() {
+  return (
+    <div className="scr">
+      <div className="pad" style={{ paddingTop: 16 }}>
+        <div className="label" style={{ marginBottom: 10 }}>Step 3 of 3</div>
+        <div className="h2 serif" style={{ marginBottom: 8 }}>Two weeks before anything appears.</div>
+        <div className="small" style={{ marginBottom: 18, lineHeight: 1.5 }}>
+          The patterns that matter show up over weeks, not hours. Until then, the log is just a quiet shelf you put things on.
+        </div>
+
+        {/* 14 dot timeline */}
+        <div className="card" style={{ padding: 18, marginBottom: 16 }}>
+          <div className="label" style={{ marginBottom: 12 }}>Your first picture · in 14 days</div>
+          <div className="row" style={{ gap: 5, marginBottom: 14, flexWrap: 'wrap' }}>
+            {Array.from({length: 14}).map((_, i) => (
+              <div key={i} style={{
+                width: 16, height: 16, borderRadius: 4,
+                background: i === 0 ? 'var(--ink)' : 'var(--paper-dim)',
+                border: '1px solid ' + (i === 0 ? 'var(--ink)' : 'var(--rule)'),
+              }} />
+            ))}
+          </div>
+          <div className="small serif ital" style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            Mon, Jul 8. We'll show you what's actually there. Not a scorecard. A picture.
+          </div>
+        </div>
+
+        <div className="col gap-12" style={{ marginBottom: 24 }}>
+          <div className="row gap-12" style={{ alignItems: 'flex-start' }}>
+            <div className="serif" style={{ fontSize: 18, color: 'var(--rust)', fontStyle: 'italic', width: 18 }}>1</div>
+            <div className="small" style={{ lineHeight: 1.5 }}>
+              <span style={{ color: 'var(--ink)', fontWeight: 600 }}>Tap when you initiate. </span>
+              Tap the other side when Sam does. Two seconds. That's it.
+            </div>
+          </div>
+          <div className="row gap-12" style={{ alignItems: 'flex-start' }}>
+            <div className="serif" style={{ fontSize: 18, color: 'var(--rust)', fontStyle: 'italic', width: 18 }}>2</div>
+            <div className="small" style={{ lineHeight: 1.5 }}>
+              <span style={{ color: 'var(--ink)', fontWeight: 600 }}>No notifications. </span>
+              We will not nag you. If you forget for three days that's information too.
+            </div>
+          </div>
+          <div className="row gap-12" style={{ alignItems: 'flex-start' }}>
+            <div className="serif" style={{ fontSize: 18, color: 'var(--rust)', fontStyle: 'italic', width: 18 }}>3</div>
+            <div className="small" style={{ lineHeight: 1.5 }}>
+              <span style={{ color: 'var(--ink)', fontWeight: 600 }}>You decide what to do. </span>
+              Ledger never tells you to bring it up, or not to.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom" style={{ paddingTop: 14 }}>
+        <button className="btn-primary" style={{ width: '100%' }}>Open the ledger</button>
+      </div>
+    </div>
+  );
+}
+
+// 05 — Core: daily log (the two-second tap)
+function LogScreen() {
+  const items = [
+    { cat: 'Initiating contact', side: 'self', t: 'Today · 8:14', note: 'First text. "morning, sleep ok?"' },
+    { cat: 'Planning', side: 'self', t: 'Yesterday · 19:02', note: 'Booked Sat dinner at Otto.' },
+    { cat: 'Emotional check-in', side: 'them', t: 'Yesterday · 17:40', note: 'Asked how the Klein call went.' },
+    { cat: 'Initiating contact', side: 'self', t: 'Mon · 7:55', note: '' },
+    { cat: 'Repair after fight', side: 'self', t: 'Sun · 22:11', note: 'I texted first after the kitchen thing.' },
+    { cat: 'Initiating contact', side: 'self', t: 'Sun · 8:02', note: '' },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad" style={{ paddingTop: 16 }}>
+        <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+          <div className="label">Thursday · June 25</div>
+          <div className="label" style={{ color: 'var(--ink-2)' }}>Day 11 of 14</div>
+        </div>
+        <div className="h2 serif" style={{ marginBottom: 14 }}>What just happened?</div>
+
+        {/* Two-side tap */}
+        <div className="row gap-8" style={{ marginBottom: 18 }}>
+          <button style={{
+            flex: 1, padding: '18px 12px', borderRadius: 14,
+            background: 'var(--indigo)', color: 'var(--paper-2)',
+            border: 'none', textAlign: 'left', cursor: 'pointer'
+          }}>
+            <div style={{ fontSize: 11, opacity: 0.75, textTransform: 'uppercase', letterSpacing: '0.12em' }}>I did</div>
+            <div className="serif" style={{ fontSize: 20, marginTop: 4 }}>You initiated</div>
+          </button>
+          <button style={{
+            flex: 1, padding: '18px 12px', borderRadius: 14,
+            background: 'var(--paper)', color: 'var(--ink)',
+            border: '1px solid var(--rule)', textAlign: 'left', cursor: 'pointer'
+          }}>
+            <div style={{ fontSize: 11, color: 'var(--ink-3)', textTransform: 'uppercase', letterSpacing: '0.12em' }}>Sam did</div>
+            <div className="serif" style={{ fontSize: 20, marginTop: 4 }}>Sam initiated</div>
+          </button>
+        </div>
+
+        <div className="row gap-6" style={{ marginBottom: 18, flexWrap: 'wrap' }}>
+          <span className="chip on">Contact</span>
+          <span className="chip">Plan</span>
+          <span className="chip">Check-in</span>
+          <span className="chip">Repair</span>
+        </div>
+
+        <div className="label" style={{ marginBottom: 10 }}>This week</div>
+        <div className="col gap-8" style={{ marginBottom: 24 }}>
+          {items.map((it, i) => (
+            <div key={i} className="card" style={{ padding: '12px 14px' }}>
+              <div className="row" style={{ justifyContent: 'space-between', marginBottom: it.note ? 6 : 0 }}>
+                <div className="row gap-8">
+                  <span className={it.side === 'self' ? 'pill-self' : 'pill-them'}>
+                    {it.side === 'self' ? 'You' : 'Sam'}
+                  </span>
+                  <span style={{ fontSize: 13, color: 'var(--ink)' }}>{it.cat}</span>
+                </div>
+                <span className="small">{it.t}</span>
+              </div>
+              {it.note && (
+                <div className="serif ital" style={{ fontSize: 13, color: 'var(--ink-2)', lineHeight: 1.4 }}>
+                  "{it.note}"
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on">
+          <span>Log</span><div className="nav-dot" />
+        </div>
+        <div className="nav-item"><span>Picture</span></div>
+        <div className="nav-item"><span>Bring it up</span></div>
+        <div className="nav-item"><span>Quiet</span></div>
+      </div>
+    </div>
+  );
+}
+
+// 06 — Core: the picture (after 14 days)
+function PictureScreen() {
+  const bars = [
+    { cat: 'Initiating contact',  self: 12, them: 2, of: 14 },
+    { cat: 'Planning shared time', self: 9,  them: 2, of: 11 },
+    { cat: 'Emotional check-ins',  self: 6,  them: 4, of: 10 },
+    { cat: 'Repair after fight',   self: 2,  them: 0, of: 2  },
+  ];
+  return (
+    <div className="scr">
+      <div className="pad" style={{ paddingTop: 16 }}>
+        <div className="label" style={{ marginBottom: 8 }}>Day 14 · June 8 → June 21</div>
+        <div className="h1 serif" style={{ fontSize: 28, marginBottom: 6, lineHeight: 1.15 }}>
+          Here's what's actually there.
+        </div>
+        <div className="serif ital" style={{ fontSize: 14, color: 'var(--ink-2)', marginBottom: 20, lineHeight: 1.5 }}>
+          Not a scorecard. A picture. Look at it before you decide what it means.
+        </div>
+
+        {/* Headline number, quiet */}
+        <div className="card" style={{ padding: 18, marginBottom: 16 }}>
+          <div className="label" style={{ marginBottom: 10 }}>Across the four things you said matter</div>
+          <div className="row" style={{ alignItems: 'flex-end', gap: 6, marginBottom: 8 }}>
+            <div className="serif" style={{ fontSize: 44, lineHeight: 1, color: 'var(--indigo)', fontWeight: 600 }}>29</div>
+            <div className="serif" style={{ fontSize: 22, color: 'var(--ink-3)', marginBottom: 4 }}>/ 37</div>
+            <div className="small" style={{ marginLeft: 'auto', marginBottom: 6, textAlign: 'right', maxWidth: 130, lineHeight: 1.4 }}>
+              moves you started, in 14 days
+            </div>
+          </div>
+        </div>
+
+        {/* Per-category bars */}
+        <div className="col gap-12" style={{ marginBottom: 20 }}>
+          {bars.map((b, i) => {
+            const total = b.self + b.them;
+            const selfPct = total ? (b.self / total) * 100 : 0;
+            return (
+              <div key={i}>
+                <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span style={{ fontSize: 13, color: 'var(--ink)' }}>{b.cat}</span>
+                  <span className="small serif ital">
+                    you {b.self} · Sam {b.them}
+                  </span>
+                </div>
+                <div style={{
+                  height: 10, borderRadius: 999, background: 'rgba(181,138,90,0.25)',
+                  position: 'relative', overflow: 'hidden'
+                }}>
+                  <div style={{
+                    position: 'absolute', left: 0, top: 0, bottom: 0,
+                    width: selfPct + '%', background: 'var(--indigo)'
+                  }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="card" style={{ padding: 16, background: 'var(--paper-dim)', marginBottom: 20 }}>
+          <div className="serif ital" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink)' }}>
+            "You sent the first text 12 mornings out of 14. Sam reached out unprompted twice."
+          </div>
+          <div className="small" style={{ marginTop: 10 }}>
+            The voice in your head said all of them. The picture says most of them.
+          </div>
+        </div>
+
+        <div className="col gap-8" style={{ marginBottom: 28 }}>
+          <button className="btn-primary">Turn this into one sentence</button>
+          <button className="btn-secondary">Put it down for now</button>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Log</span></div>
+        <div className="nav-item on"><span>Picture</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>Bring it up</span></div>
+        <div className="nav-item"><span>Quiet</span></div>
+      </div>
+    </div>
+  );
+}
+
+// 07 — Core: from picture to a single sentence
+function SentenceScreen() {
+  return (
+    <div className="scr">
+      <div className="pad" style={{ paddingTop: 16 }}>
+        <div className="label" style={{ marginBottom: 8 }}>Bring it up</div>
+        <div className="h2 serif" style={{ marginBottom: 8 }}>One sentence. Not an accusation.</div>
+        <div className="small" style={{ marginBottom: 18, lineHeight: 1.5 }}>
+          You can read this to Sam. You can keep it for yourself. Ledger has no opinion either way.
+        </div>
+
+        {/* Draft */}
+        <div style={{
+          background: 'var(--paper)', border: '1px solid var(--rule-strong)',
+          borderLeft: '3px solid var(--indigo)',
+          borderRadius: 12, padding: '18px 18px 16px', marginBottom: 14
+        }}>
+          <div className="label" style={{ marginBottom: 10, color: 'var(--indigo)' }}>What you might say</div>
+          <div className="serif" style={{ fontSize: 19, lineHeight: 1.5, color: 'var(--ink)' }}>
+            "I've noticed I've been the one starting most of our weeks lately. Can we look at that together?"
+          </div>
+        </div>
+
+        {/* Toggle */}
+        <div className="row gap-6" style={{ marginBottom: 14, flexWrap: 'wrap' }}>
+          <span className="chip on">Gentle</span>
+          <span className="chip">Direct</span>
+          <span className="chip">Curious</span>
+        </div>
+
+        {/* What NOT to say */}
+        <div className="card" style={{ padding: 14, background: 'transparent',
+                                       borderStyle: 'dashed', marginBottom: 16 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Instead of</div>
+          <div className="serif ital" style={{ fontSize: 14, color: 'var(--ink-3)',
+                lineHeight: 1.5, textDecoration: 'line-through', textDecorationColor: 'var(--rule-strong)' }}>
+            "You never plan anything for us anymore."
+          </div>
+          <div className="small" style={{ marginTop: 8, lineHeight: 1.5 }}>
+            "Never" is an accusation. The picture is more specific than that, and more useful.
+          </div>
+        </div>
+
+        <div className="card" style={{ padding: 14, marginBottom: 22 }}>
+          <div className="label" style={{ marginBottom: 8 }}>Show Sam the picture?</div>
+          <div className="row gap-8">
+            <span className="chip">Yes, with this sentence</span>
+            <span className="chip on">Just the sentence</span>
+          </div>
+          <div className="small serif ital" style={{ marginTop: 10, lineHeight: 1.5 }}>
+            Most people find the sentence lands better without the data. The data is for you.
+          </div>
+        </div>
+
+        <button className="btn-primary" style={{ marginBottom: 8 }}>Copy sentence</button>
+        <button className="btn-secondary">Not yet · keep watching</button>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Log</span></div>
+        <div className="nav-item"><span>Picture</span></div>
+        <div className="nav-item on"><span>Bring it up</span><div className="nav-dot" /></div>
+        <div className="nav-item"><span>Quiet</span></div>
+      </div>
+    </div>
+  );
+}
+
+// 08 — Core: the "put it down" mode (resentment release)
+function QuietScreen() {
+  return (
+    <div className="scr">
+      <div className="pad" style={{ paddingTop: 16 }}>
+        <div className="label" style={{ marginBottom: 8 }}>Quiet</div>
+        <div className="h2 serif" style={{ marginBottom: 14 }}>Sometimes the picture says it's fine.</div>
+
+        <div className="card" style={{ padding: 18, marginBottom: 16, background: 'var(--paper-dim)' }}>
+          <div className="serif ital" style={{ fontSize: 16, lineHeight: 1.55, color: 'var(--ink)' }}>
+            Last two weeks, Sam started 11 of 23. You started 12. The story in your head was 19 to 4.
+          </div>
+          <div className="small" style={{ marginTop: 12 }}>
+            This doesn't mean you were wrong to feel it. It means you can put this one down.
+          </div>
+        </div>
+
+        {/* Last 14 entries as marks */}
+        <div className="label" style={{ marginBottom: 10 }}>Last fourteen days</div>
+        <div className="row" style={{ gap: 4, marginBottom: 18, flexWrap: 'wrap' }}>
+          {['s','t','s','t','t','s','s','t','s','t','s','t','t','s'].map((side, i) => (
+            <div key={i} style={{
+              width: 18, height: 26, borderRadius: 3,
+              background: side === 's' ? 'var(--indigo)' : 'rgba(181,138,90,0.55)',
+              opacity: 0.92
+            }} />
+          ))}
+        </div>
+        <div className="row gap-12" style={{ marginBottom: 22, fontSize: 11, color: 'var(--ink-3)' }}>
+          <span className="row gap-6"><span style={{ width: 9, height: 9, background: 'var(--indigo)', borderRadius: 2 }} /> You started</span>
+          <span className="row gap-6"><span style={{ width: 9, height: 9, background: 'rgba(181,138,90,0.55)', borderRadius: 2 }} /> Sam started</span>
+        </div>
+
+        <div className="card" style={{ padding: 16, marginBottom: 14 }}>
+          <div className="label" style={{ marginBottom: 8 }}>A note for next time the feeling comes back</div>
+          <div className="serif ital" style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+            "On June 21, the picture showed Sam was doing more than I'd been giving them credit for. I want to remember that the next time I'm spiralling at midnight."
+          </div>
+        </div>
+
+        <button className="btn-secondary" style={{ marginBottom: 8 }}>Pause logging for a week</button>
+        <button className="btn-primary">Save this note</button>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><span>Log</span></div>
+        <div className="nav-item"><span>Picture</span></div>
+        <div className="nav-item"><span>Bring it up</span></div>
+        <div className="nav-item on"><span>Quiet</span><div className="nav-dot" /></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+// ---------------- App layout ----------------
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="No partner login, no streaks, no nagging. Two uneven tallies make the pitch before any words do.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="What counts" caption="You choose the categories that matter. Logistics and family upkeep are off by default — Ledger is about relational initiative, not chores.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Their name, your eyes" caption="Name the other side of the page. The reassurance that nothing leaves the device is repeated, because the surveillance fear is the first objection.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="14-day window" caption="Sets the expectation: nothing meaningful happens for two weeks. No streaks. Forgetting is information, not failure.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="The two-second tap" caption="Two large buttons, optional note, recent entries. The whole interaction is built to take less effort than the rumination it's replacing.">
+        <LogScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="The picture" caption="The payoff: per-category bars and the gap between the story in your head and the data. The picture can go either way — that's the point.">
+        <PictureScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="One sentence" caption="The bridge from private picture to actual conversation. Default: share the sentence, not the data, because 'I tracked you' reads as surveillance.">
+        <SentenceScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Put it down" caption="The exit valve. When the picture says the resentment was disproportionate, Ledger lets you log a note to yourself and walk away.">
+        <QuietScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Beta · Pain Radar proto 03/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --slate: #0F1418;
+    --slate-2: #1A2128;
+    --chalk: #E8E4DA;
+    --chalk-dim: #D6CFBE;
+    --paper: #F2EEE3;
+    --paper-2: #E9E3D2;
+    --moss: #6B7D5A;
+    --moss-soft: rgba(107, 125, 90, 0.16);
+    --tape: #D9543F;
+    --tape-soft: rgba(217, 84, 63, 0.14);
+    --ink: #161A1E;
+    --ink-2: #4A5159;
+    --ink-3: #7C8189;
+    --line: rgba(22, 26, 30, 0.12);
+    --line-strong: rgba(22, 26, 30, 0.22);
+    --hold-blue: #3E5C77;
+    --hold-purple: #6A4A6B;
+    --hold-yellow: #C9A14A;
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "Inter", -apple-system, sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+  }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  .mono { font-family: "IBM Plex Mono", monospace; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(242, 238, 227, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--tape); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 64px; letter-spacing: -0.03em;
+    line-height: 1.0; margin: 0 0 18px;
+    font-variation-settings: "SOFT" 50, "WONK" 1;
+  }
+  .page-tagline {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 740px; margin: 0;
+    font-weight: 400;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 500;
+    color: var(--tape); font-size: 12px;
+    letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--tape-soft); color: var(--tape);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App-scoped styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .scr-dark { background: var(--slate); color: var(--chalk); }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 30px; line-height: 1.05;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 500; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  #app .mono { font-family: "IBM Plex Mono", monospace; }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; font-family: "IBM Plex Mono", monospace; }
+  #app .btn-primary {
+    background: var(--tape); color: var(--paper);
+    padding: 14px 22px; border-radius: 14px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+    font-family: inherit;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 14px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer; font-family: inherit;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-4 { gap: 4px; } #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-10 { gap: 10px; } #app .gap-12 { gap: 12px; } #app .gap-14 { gap: 14px; }
+  #app .gap-16 { gap: 16px; } #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-2); border: 1px solid var(--line);
+  }
+  #app .field .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; font-family: "IBM Plex Mono", monospace; }
+  #app .field .field-value { font-size: 15px; color: var(--ink); font-weight: 500; }
+  #app .chip {
+    padding: 8px 12px; border-radius: 999px;
+    background: var(--paper-2); border: 1px solid var(--line);
+    font-size: 12px; color: var(--ink-2); white-space: nowrap;
+  }
+  #app .chip.on {
+    background: var(--ink); color: var(--paper);
+    border-color: var(--ink);
+  }
+  #app .chip.tape {
+    background: var(--tape); color: var(--paper);
+    border-color: var(--tape);
+  }
+  #app .chip.moss {
+    background: var(--moss-soft); color: var(--moss);
+    border-color: var(--moss);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 9px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  #app .nav-item.on { color: var(--tape); }
+  #app .nav-dot { width: 4px; height: 4px; border-radius: 999px;
+    background: var(--tape); margin-top: 2px; }
+
+  /* Wall visualization */
+  #app .wall {
+    background: var(--slate-2);
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  #app .hold {
+    position: absolute;
+    border-radius: 50% 60% 55% 45% / 55% 50% 60% 45%;
+    box-shadow: inset -2px -3px 4px rgba(0,0,0,0.35), inset 2px 2px 3px rgba(255,255,255,0.12);
+  }
+  #app .climber {
+    position: absolute;
+    width: 22px; height: 36px;
+  }
+
+  /* Annotation pin */
+  #app .anno {
+    position: absolute; width: 26px; height: 26px;
+    border-radius: 999px;
+    background: var(--tape); color: var(--paper);
+    display: grid; place-items: center;
+    font-size: 11px; font-weight: 700;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35), 0 0 0 3px rgba(217, 84, 63, 0.28);
+    transform: translate(-50%, -50%);
+    font-family: "IBM Plex Mono", monospace;
+  }
+  #app .anno-card {
+    position: absolute;
+    background: var(--chalk); color: var(--slate);
+    padding: 10px 12px; border-radius: 10px;
+    font-size: 11px; line-height: 1.45;
+    max-width: 180px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.32);
+  }
+  #app .timeline {
+    height: 6px; background: rgba(255,255,255,0.12);
+    border-radius: 999px; position: relative;
+  }
+  #app .timeline-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--chalk); border-radius: 999px;
+    width: 62%;
+  }
+  #app .tl-tick {
+    position: absolute; top: -3px; width: 12px; height: 12px;
+    border-radius: 999px; background: var(--tape);
+    transform: translateX(-50%);
+    border: 2px solid var(--slate);
+  }
+  #app .stamp {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px; letter-spacing: 0.04em;
+    color: var(--ink-3);
+  }
+
+  /* Footer */
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">03 / 45 — Beta</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Anchor/index.html" title="Previous: Anchor">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Cradle/index.html" title="Next: Cradle">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Two-sided · per-route community · body-anchored beta</div>
+  <h1 class="page-title serif">Beta</h1>
+  <p class="page-tagline serif">Someone watching you climb, every send. Film a 30-second attempt, get the wall read, learn the beta your body actually needs.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photography — wall visualisations are SVG.
+  This is a Phase 1 prototype, not a product spec. See <a href="../../Apps/_radar/Beta/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined verbatim from Loom) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+const IMG = window.IMG;
+
+// ---------------- Reusable building blocks ----------------
+
+const Ico = {
+  record: <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/><circle cx="12" cy="12" r="5" fill="currentColor"/></svg>,
+  arrowR: <svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7h8 M7 3l4 4-4 4" stroke="currentColor" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+  home: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 9l7-5 7 5v8H3V9z" stroke="currentColor" strokeWidth="1.5"/></svg>,
+  wall: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/><circle cx="7" cy="7" r="1.3" fill="currentColor"/><circle cx="13" cy="9" r="1.3" fill="currentColor"/><circle cx="9" cy="13" r="1.3" fill="currentColor"/></svg>,
+  film: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="6" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M16 10l4-2v6l-4-2z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></svg>,
+  me: <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="3" stroke="currentColor" strokeWidth="1.5"/><path d="M3 18c0-4 3-6 7-6s7 2 7 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>,
+  pin: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1c2.2 0 4 1.7 4 3.8 0 2.8-4 6.2-4 6.2S2 7.6 2 4.8C2 2.7 3.8 1 6 1z" stroke="currentColor" strokeWidth="1.3"/><circle cx="6" cy="5" r="1.2" fill="currentColor"/></svg>,
+  check: <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>,
+};
+
+function NavBar({ active }) {
+  const items = [
+    { id: 'home', label: 'Sessions', icon: Ico.home },
+    { id: 'wall', label: 'Walls', icon: Ico.wall },
+    { id: 'film', label: '', icon: Ico.film },
+    { id: 'me', label: 'You', icon: Ico.me },
+  ];
+  return (
+    <div className="nav-bottom">
+      {items.map(it => (
+        <div key={it.id} className={`nav-item ${active === it.id ? 'on' : ''}`}>
+          {it.icon}
+          {it.label && <span>{it.label}</span>}
+          {active === it.id && <span className="nav-dot" />}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Wall + climber SVG-ish visualization (no photos)
+function Wall({ holds, climber, annotations, height = 260, showHighlight }) {
+  return (
+    <div className="wall" style={{ height, width: '100%' }}>
+      {/* faint grid texture */}
+      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.18 }}>
+        <defs>
+          <pattern id="grid" width="22" height="22" patternUnits="userSpaceOnUse">
+            <path d="M22 0H0V22" fill="none" stroke="#E8E4DA" strokeWidth="0.4"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+      </svg>
+      {holds.map((h, i) => (
+        <div key={i} className="hold" style={{
+          left: `${h.x}%`, top: `${h.y}%`,
+          width: h.s || 18, height: (h.s || 18) * 0.85,
+          background: h.c || 'var(--hold-blue)',
+          opacity: h.dim ? 0.35 : 1,
+        }} />
+      ))}
+      {showHighlight && (
+        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}>
+          <path d={showHighlight} stroke="var(--tape)" strokeWidth="1.5" fill="none" strokeDasharray="3 4" opacity="0.7"/>
+        </svg>
+      )}
+      {climber && (
+        <svg className="climber" style={{ left: `${climber.x}%`, top: `${climber.y}%` }} viewBox="0 0 22 36" fill="none">
+          {/* simplified climber silhouette */}
+          <circle cx="11" cy="5" r="3" fill="#E8E4DA"/>
+          <path d="M11 8v10 M11 12l-5 -2 M11 12l5 -3 M11 18l-4 8 M11 18l4 8" stroke="#E8E4DA" strokeWidth="1.6" strokeLinecap="round"/>
+        </svg>
+      )}
+      {annotations && annotations.map((a, i) => (
+        <div key={i} className="anno" style={{ left: `${a.x}%`, top: `${a.y}%` }}>{a.n}</div>
+      ))}
+    </div>
+  );
+}
+
+// ---------------- Screens ----------------
+
+// 1. HERO
+function HeroScreen() {
+  return (
+    <div className="scr scr-dark col" style={{ padding: '64px 26px 0', height: '100%', justifyContent: 'space-between' }}>
+      <div className="col gap-20">
+        <div style={{ fontFamily: 'IBM Plex Mono, monospace', fontSize: 11,
+          color: 'var(--tape)', letterSpacing: '0.18em', textTransform: 'uppercase', marginTop: 18 }}>
+          Beta · for the gym
+        </div>
+        <h1 className="serif" style={{ fontSize: 38, lineHeight: 1.02, margin: 0,
+          letterSpacing: '-0.025em', color: 'var(--chalk)', fontWeight: 500 }}>
+          Someone is watching you climb.
+        </h1>
+        <p className="serif" style={{ fontStyle: 'italic', fontSize: 17, lineHeight: 1.45,
+          color: 'var(--chalk-dim)', margin: 0, maxWidth: 300 }}>
+          Film 30 seconds. Three climbers who sent it read your body. The beta finds you.
+        </p>
+
+        {/* preview wall */}
+        <div style={{ marginTop: 12 }}>
+          <Wall
+            height={210}
+            holds={[
+              { x: 18, y: 12, c: 'var(--hold-purple)', s: 22 },
+              { x: 62, y: 22, c: 'var(--hold-purple)', s: 20 },
+              { x: 32, y: 38, c: 'var(--hold-purple)', s: 22 },
+              { x: 70, y: 50, c: 'var(--hold-purple)', s: 18 },
+              { x: 42, y: 62, c: 'var(--hold-purple)', s: 24 },
+              { x: 22, y: 78, c: 'var(--hold-purple)', s: 20 },
+              { x: 8, y: 30, c: 'var(--hold-blue)', s: 14, dim: true },
+              { x: 80, y: 70, c: 'var(--hold-yellow)', s: 14, dim: true },
+            ]}
+            climber={{ x: 38, y: 50 }}
+            annotations={[{ n: 1, x: 30, y: 60 }, { n: 2, x: 48, y: 30 }]}
+          />
+        </div>
+      </div>
+
+      <div className="col gap-10" style={{ paddingBottom: 28 }}>
+        <button className="btn-primary">Film a send</button>
+        <div className="stamp" style={{ textAlign: 'center', color: 'var(--ink-3)' }}>
+          Brooklyn Boulders · 247 climbers near you
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 2. ONBOARDING 1 — Pick your gym
+function Onb1Screen() {
+  const gyms = [
+    { name: 'Brooklyn Boulders Gowanus', dist: '0.4 mi', members: 1840, on: true },
+    { name: 'The Cliffs at DUMBO', dist: '1.1 mi', members: 920 },
+    { name: 'VITAL Williamsburg', dist: '1.6 mi', members: 1320 },
+    { name: 'Movement LIC', dist: '3.8 mi', members: 760 },
+  ];
+  return (
+    <div className="scr col" style={{ padding: '60px 22px 90px', gap: 18, height: '100%' }}>
+      <div className="col gap-6" style={{ marginTop: 8 }}>
+        <span className="label">Step 1 of 3</span>
+        <h2 className="h1">Pick your home gym.</h2>
+        <p className="meta" style={{ margin: 0 }}>
+          Beta is local. Your reads come from climbers on the same wall.
+        </p>
+      </div>
+      <div className="col gap-8">
+        {gyms.map(g => (
+          <div key={g.name} className="field" style={{
+            borderColor: g.on ? 'var(--ink)' : 'var(--line)',
+            background: g.on ? 'var(--ink)' : 'var(--paper-2)',
+            color: g.on ? 'var(--paper)' : 'var(--ink)',
+          }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="col gap-4">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{g.name}</div>
+                <div className="mono" style={{ fontSize: 10, opacity: 0.7, letterSpacing: '0.04em' }}>
+                  {g.dist} · {g.members.toLocaleString()} climbers
+                </div>
+              </div>
+              {g.on && <span style={{ width: 22, height: 22, borderRadius: 999, background: 'var(--tape)', display: 'grid', placeItems: 'center', color: 'var(--paper)' }}>{Ico.check}</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ marginTop: 'auto' }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// 3. ONBOARDING 2 — Your climb profile
+function Onb2Screen() {
+  return (
+    <div className="scr col" style={{ padding: '60px 22px 90px', gap: 18, height: '100%' }}>
+      <div className="col gap-6" style={{ marginTop: 8 }}>
+        <span className="label">Step 2 of 3</span>
+        <h2 className="h1">Your body, your grade.</h2>
+        <p className="meta" style={{ margin: 0 }}>
+          So the right reads find you and yours find the right people.
+        </p>
+      </div>
+      <div className="col gap-10">
+        <div className="field">
+          <span className="field-label">Height</span>
+          <span className="field-value">5'4" · 163 cm</span>
+        </div>
+        <div className="field">
+          <span className="field-label">Ape index</span>
+          <span className="field-value">+1 in · positive</span>
+        </div>
+        <div className="field">
+          <span className="field-label">Current project grade</span>
+          <div className="row gap-6" style={{ marginTop: 4, flexWrap: 'wrap' }}>
+            <span className="chip">V2</span>
+            <span className="chip">V3</span>
+            <span className="chip on">V4</span>
+            <span className="chip">V5</span>
+            <span className="chip">V6</span>
+          </div>
+        </div>
+        <div className="field">
+          <span className="field-label">Sessions per week</span>
+          <div className="row gap-6" style={{ marginTop: 4 }}>
+            <span className="chip">1</span>
+            <span className="chip">2</span>
+            <span className="chip on">3</span>
+            <span className="chip">4+</span>
+          </div>
+        </div>
+      </div>
+      <div style={{ marginTop: 'auto' }} className="col gap-6">
+        <button className="btn-primary">Continue</button>
+        <span className="stamp" style={{ textAlign: 'center' }}>Used only to match body-typed beta. Never shown publicly.</span>
+      </div>
+    </div>
+  );
+}
+
+// 4. ONBOARDING 3 — How Beta works (the supply contract)
+function Onb3Screen() {
+  return (
+    <div className="scr col" style={{ padding: '60px 22px 90px', gap: 16, height: '100%' }}>
+      <div className="col gap-6" style={{ marginTop: 8 }}>
+        <span className="label">Step 3 of 3</span>
+        <h2 className="h1">Two reads in, one read out.</h2>
+        <p className="meta" style={{ margin: 0 }}>
+          A simple deal. Annotate two climbs at your grade or above before your own send goes live.
+        </p>
+      </div>
+
+      <div className="col gap-10" style={{ marginTop: 4 }}>
+        <div className="row gap-12" style={{ alignItems: 'flex-start' }}>
+          <span className="mono" style={{ color: 'var(--tape)', fontWeight: 600, fontSize: 14, minWidth: 18 }}>01</span>
+          <div className="col gap-4">
+            <div style={{ fontSize: 14, fontWeight: 600 }}>You film 30 seconds.</div>
+            <div className="meta">Wall section auto-detected. Grade and holds tagged for you.</div>
+          </div>
+        </div>
+        <div className="divider" />
+        <div className="row gap-12" style={{ alignItems: 'flex-start' }}>
+          <span className="mono" style={{ color: 'var(--tape)', fontWeight: 600, fontSize: 14, minWidth: 18 }}>02</span>
+          <div className="col gap-4">
+            <div style={{ fontSize: 14, fontWeight: 600 }}>You read two climbs back.</div>
+            <div className="meta">Two V4-or-higher clips from your gym, in your queue. Tap-anchored notes only.</div>
+          </div>
+        </div>
+        <div className="divider" />
+        <div className="row gap-12" style={{ alignItems: 'flex-start' }}>
+          <span className="mono" style={{ color: 'var(--tape)', fontWeight: 600, fontSize: 14, minWidth: 18 }}>03</span>
+          <div className="col gap-4">
+            <div style={{ fontSize: 14, fontWeight: 600 }}>Your send unlocks.</div>
+            <div className="meta">Posted to the route page. First read usually within 90 minutes.</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="field" style={{ background: 'var(--moss-soft)', borderColor: 'var(--moss)' }}>
+        <span className="field-label" style={{ color: 'var(--moss)' }}>Median this week at your gym</span>
+        <span className="field-value" style={{ color: 'var(--moss)' }}>First read: 42 min · 3 reads in: 2h 10min</span>
+      </div>
+
+      <div style={{ marginTop: 'auto' }}>
+        <button className="btn-primary">I'm in</button>
+      </div>
+    </div>
+  );
+}
+
+// 5. CORE — Film a send (capture screen)
+function CoreFilmScreen() {
+  return (
+    <div className="scr scr-dark col" style={{ padding: '54px 0 0', height: '100%', position: 'relative' }}>
+      <div className="row" style={{ justifyContent: 'space-between', padding: '0 22px' }}>
+        <span className="mono" style={{ color: 'var(--chalk-dim)', fontSize: 11, letterSpacing: '0.08em' }}>CANCEL</span>
+        <span className="mono" style={{ color: 'var(--tape)', fontSize: 11, letterSpacing: '0.08em' }}>● REC  0:18 / 0:30</span>
+      </div>
+
+      <div style={{ padding: '14px 16px 0', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <Wall
+          height={420}
+          holds={[
+            { x: 24, y: 8, c: 'var(--hold-purple)', s: 24 },
+            { x: 64, y: 16, c: 'var(--hold-purple)', s: 22 },
+            { x: 36, y: 28, c: 'var(--hold-purple)', s: 22 },
+            { x: 72, y: 38, c: 'var(--hold-purple)', s: 20 },
+            { x: 22, y: 48, c: 'var(--hold-purple)', s: 22 },
+            { x: 58, y: 56, c: 'var(--hold-purple)', s: 22 },
+            { x: 30, y: 68, c: 'var(--hold-purple)', s: 22 },
+            { x: 68, y: 78, c: 'var(--hold-purple)', s: 22 },
+            { x: 8, y: 22, c: 'var(--hold-blue)', s: 14, dim: true },
+            { x: 86, y: 60, c: 'var(--hold-yellow)', s: 12, dim: true },
+            { x: 12, y: 86, c: 'var(--hold-blue)', s: 14, dim: true },
+          ]}
+          climber={{ x: 42, y: 52 }}
+        />
+
+        {/* Auto-detected meta */}
+        <div style={{ background: 'rgba(232, 228, 218, 0.08)', border: '1px solid rgba(232, 228, 218, 0.2)', borderRadius: 12, padding: '10px 14px' }}>
+          <div className="row" style={{ justifyContent: 'space-between' }}>
+            <div className="col gap-4">
+              <div className="mono" style={{ fontSize: 9, color: 'var(--moss)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>● Auto-detected</div>
+              <div style={{ fontSize: 13, color: 'var(--chalk)', fontWeight: 500 }}>Wall 3 · Purple holds · V4</div>
+              <div className="stamp" style={{ color: 'var(--chalk-dim)' }}>"The Long Reach" · set 5 days ago</div>
+            </div>
+            <span className="mono" style={{ color: 'var(--chalk-dim)', fontSize: 10 }}>edit ›</span>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ padding: '14px 22px 28px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 24 }}>
+        <div style={{ width: 36, height: 36, borderRadius: 999, border: '1px solid rgba(232,228,218,0.3)', display: 'grid', placeItems: 'center', color: 'var(--chalk-dim)' }}>
+          <span style={{ fontSize: 10 }} className="mono">FLIP</span>
+        </div>
+        <div style={{ width: 64, height: 64, borderRadius: 999, background: 'var(--tape)', border: '4px solid var(--chalk)' }} />
+        <div style={{ width: 36, height: 36, borderRadius: 999, border: '1px solid rgba(232,228,218,0.3)', display: 'grid', placeItems: 'center', color: 'var(--chalk-dim)' }}>
+          <span style={{ fontSize: 10 }} className="mono">GRID</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 6. CORE — Annotate someone else's clip (supply side)
+function CoreAnnotateScreen() {
+  return (
+    <div className="scr scr-dark col" style={{ padding: '54px 0 0', height: '100%' }}>
+      <div className="row" style={{ justifyContent: 'space-between', padding: '0 22px 10px' }}>
+        <div className="col gap-4">
+          <div className="mono" style={{ fontSize: 9, color: 'var(--chalk-dim)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>Reading for · 1 of 2</div>
+          <div className="serif" style={{ fontSize: 17, color: 'var(--chalk)', fontStyle: 'italic' }}>Maya · V4 attempt</div>
+        </div>
+        <span className="chip moss" style={{ background: 'var(--moss-soft)', color: 'var(--moss)', border: '1px solid var(--moss)', fontSize: 10 }}>You've sent this · V5</span>
+      </div>
+
+      <div style={{ padding: '0 16px', position: 'relative' }}>
+        <Wall
+          height={320}
+          holds={[
+            { x: 24, y: 10, c: 'var(--hold-purple)', s: 22 },
+            { x: 62, y: 20, c: 'var(--hold-purple)', s: 22 },
+            { x: 36, y: 36, c: 'var(--hold-purple)', s: 22 },
+            { x: 72, y: 48, c: 'var(--hold-purple)', s: 20 },
+            { x: 26, y: 60, c: 'var(--hold-purple)', s: 22 },
+            { x: 58, y: 72, c: 'var(--hold-purple)', s: 22 },
+            { x: 30, y: 84, c: 'var(--hold-purple)', s: 22 },
+          ]}
+          climber={{ x: 36, y: 56 }}
+          annotations={[{ n: 1, x: 48, y: 50 }]}
+          showHighlight="M 92 180 Q 130 150 160 130"
+        />
+        <div className="anno-card" style={{ left: '52%', top: '32%' }}>
+          <div className="mono" style={{ fontSize: 9, color: 'var(--tape)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 4 }}>0:11 · Hip</div>
+          Drop your weight onto the right foot before you grab. You're square — that's why the reach feels long.
+        </div>
+      </div>
+
+      {/* timeline */}
+      <div style={{ padding: '18px 22px 12px' }}>
+        <div className="timeline">
+          <div className="timeline-fill" />
+          <div className="tl-tick" style={{ left: '20%' }} />
+          <div className="tl-tick" style={{ left: '36%', background: 'var(--moss)' }} />
+        </div>
+        <div className="row" style={{ justifyContent: 'space-between', marginTop: 6 }}>
+          <span className="mono" style={{ fontSize: 10, color: 'var(--chalk-dim)' }}>0:00</span>
+          <span className="mono" style={{ fontSize: 10, color: 'var(--chalk-dim)' }}>0:18 / 0:30</span>
+        </div>
+      </div>
+
+      <div style={{ padding: '0 22px 24px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <button className="btn-primary" style={{ background: 'var(--chalk)', color: 'var(--slate)' }}>Tap the body. Drop a note.</button>
+        <span className="stamp" style={{ textAlign: 'center', color: 'var(--chalk-dim)' }}>1 more after this · unlocks your send</span>
+      </div>
+    </div>
+  );
+}
+
+// 7. CORE — Your send, anchored reads in
+function CoreReadsScreen() {
+  return (
+    <div className="scr col" style={{ padding: '60px 0 90px', height: '100%' }}>
+      <div className="pad row" style={{ justifyContent: 'space-between' }}>
+        <div className="col gap-4">
+          <span className="label">Your send · 6h ago</span>
+          <h2 className="h2 serif">Wall 3 · "The Long Reach" · V4</h2>
+        </div>
+        <span className="chip moss">3 reads</span>
+      </div>
+
+      <div style={{ padding: '14px 16px 0', position: 'relative' }}>
+        <Wall
+          height={260}
+          holds={[
+            { x: 26, y: 12, c: 'var(--hold-purple)', s: 22 },
+            { x: 64, y: 22, c: 'var(--hold-purple)', s: 22 },
+            { x: 36, y: 36, c: 'var(--hold-purple)', s: 22 },
+            { x: 72, y: 48, c: 'var(--hold-purple)', s: 22 },
+            { x: 24, y: 60, c: 'var(--hold-purple)', s: 22 },
+            { x: 58, y: 72, c: 'var(--hold-purple)', s: 22 },
+            { x: 30, y: 84, c: 'var(--hold-purple)', s: 22 },
+          ]}
+          climber={{ x: 38, y: 54 }}
+          annotations={[
+            { n: 1, x: 32, y: 58 },
+            { n: 2, x: 50, y: 38 },
+            { n: 3, x: 70, y: 70 },
+          ]}
+        />
+      </div>
+
+      <div className="col gap-8" style={{ padding: '16px 22px 0' }}>
+        <div className="row gap-10" style={{ alignItems: 'flex-start' }}>
+          <span className="anno" style={{ position: 'static', transform: 'none', flexShrink: 0 }}>1</span>
+          <div className="col gap-4">
+            <div className="row gap-6" style={{ alignItems: 'baseline' }}>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>Jordan H.</span>
+              <span className="stamp">V6 · sent this Tue · 0:07</span>
+            </div>
+            <div className="meta">Heel hook on the orange volume, not the toe. Your knee is fighting you.</div>
+          </div>
+        </div>
+        <div className="divider" />
+        <div className="row gap-10" style={{ alignItems: 'flex-start' }}>
+          <span className="anno" style={{ position: 'static', transform: 'none', flexShrink: 0 }}>2</span>
+          <div className="col gap-4">
+            <div className="row gap-6" style={{ alignItems: 'baseline' }}>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>Sasha R.</span>
+              <span className="stamp">V5 · 5'3" · 0:14</span>
+            </div>
+            <div className="meta">Same height as you. Match on the side pull before the throw, makes it static.</div>
+          </div>
+        </div>
+        <div className="divider" />
+        <div className="row gap-10" style={{ alignItems: 'flex-start' }}>
+          <span className="anno" style={{ position: 'static', transform: 'none', flexShrink: 0 }}>3</span>
+          <div className="col gap-4">
+            <div className="row gap-6" style={{ alignItems: 'baseline' }}>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>Devi (setter)</span>
+              <span className="stamp">intended beta · 0:22</span>
+            </div>
+            <div className="meta">Intended as a dynamic right hand. Three reads in, the 5'4" version is the static — that's fair.</div>
+          </div>
+        </div>
+      </div>
+      <NavBar active="home" />
+    </div>
+  );
+}
+
+// 8. CORE — Route page (community cluster)
+function CoreRouteScreen() {
+  return (
+    <div className="scr col" style={{ padding: '60px 0 90px', height: '100%' }}>
+      <div className="pad col gap-6">
+        <span className="label">Route · Wall 3</span>
+        <h2 className="h1">The Long Reach</h2>
+        <div className="row gap-8" style={{ marginTop: 2, flexWrap: 'wrap' }}>
+          <span className="chip tape" style={{ fontSize: 11 }}>V4</span>
+          <span className="chip">Purple</span>
+          <span className="chip">Brooklyn Boulders</span>
+          <span className="chip">Set Jun 19</span>
+        </div>
+      </div>
+
+      <div className="pad" style={{ marginTop: 16 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <span className="label">7 climbs · 4 sequences</span>
+          <span className="stamp">5 days left in cycle</span>
+        </div>
+      </div>
+
+      {/* sequence stack */}
+      <div className="col gap-8" style={{ padding: '10px 22px 0' }}>
+        {[
+          { who: 'The static (5\'3"–5\'5")', n: 3, tag: 'For you', tagOn: true, height: '5\'4" avg' },
+          { who: 'Setter intended — dynamic right', n: 1, tag: 'Setter', tagOn: false, height: '5\'9"' },
+          { who: 'Knee bar variation', n: 2, tag: 'Creative', tagOn: false, height: '5\'8"–6\'0"' },
+          { who: 'Campus through middle', n: 1, tag: 'Strong only', tagOn: false, height: '5\'10"+' },
+        ].map((s, i) => (
+          <div key={i} className="field" style={{
+            background: s.tagOn ? 'var(--ink)' : 'var(--paper-2)',
+            borderColor: s.tagOn ? 'var(--ink)' : 'var(--line)',
+            color: s.tagOn ? 'var(--paper)' : 'var(--ink)',
+          }}>
+            <div className="row" style={{ justifyContent: 'space-between' }}>
+              <div className="col gap-4">
+                <div style={{ fontSize: 13, fontWeight: 600 }}>{s.who}</div>
+                <div className="mono" style={{ fontSize: 10, opacity: 0.65, letterSpacing: '0.04em' }}>
+                  {s.n} clip{s.n > 1 ? 's' : ''} · {s.height}
+                </div>
+              </div>
+              <span className="chip" style={{
+                background: s.tagOn ? 'var(--tape)' : 'transparent',
+                color: s.tagOn ? 'var(--paper)' : 'var(--ink-3)',
+                border: s.tagOn ? '1px solid var(--tape)' : '1px solid var(--line)',
+                fontSize: 10,
+              }}>{s.tag}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="pad" style={{ marginTop: 'auto' }}>
+        <button className="btn-primary">Try the 5'4" beta next session</button>
+      </div>
+      <NavBar active="wall" />
+    </div>
+  );
+}
+
+// ---------------- Tile + App ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="Dark wall, climber silhouette, two pins. The promise — someone is watching — lands before the app icon does.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Home gym" caption="Beta is hyper-local. You pick one gym; reads come from people who climb the same wall and recognise the route by sight.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Body profile" caption="Height, ape index, project grade. Used to route 5'4'' beta to a 5'4'' climber, never shown publicly.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="The 2-for-1 contract" caption="Reviewer-supply problem solved structurally: read two before yours unlocks. Median first-read time is shown up front.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Film the send" caption="30s timer, auto-detected wall, holds, grade. Three taps from gym to posted.">
+        <CoreFilmScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Read someone back" caption="Body-anchored only, no comment thread. The route is fresh — you sent it Tuesday — so you can actually read the climb.">
+        <CoreAnnotateScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Your send, anchored reads" caption="Three pinned notes, each carries the climber's grade and height. Trust is per-route, not a follower count.">
+        <CoreReadsScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="Route page · cluster beta" caption="Four sequences for one V4. The 5'4'' static is matched to you. The route page is the unit of community, not a feed.">
+        <CoreRouteScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>

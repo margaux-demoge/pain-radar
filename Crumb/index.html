@@ -1,0 +1,895 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Crumb · Pain Radar proto 06/45</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F6EFE0;
+    --paper-2: #EFE5CF;
+    --paper-dim: #E7DBC1;
+    --crust: #6B3A1F;
+    --crust-soft: rgba(107, 58, 31, 0.10);
+    --amber: #B7782A;
+    --char: #1F1B16;
+    --ink: #2A241C;
+    --ink-2: #5A4E3D;
+    --ink-3: #8B7C66;
+    --line: rgba(42, 36, 28, 0.12);
+    --line-strong: rgba(42, 36, 28, 0.22);
+    --sage: #6F8466;
+    --sage-soft: rgba(111, 132, 102, 0.16);
+    --signal: #C25B2F;
+  }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); }
+  body {
+    font-family: "IBM Plex Sans", -apple-system, sans-serif;
+    font-feature-settings: "kern", "liga";
+  }
+  .serif { font-family: "Fraunces", Georgia, serif; }
+  .mono { font-family: "IBM Plex Mono", monospace; }
+  a { color: inherit; }
+
+  /* Gallery chrome */
+  .chrome {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(246, 239, 224, 0.92);
+    backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .chrome-inner {
+    max-width: 1680px; margin: 0 auto;
+    display: flex; align-items: center; gap: 24px;
+    padding: 18px 32px;
+  }
+  .chrome-brand {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  }
+  .chrome-counter {
+    font-size: 13px; color: var(--ink-3);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.04em;
+  }
+  .chrome-arrows { margin-left: auto; display: flex; gap: 8px; }
+  .chrome-arrow {
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper-2);
+    color: var(--ink); display: grid; place-items: center;
+    cursor: pointer; transition: transform 120ms;
+    text-decoration: none;
+  }
+  .chrome-arrow:hover { transform: translateY(-1px); }
+  .chrome-arrow.disabled { opacity: 0.35; pointer-events: none; }
+  .chrome-gallery {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 999px;
+    border: 1px solid var(--line-strong); background: var(--paper-2);
+    text-decoration: none; color: var(--ink);
+    font-size: 13px;
+  }
+
+  /* Page hero */
+  .page-hero {
+    max-width: 1680px; margin: 0 auto;
+    padding: 56px 32px 32px;
+  }
+  .page-eyebrow {
+    text-transform: uppercase; letter-spacing: 0.18em;
+    font-size: 11px; color: var(--crust); font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .page-title {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 64px; letter-spacing: -0.03em;
+    line-height: 1.0; margin: 0 0 18px;
+    font-variation-settings: "opsz" 120, "SOFT" 50;
+  }
+  .page-tagline {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-size: 22px; line-height: 1.5;
+    color: var(--ink-2); max-width: 780px; margin: 0;
+  }
+  .page-meta {
+    margin-top: 28px; display: flex; gap: 18px; flex-wrap: wrap;
+    font-size: 13px; color: var(--ink-3);
+  }
+  .page-meta strong { color: var(--ink); font-weight: 600; }
+
+  /* Phone grid */
+  .phones { max-width: 1680px; margin: 0 auto; padding: 32px 32px 80px; }
+  #app {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 48px 32px;
+    align-items: start;
+    justify-items: center;
+  }
+  .phone-wrap { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .phone-label-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--ink-3);
+  }
+  .phone-label-row .num {
+    font-family: "Fraunces", Georgia, serif;
+    font-style: italic; font-weight: 500;
+    color: var(--crust); font-size: 13px;
+    text-transform: none; letter-spacing: 0;
+  }
+  .phone-label-row .cat {
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--crust-soft); color: var(--crust);
+    font-weight: 600;
+  }
+  .phone-caption {
+    max-width: 260px; text-align: center;
+    font-size: 13px; line-height: 1.5; color: var(--ink-2);
+  }
+
+  .phone-scale {
+    width: 230px; height: 482px;
+    position: relative; overflow: visible;
+  }
+  .phone-scale-inner {
+    position: absolute; top: 0; left: 0;
+    transform: scale(0.552); transform-origin: top left;
+  }
+  @media (min-width: 1800px) {
+    .phone-scale { width: 270px; height: 568px; }
+    .phone-scale-inner { transform: scale(0.65); }
+  }
+  @media (max-width: 1280px) {
+    #app { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .phone-scale { width: 310px; height: 654px; }
+    .phone-scale-inner { transform: scale(0.745); }
+  }
+  @media (max-width: 720px) {
+    #app { grid-template-columns: 1fr; }
+    .phone-scale { width: 350px; height: 738px; }
+    .phone-scale-inner { transform: scale(0.84); }
+  }
+
+  /* App styles */
+  #app .scr { width: 100%; height: 100%; background: var(--paper); color: var(--ink); position: relative; }
+  #app .pad { padding: 0 22px; }
+  #app .h1 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 32px; line-height: 1.05;
+    letter-spacing: -0.02em; color: var(--ink);
+  }
+  #app .h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 600; font-size: 22px; line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  #app .small { font-size: 12px; color: var(--ink-3); }
+  #app .meta { font-size: 12px; color: var(--ink-2); }
+  #app .label { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; }
+  #app .btn-primary {
+    background: var(--crust); color: var(--paper);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 600; font-size: 15px;
+    border: none; width: 100%; cursor: pointer;
+    letter-spacing: 0.01em;
+  }
+  #app .btn-secondary {
+    background: transparent; color: var(--ink);
+    padding: 14px 22px; border-radius: 999px;
+    font-weight: 500; font-size: 14px;
+    border: 1px solid var(--line-strong); width: 100%;
+    cursor: pointer;
+  }
+  #app .row { display: flex; align-items: center; }
+  #app .col { display: flex; flex-direction: column; }
+  #app .gap-4 { gap: 4px; } #app .gap-6 { gap: 6px; } #app .gap-8 { gap: 8px; }
+  #app .gap-10 { gap: 10px; } #app .gap-12 { gap: 12px; } #app .gap-16 { gap: 16px; }
+  #app .gap-20 { gap: 20px; } #app .gap-24 { gap: 24px; }
+  #app .field {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; border-radius: 14px;
+    background: var(--paper-2); border: 1px solid var(--line);
+  }
+  #app .field-label { font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.14em; color: var(--ink-3); font-weight: 600; }
+  #app .field-value { font-size: 15px; color: var(--ink); }
+  #app .chip {
+    padding: 8px 14px; border-radius: 999px;
+    background: var(--paper-2); border: 1px solid var(--line);
+    font-size: 13px; color: var(--ink-2);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  #app .chip.on {
+    background: var(--crust); color: var(--paper);
+    border-color: var(--crust);
+  }
+  #app .chip.sage {
+    background: var(--sage-soft); color: var(--sage);
+    border-color: rgba(111, 132, 102, 0.3);
+  }
+  #app .divider { height: 1px; background: var(--line); }
+  #app .nav-bottom {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    border-top: 1px solid var(--line);
+    background: var(--paper);
+    padding: 10px 22px 22px;
+    display: flex; justify-content: space-around;
+    align-items: center;
+  }
+  #app .nav-item { display: flex; flex-direction: column; align-items: center;
+    gap: 4px; font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+  #app .nav-item.on { color: var(--crust); }
+  #app .nav-dot { width: 5px; height: 5px; border-radius: 999px;
+    background: var(--crust); margin-top: 2px; }
+
+  /* Crumb-specific: the crumb photo placeholder (no real photo, an SVG texture) */
+  #app .crumb-frame {
+    border-radius: 14px; overflow: hidden; position: relative;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+  }
+  #app .diag-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px; border-radius: 12px;
+    background: var(--paper-2); border: 1px solid var(--line);
+  }
+  #app .diag-bar {
+    height: 6px; border-radius: 999px; background: var(--paper-dim);
+    overflow: hidden; flex: 1; margin: 0 12px;
+  }
+  #app .diag-bar > div { height: 100%; background: var(--crust); border-radius: 999px; }
+  #app .reader-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+  }
+  #app .avatar {
+    width: 28px; height: 28px; border-radius: 999px;
+    background: var(--paper-dim); color: var(--crust);
+    display: grid; place-items: center; font-weight: 600;
+    font-size: 11px; flex-shrink: 0;
+    font-family: "Fraunces", Georgia, serif;
+  }
+
+  .foot {
+    max-width: 1680px; margin: 0 auto;
+    padding: 32px; border-top: 1px solid var(--line);
+    color: var(--ink-3); font-size: 12px;
+  }
+  .foot a { color: var(--ink-2); text-decoration: underline; text-underline-offset: 3px;}
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <div class="chrome-inner">
+    <span class="chrome-brand">Pain Radar</span>
+    <span class="chrome-counter">06 / 45 — Crumb</span>
+    <a href="../index.html" class="chrome-gallery">All protos</a>
+    <div class="chrome-arrows">
+      <a class="chrome-arrow" href="../Crest/index.html" title="Previous: Crest">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M10 4l-4 4 4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="chrome-arrow" href="../Even/index.html" title="Next: Even">
+        <svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="page-hero">
+  <div class="page-eyebrow">Peer diagnosis · sourdough crumb</div>
+  <h1 class="page-title serif">Crumb</h1>
+  <p class="page-tagline serif">A trained eye on every loaf you bake. Post your crumb, get diagnosed by bakers who have been there, learn faster than three months of guessing alone.</p>
+  <div class="page-meta">
+    <span><strong>Score</strong> · 4</span>
+    <span><strong>Benchmark</strong> · 🟡 CROWDED_SPACE</span>
+    <span><strong>Retention</strong> · 🟢 STRUCTURAL_RETURN</span>
+    <span><strong>Interview</strong> · 🟡 WEAK_ON_ASSUMPTIONS</span>
+  </div>
+</div>
+
+<div class="phones" id="phones-grid"></div>
+
+<div class="foot">
+  Generated by Pain Radar pipeline · Type-driven prototype, no photographs. See <a href="../../Apps/_radar/Crumb/spec.md">spec.md</a> for the full concept.
+</div>
+
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.20.15/babel.min.js"></script>
+
+<script>
+window.IMG = {};
+</script>
+
+<script type="text/babel" data-presets="react">
+// ---------------- IosFrame (inlined from huashu-design skill assets) ----------------
+const iosFrameStyles = {
+  wrapper: { display: 'inline-block', padding: 12, background: '#000', borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.18)', position: 'relative' },
+  screen: { position: 'relative', borderRadius: 48, overflow: 'hidden', background: '#fff' },
+  statusBar: { position: 'absolute', top: 0, left: 0, right: 0, height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px', fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif', zIndex: 20, pointerEvents: 'none' },
+  dynamicIsland: { position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+    width: 124, height: 36, background: '#000', borderRadius: 999, zIndex: 30 },
+  statusIcons: { display: 'flex', alignItems: 'center', gap: 6 },
+  signalIcon: { display: 'flex', alignItems: 'flex-end', gap: 2, height: 12 },
+  signalBar: { width: 3, background: 'currentColor', borderRadius: 1 },
+  batteryIcon: { width: 26, height: 12, border: '1.5px solid currentColor', borderRadius: 3,
+    padding: 1, position: 'relative', opacity: 0.8 },
+  batteryCap: { position: 'absolute', top: 3, right: -3, width: 2, height: 6,
+    background: 'currentColor', borderRadius: '0 1px 1px 0' },
+  content: { position: 'absolute', top: 54, left: 0, right: 0, bottom: 34, overflow: 'auto' },
+  homeIndicator: { position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)',
+    width: 140, height: 5, background: 'rgba(0,0,0,0.3)', borderRadius: 999, zIndex: 10 },
+};
+function IosFrame({ children, width = 393, height = 852, time = '9:41', battery = 92 }) {
+  return (
+    <div style={iosFrameStyles.wrapper}>
+      <div style={{ ...iosFrameStyles.screen, width, height }}>
+        <div style={{ ...iosFrameStyles.statusBar, color: '#000' }}>
+          <span>{time}</span>
+          <div style={iosFrameStyles.statusIcons}>
+            <div style={iosFrameStyles.signalIcon}>
+              <div style={{ ...iosFrameStyles.signalBar, height: 4 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 6 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 9 }} />
+              <div style={{ ...iosFrameStyles.signalBar, height: 11 }} />
+            </div>
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+              <path d="M8 11.5a1 1 0 100-2 1 1 0 000 2z" fill="currentColor" />
+              <path d="M3 7.5a7 7 0 0110 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" />
+              <path d="M1 4.5a11 11 0 0114 0" stroke="currentColor" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.7" />
+            </svg>
+            <div style={iosFrameStyles.batteryIcon}>
+              <div style={{ width: `${battery}%`, height: '100%', background: 'currentColor', borderRadius: 1, opacity: 0.9 }} />
+              <div style={iosFrameStyles.batteryCap} />
+            </div>
+          </div>
+        </div>
+        <div style={iosFrameStyles.dynamicIsland} />
+        <div style={iosFrameStyles.content}>{children}</div>
+        <div style={iosFrameStyles.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Crumb SVG texture (stand-in for a crumb photograph) ----------------
+// Variant: 'tight' (small even holes, underproofed), 'open' (large irregular, overproofed),
+// 'balanced' (the target look), 'tunneling' (one big hole near crust)
+function CrumbTexture({ variant = 'balanced', seed = 1, style = {} }) {
+  // Deterministic pseudo-random
+  function rng(s) { let x = Math.sin(s) * 10000; return x - Math.floor(x); }
+  const holes = [];
+  const W = 320, H = 220;
+  if (variant === 'tight') {
+    for (let i = 0; i < 70; i++) {
+      const r = 3 + rng(seed + i) * 4;
+      holes.push({ x: rng(seed + i*2) * W, y: rng(seed + i*3) * H, r });
+    }
+  } else if (variant === 'open') {
+    for (let i = 0; i < 22; i++) {
+      const r = 9 + rng(seed + i) * 22;
+      holes.push({ x: rng(seed + i*2) * W, y: rng(seed + i*3) * H, r });
+    }
+  } else if (variant === 'tunneling') {
+    for (let i = 0; i < 30; i++) {
+      const r = 4 + rng(seed + i) * 8;
+      holes.push({ x: rng(seed + i*2) * W, y: 60 + rng(seed + i*3) * (H - 80), r });
+    }
+    holes.push({ x: W * 0.5, y: 30, r: 28 });
+    holes.push({ x: W * 0.62, y: 36, r: 18 });
+  } else {
+    for (let i = 0; i < 38; i++) {
+      const r = 5 + rng(seed + i) * 11;
+      holes.push({ x: rng(seed + i*2) * W, y: rng(seed + i*3) * H, r });
+    }
+  }
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice"
+      style={{ display: 'block', width: '100%', height: '100%', ...style }}>
+      <defs>
+        <radialGradient id={`crumb-bg-${seed}`} cx="50%" cy="40%" r="80%">
+          <stop offset="0%" stopColor="#E9D7B0" />
+          <stop offset="60%" stopColor="#D9C08A" />
+          <stop offset="100%" stopColor="#A87742" />
+        </radialGradient>
+        <radialGradient id={`hole-${seed}`} cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stopColor="#3A2A18" />
+          <stop offset="100%" stopColor="#1B1208" />
+        </radialGradient>
+      </defs>
+      <rect width={W} height={H} fill={`url(#crumb-bg-${seed})`} />
+      {/* crust ring */}
+      <rect x="0" y="0" width={W} height="8" fill="#5C3818" opacity="0.85" />
+      {holes.map((h, i) => (
+        <ellipse key={i} cx={h.x} cy={h.y} rx={h.r} ry={h.r * (0.7 + rng(seed + i*5) * 0.5)}
+          fill={`url(#hole-${seed})`} opacity={0.88} />
+      ))}
+      {/* grain speckle */}
+      {Array.from({ length: 60 }).map((_, i) => (
+        <circle key={'sp'+i} cx={rng(seed + i*7) * W} cy={rng(seed + i*11) * H}
+          r="0.6" fill="#5C3818" opacity="0.35" />
+      ))}
+    </svg>
+  );
+}
+
+// ---------------- Hero ----------------
+function HeroScreen() {
+  return (
+    <div className="scr col">
+      <div style={{ height: 240, position: 'relative', overflow: 'hidden' }}>
+        <CrumbTexture variant="balanced" seed={3} />
+        <div style={{ position: 'absolute', inset: 0,
+          background: 'linear-gradient(to bottom, rgba(246,239,224,0) 40%, var(--paper) 100%)' }} />
+      </div>
+      <div className="pad col gap-16" style={{ marginTop: -20, position: 'relative' }}>
+        <div className="label">Crumb</div>
+        <div className="h1 serif">A trained eye on every loaf you bake.</div>
+        <div className="meta serif" style={{ fontStyle: 'italic', fontSize: 15, lineHeight: 1.55, color: 'var(--ink-2)' }}>
+          You cut the loaf. You see the crumb. Within the hour, three bakers who have been there tell you what happened.
+        </div>
+        <div style={{ height: 18 }} />
+        <button className="btn-primary">Post my first crumb</button>
+        <button className="btn-secondary">I want to read others first</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 6 }}>
+          Free · No karma, no ranks · For bakers 5 to 50 loaves in
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Onboarding 1: experience pick ----------------
+function Onb1Screen() {
+  const levels = [
+    { k: 'first', label: 'I haven\'t baked one yet', sub: 'Crumb isn\'t for you yet — come back after loaf 5.', dim: true },
+    { k: 'early', label: '5 to 15 loaves in', sub: 'You\'re past starter panic. Good window.', on: false },
+    { k: 'mid', label: '15 to 50 loaves in', sub: 'Mid-arc. You\'ll get the most out of Crumb.', on: true },
+    { k: 'deep', label: '50+ loaves', sub: 'You\'ll mostly be a reader here.', on: false },
+  ];
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="label">Step 1 of 3</div>
+        <div className="h2 serif" style={{ marginTop: 10, marginBottom: 6 }}>How many loaves are you in?</div>
+        <div className="meta" style={{ marginBottom: 18 }}>So we calibrate who reads your posts and whose posts you see.</div>
+        <div className="col gap-10">
+          {levels.map(l => (
+            <div key={l.k} style={{
+              padding: '14px 16px', borderRadius: 14,
+              background: l.on ? 'var(--crust-soft)' : 'var(--paper-2)',
+              border: l.on ? '1.5px solid var(--crust)' : '1px solid var(--line)',
+              opacity: l.dim ? 0.5 : 1,
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{
+                  width: 18, height: 18, borderRadius: 999,
+                  border: l.on ? '5px solid var(--crust)' : '1.5px solid var(--line-strong)',
+                  background: l.on ? 'var(--paper)' : 'transparent',
+                }} />
+                <div className="col" style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 500 }}>{l.label}</div>
+                  <div className="small" style={{ marginTop: 2 }}>{l.sub}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 70, left: 22, right: 22 }}>
+        <button className="btn-primary">Continue</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Onboarding 2: baseline recipe ----------------
+function Onb2Screen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="label">Step 2 of 3</div>
+        <div className="h2 serif" style={{ marginTop: 10, marginBottom: 6 }}>Your usual loaf</div>
+        <div className="meta" style={{ marginBottom: 18 }}>We pre-fill every post with this. You can override per bake in two taps.</div>
+        <div className="col gap-10">
+          <div className="field">
+            <div className="field-label">Hydration</div>
+            <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+              <div className="field-value mono">75%</div>
+              <div className="small">slider · 60–95</div>
+            </div>
+            <div style={{ height: 4, background: 'var(--paper-dim)', borderRadius: 999, marginTop: 8, position: 'relative' }}>
+              <div style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '43%', background: 'var(--crust)', borderRadius: 999 }} />
+              <div style={{ position: 'absolute', left: '43%', top: -4, width: 12, height: 12, borderRadius: 999, background: 'var(--paper)', border: '2px solid var(--crust)' }} />
+            </div>
+          </div>
+          <div className="field">
+            <div className="field-label">Flour mix</div>
+            <div className="field-value">80% bread · 15% whole wheat · 5% rye</div>
+          </div>
+          <div className="row gap-10">
+            <div className="field" style={{ flex: 1 }}>
+              <div className="field-label">Bulk</div>
+              <div className="field-value mono">4h 30m · 24°C</div>
+            </div>
+            <div className="field" style={{ flex: 1 }}>
+              <div className="field-label">Cold retard</div>
+              <div className="field-value mono">14h · 4°C</div>
+            </div>
+          </div>
+          <div className="row gap-10">
+            <div className="field" style={{ flex: 1 }}>
+              <div className="field-label">Shape</div>
+              <div className="field-value">Boule</div>
+            </div>
+            <div className="field" style={{ flex: 1 }}>
+              <div className="field-label">Oven</div>
+              <div className="field-value">Dutch oven</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 70, left: 22, right: 22 }}>
+        <button className="btn-primary">Save and continue</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Onboarding 3: how reads work ----------------
+function Onb3Screen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 24 }}>
+        <div className="label">Step 3 of 3</div>
+        <div className="h2 serif" style={{ marginTop: 10, marginBottom: 14 }}>How a read works</div>
+        <div className="col gap-12">
+          <div className="row gap-12">
+            <div style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--crust)', color: 'var(--paper)',
+              display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 13, fontFamily: 'Fraunces, serif' }}>1</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>You post the slice</div>
+              <div className="small" style={{ marginTop: 2 }}>One crumb photo, your recipe pre-filled. Under a minute.</div>
+            </div>
+          </div>
+          <div className="row gap-12">
+            <div style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--crust)', color: 'var(--paper)',
+              display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 13, fontFamily: 'Fraunces, serif' }}>2</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>Bakers tag what they see</div>
+              <div className="small" style={{ marginTop: 2 }}>No essays. Eight diagnoses to choose from, one short note.</div>
+            </div>
+          </div>
+          <div className="row gap-12">
+            <div style={{ width: 28, height: 28, borderRadius: 999, background: 'var(--crust)', color: 'var(--paper)',
+              display: 'grid', placeItems: 'center', fontWeight: 700, fontSize: 13, fontFamily: 'Fraunces, serif' }}>3</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14 }}>A cluster forms</div>
+              <div className="small" style={{ marginTop: 2 }}>You read the pattern, not any single comment. High-accuracy bakers count for more.</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ marginTop: 18, padding: 14, borderRadius: 12, background: 'var(--sage-soft)',
+          border: '1px solid rgba(111,132,102,0.3)' }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--sage)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>The promise</div>
+          <div style={{ fontSize: 13, marginTop: 4, color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            First read in 15 min. A confident cluster within the hour — while you're still in the kitchen.
+          </div>
+        </div>
+        <div style={{ marginTop: 14, padding: 14, borderRadius: 12, background: 'var(--paper-2)', border: '1px solid var(--line)' }}>
+          <div className="small" style={{ lineHeight: 1.55 }}>
+            <strong style={{ color: 'var(--ink)' }}>To keep the queue alive</strong>, we ask every poster to read one loaf within 24h. That's the deal.
+          </div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 70, left: 22, right: 22 }}>
+        <button className="btn-primary">Start baking</button>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Core 1: post a crumb (the form) ----------------
+function CorePostScreen() {
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 22 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="small">Cancel</div>
+          <div className="label" style={{ fontSize: 12 }}>New crumb</div>
+          <div className="small mono" style={{ color: 'var(--crust)' }}>00:42</div>
+        </div>
+        <div className="crumb-frame" style={{ height: 160, marginTop: 16 }}>
+          <CrumbTexture variant="tunneling" seed={11} />
+        </div>
+        <div className="row gap-6" style={{ marginTop: 10, justifyContent: 'space-between' }}>
+          <div className="small">Bake #23 · Sat Jun 20, 9:04 am</div>
+          <div className="small mono" style={{ color: 'var(--crust)' }}>retake</div>
+        </div>
+
+        <div className="col gap-8" style={{ marginTop: 16 }}>
+          <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+            <div className="chip">Hydration <strong style={{ marginLeft: 4 }}>78%</strong></div>
+            <div className="chip">Flour <strong style={{ marginLeft: 4 }}>80/15/5</strong></div>
+          </div>
+          <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+            <div className="chip">Bulk <strong style={{ marginLeft: 4 }}>5h · 25°C</strong></div>
+            <div className="chip">Retard <strong style={{ marginLeft: 4 }}>16h · 4°C</strong></div>
+          </div>
+          <div className="row gap-8" style={{ justifyContent: 'space-between' }}>
+            <div className="chip">Boule</div>
+            <div className="chip">Dutch oven</div>
+            <div className="chip" style={{ background: 'var(--paper)', borderStyle: 'dashed' }}>+ ambient</div>
+          </div>
+        </div>
+
+        <div className="field" style={{ marginTop: 14 }}>
+          <div className="field-label">What you're asking</div>
+          <div style={{ fontSize: 14, color: 'var(--ink)', lineHeight: 1.45, marginTop: 2 }}>
+            Tunneling near the top crust again. Third bake in a row. Bulk or shaping?
+          </div>
+          <div className="small" style={{ marginTop: 6 }}>One line · 120 char max</div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 70, left: 22, right: 22 }}>
+        <button className="btn-primary">Post to Fresh queue</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 8 }}>14 readers active right now · est. first read in 11 min</div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Core 2: Fresh queue ----------------
+function CoreFeedScreen() {
+  const posts = [
+    { who: 'Marcus · Portland', loaf: '#23', ago: '4m', tag: 'Tunneling, third in a row', diag: 2, target: 3, variant: 'tunneling', s: 5, hot: true },
+    { who: 'Asha · Bristol', loaf: '#7', ago: '12m', tag: 'Hydration jump 72→76', diag: 4, target: 3, variant: 'open', s: 9 },
+    { who: 'Yuki · Kyoto', loaf: '#41', ago: '23m', tag: 'Gummy at the base only', diag: 5, target: 3, variant: 'tight', s: 17 },
+    { who: 'Helga · Munich', loaf: '#12', ago: '31m', tag: 'First retard at 18h', diag: 3, target: 3, variant: 'balanced', s: 2 },
+  ];
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 22 }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <div className="h2 serif">Fresh</div>
+          <div className="small">Cooling now · 14 live</div>
+        </div>
+        <div className="row gap-8" style={{ marginTop: 12, overflowX: 'auto' }}>
+          <div className="chip on">Needs reads</div>
+          <div className="chip">Newest</div>
+          <div className="chip">Near you</div>
+        </div>
+        <div className="col gap-12" style={{ marginTop: 14 }}>
+          {posts.map((p, i) => (
+            <div key={i} style={{ borderRadius: 14, background: 'var(--paper-2)', border: '1px solid var(--line)', overflow: 'hidden' }}>
+              <div style={{ display: 'flex' }}>
+                <div style={{ width: 90, height: 90, flexShrink: 0 }}>
+                  <CrumbTexture variant={p.variant} seed={p.s} />
+                </div>
+                <div className="col" style={{ padding: 10, flex: 1, gap: 4 }}>
+                  <div className="row" style={{ justifyContent: 'space-between' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600 }}>{p.who}</div>
+                    <div className="small mono">{p.ago}</div>
+                  </div>
+                  <div className="small" style={{ color: 'var(--ink-2)' }}>Loaf {p.loaf}</div>
+                  <div style={{ fontSize: 12, color: 'var(--ink)', lineHeight: 1.35, marginTop: 2 }}>
+                    "{p.tag}"
+                  </div>
+                  <div className="row" style={{ justifyContent: 'space-between', marginTop: 4 }}>
+                    <div className="small" style={{ color: p.diag < p.target ? 'var(--signal)' : 'var(--sage)' }}>
+                      {p.diag}/{p.target} reads
+                    </div>
+                    {p.hot && <div style={{ fontSize: 10, padding: '2px 6px', borderRadius: 999,
+                      background: 'var(--signal)', color: 'var(--paper)', fontWeight: 600, letterSpacing: '0.04em' }}>STILL HOT</div>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item on"><div>Fresh</div><div className="nav-dot" /></div>
+        <div className="nav-item"><div>My bakes</div></div>
+        <div className="nav-item"><div>Post</div></div>
+        <div className="nav-item"><div>Me</div></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Core 3: read someone else's loaf ----------------
+function CoreReadScreen() {
+  const diagnoses = [
+    { k: 'over', label: 'Overproofed', sub: 'too far in bulk' },
+    { k: 'under', label: 'Underproofed', sub: 'pulled too early', on: true },
+    { k: 'starter', label: 'Weak starter', sub: 'not at peak' },
+    { k: 'hydlow', label: 'Hydration too low' },
+    { k: 'hydhigh', label: 'Hydration too high' },
+    { k: 'shape', label: 'Poor shaping' },
+    { k: 'cool', label: 'Oven too cool' },
+    { k: 'fine', label: 'Looks great' },
+  ];
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 22 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="small">← Fresh</div>
+          <div className="small mono">2 of 3 reads needed</div>
+        </div>
+        <div className="row" style={{ marginTop: 14, gap: 10, alignItems: 'flex-start' }}>
+          <div className="avatar">M</div>
+          <div className="col" style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>Marcus, Portland · Loaf #23</div>
+            <div className="small">78% · 80/15/5 · 5h bulk @ 25° · 16h retard</div>
+            <div style={{ fontSize: 13, fontStyle: 'italic', color: 'var(--ink-2)', marginTop: 4, lineHeight: 1.4 }}>
+              "Tunneling near the top crust again. Third bake in a row."
+            </div>
+          </div>
+        </div>
+        <div className="crumb-frame" style={{ height: 150, marginTop: 12 }}>
+          <CrumbTexture variant="tunneling" seed={11} />
+        </div>
+        <div className="label" style={{ marginTop: 14 }}>What do you see?</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginTop: 8 }}>
+          {diagnoses.map(d => (
+            <div key={d.k} style={{
+              padding: '10px 12px', borderRadius: 12,
+              background: d.on ? 'var(--crust)' : 'var(--paper-2)',
+              color: d.on ? 'var(--paper)' : 'var(--ink)',
+              border: d.on ? '1px solid var(--crust)' : '1px solid var(--line)',
+            }}>
+              <div style={{ fontSize: 13, fontWeight: 600 }}>{d.label}</div>
+              {d.sub && <div style={{ fontSize: 10, opacity: 0.75, marginTop: 2 }}>{d.sub}</div>}
+            </div>
+          ))}
+        </div>
+        <div className="field" style={{ marginTop: 12 }}>
+          <div className="field-label">One short note (optional)</div>
+          <div style={{ fontSize: 13, color: 'var(--ink)', marginTop: 2 }}>
+            Shape looks tight at the top. Try a looser pre-shape and a 30-min bench rest.
+          </div>
+        </div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 70, left: 22, right: 22 }}>
+        <button className="btn-primary">Send read · counts as 1.4×</button>
+        <div className="small" style={{ textAlign: 'center', marginTop: 6 }}>You've read 47 loaves · accuracy 78%</div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Core 4: cluster on your own post ----------------
+function CoreClusterScreen() {
+  const cluster = [
+    { label: 'Underproofed', count: 4, weight: 5.2, pct: 62 },
+    { label: 'Poor shaping', count: 2, weight: 2.1, pct: 25 },
+    { label: 'Looks great', count: 1, weight: 0.6, pct: 7 },
+    { label: 'Weak starter', count: 1, weight: 0.5, pct: 6 },
+  ];
+  const readers = [
+    { i: 'A', who: 'Asha · 142 reads · 81%', diag: 'Underproofed', note: 'Even crumb at the base but tight up top — looks like bulk pulled 30 min early.', ago: '8m' },
+    { i: 'Y', who: 'Yuki · 318 reads · 86%', diag: 'Underproofed', note: 'Same. The tunneling reads like gas pushing through a tight matrix, not over-fermentation.', ago: '14m' },
+    { i: 'H', who: 'Helga · 67 reads · 74%', diag: 'Poor shaping', note: 'I see seam tension at 11 o\'clock.', ago: '22m' },
+  ];
+  return (
+    <div className="scr col">
+      <div className="pad" style={{ paddingTop: 22 }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div className="small">← My bakes</div>
+          <div className="small mono" style={{ color: 'var(--sage)' }}>● Confident · 8 reads in 47m</div>
+        </div>
+        <div className="crumb-frame" style={{ height: 120, marginTop: 12 }}>
+          <CrumbTexture variant="tunneling" seed={11} />
+        </div>
+        <div className="h2 serif" style={{ marginTop: 12, fontSize: 18 }}>The cluster says</div>
+        <div className="col gap-8" style={{ marginTop: 8 }}>
+          {cluster.map((c, i) => (
+            <div key={i} className="diag-row" style={i === 0 ? { borderColor: 'var(--crust)', background: 'var(--crust-soft)' } : {}}>
+              <div style={{ fontSize: 13, fontWeight: i === 0 ? 700 : 500, minWidth: 110 }}>{c.label}</div>
+              <div className="diag-bar"><div style={{ width: c.pct + '%' }} /></div>
+              <div className="mono small" style={{ minWidth: 48, textAlign: 'right' }}>{c.count} · w{c.weight}</div>
+            </div>
+          ))}
+        </div>
+        <div className="row" style={{ marginTop: 12, gap: 8 }}>
+          <div className="chip sage">Next bake: try +30 min bulk</div>
+          <div className="chip">vs loaf #22 · same call</div>
+        </div>
+        <div className="label" style={{ marginTop: 16 }}>Notes from readers</div>
+        <div className="col" style={{ marginTop: 4 }}>
+          {readers.map((r, i) => (
+            <div key={i} className="reader-row">
+              <div className="avatar">{r.i}</div>
+              <div className="col" style={{ flex: 1 }}>
+                <div className="row" style={{ justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600 }}>{r.who}</div>
+                  <div className="small mono">{r.ago}</div>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--crust)', fontWeight: 600, marginTop: 2 }}>→ {r.diag}</div>
+                <div style={{ fontSize: 12, color: 'var(--ink-2)', lineHeight: 1.45, marginTop: 4 }}>{r.note}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 14, padding: 12, borderRadius: 12, background: 'var(--paper-2)', border: '1px dashed var(--line-strong)' }}>
+          <div className="small" style={{ color: 'var(--ink-2)', lineHeight: 1.5 }}>
+            <strong style={{ color: 'var(--ink)' }}>After your next bake</strong>, tell us if this call was right. That's how reader scores stay honest.
+          </div>
+        </div>
+      </div>
+      <div className="nav-bottom">
+        <div className="nav-item"><div>Fresh</div></div>
+        <div className="nav-item on"><div>My bakes</div><div className="nav-dot" /></div>
+        <div className="nav-item"><div>Post</div></div>
+        <div className="nav-item"><div>Me</div></div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------- Phone tile ----------------
+function Tile({ num, cat, label, caption, children }) {
+  return (
+    <div className="phone-wrap">
+      <div className="phone-label-row">
+        <span className="num">{num}</span>
+        <span className="cat">{cat}</span>
+        <span>{label}</span>
+      </div>
+      <div className="phone-scale">
+        <div className="phone-scale-inner">
+          <IosFrame>{children}</IosFrame>
+        </div>
+      </div>
+      {caption && <div className="phone-caption">{caption}</div>}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div id="app">
+      <Tile num="01" cat="Hero" label="Tagline" caption="A crumb, not a logo. The hero leans on the texture of the thing the app is about — and on the promise of a real human read within the hour.">
+        <HeroScreen />
+      </Tile>
+      <Tile num="02" cat="Onboarding" label="Where you are" caption="Crumb refuses pure beginners. The product only works for bakers between loaf 5 and 50 — the segment that posts on r/Sourdough and gets noise.">
+        <Onb1Screen />
+      </Tile>
+      <Tile num="03" cat="Onboarding" label="Your usual loaf" caption="A baseline recipe pre-fills every future post. Five fields once, two-tap overrides later. This is the wedge against Reddit's free-form drudgery.">
+        <Onb2Screen />
+      </Tile>
+      <Tile num="04" cat="Onboarding" label="The deal" caption="The 'read one to post one' contract is set up front. That's how the spec's open question on reader-side retention gets answered.">
+        <Onb3Screen />
+      </Tile>
+      <Tile num="05" cat="Core loop" label="Post a crumb" caption="Under-a-minute structured post. Photo, six preset chips, one 120-char question. The first read ETA is shown before you submit.">
+        <CorePostScreen />
+      </Tile>
+      <Tile num="06" cat="Core loop" label="Fresh queue" caption="The Reddit /new feed, but the cards lead with 'reads needed' and 'still hot'. Sorted to keep loaves under the 60-minute target.">
+        <CoreFeedScreen />
+      </Tile>
+      <Tile num="07" cat="Core loop" label="Read a loaf" caption="Eight diagnoses, one optional short note. Your weight is shown on the button — bakers feel their reputation in the act, not on a leaderboard.">
+        <CoreReadScreen />
+      </Tile>
+      <Tile num="08" cat="Core loop" label="The cluster" caption="A weighted cluster, not a comment thread. The 'next bake' suggestion compares to your last call. The confirm-or-not prompt is what powers reader accuracy.">
+        <CoreClusterScreen />
+      </Tile>
+    </div>
+  );
+}
+
+const grid = document.getElementById('phones-grid');
+ReactDOM.createRoot(grid).render(<App />);
+</script>
+</body>
+</html>
